@@ -41,7 +41,6 @@ jobs:
           ARGS: "-rlgoDzvc -i --delete"
           SOURCE: "/"
           EXCLUDE: "/node_modules/, /tests/, /storage/, .git/, .github/, .env"
-
       - name: Run Remote Commands
         uses: appleboy/ssh-action@master
         with:
