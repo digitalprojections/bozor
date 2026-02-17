@@ -67,6 +67,7 @@ jobs:
           SOURCE: "./"
           EXCLUDE: ".git/, .github/, node_modules/, tests/, storage/framework/, storage/logs/, .env"
 
+          
       - name: Post-deployment Setup
         uses: appleboy/ssh-action@master
         with:
