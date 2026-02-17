@@ -89,6 +89,7 @@ jobs:
               php artisan key:generate --force
             fi
             
+            
             # Laravel optimizations
             php artisan migrate --force
             php artisan config:cache
