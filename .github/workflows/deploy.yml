@@ -35,7 +35,7 @@ jobs:
         run: |
           # Remove development files
           rm -rf .git .github node_modules tests
-          
+
           
           # Optimize Laravel
           php artisan optimize
@@ -55,6 +55,20 @@ jobs:
             echo "Directory listing:"
             ls -la
             echo "PHP version: $(php -v | head -n1)"
+
+             name: Debug Environment
+  run: |
+    echo "GitHub Workspace: ${{ github.workspace }}"
+    echo "Current directory: $(pwd)"
+    echo "Files in workspace:"
+    ls -la
+    echo ""
+    echo "Checking secrets (safe):"
+    echo "SSH_HOST is ${{ secrets.SSH_HOST != '' && 'set' || 'NOT SET' }}"
+    echo "SSH_USERNAME is ${{ secrets.SSH_USERNAME != '' && 'set' || 'NOT SET' }}"
+    echo "SSH_PRIVATE_KEY is ${{ secrets.SSH_PRIVATE_KEY != '' && 'set' || 'NOT SET' }}"
+    echo "SSH_PORT is ${{ secrets.SSH_PORT != '' && 'set' || 'NOT SET' }}"
+    echo "REMOTE_DIR is ${{ secrets.REMOTE_DIR != '' && 'set' || 'NOT SET' }}"
 
       - name: Deploy to Server
         uses: easingthemes/ssh-deploy@v4.1.0
