@@ -38,8 +38,11 @@ export default function Profile({
     // Reset avatar state when status changes (indicating successful save)
     useEffect(() => {
         if (status && (avatarFile !== null || removeAvatar !== false)) {
-            setAvatarFile(null);
-            setRemoveAvatar(false);
+            const timer = setTimeout(() => {
+                setAvatarFile(null);
+                setRemoveAvatar(false);
+            }, 0);
+            return () => clearTimeout(timer);
         }
     }, [status, avatarFile, removeAvatar]);
 
