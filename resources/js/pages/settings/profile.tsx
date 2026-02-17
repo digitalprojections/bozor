@@ -37,11 +37,11 @@ export default function Profile({
 
     // Reset avatar state when status changes (indicating successful save)
     useEffect(() => {
-        if (status) {
+        if (status && (avatarFile !== null || removeAvatar !== false)) {
             setAvatarFile(null);
             setRemoveAvatar(false);
         }
-    }, [status]);
+    }, [status, avatarFile, removeAvatar]);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>

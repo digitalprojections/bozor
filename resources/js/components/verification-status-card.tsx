@@ -1,18 +1,12 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { VerificationRequest } from '@/types/dashboard';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useTranslations } from '@/hooks/use-translations';
 import { CheckCircle, Clock, XCircle } from 'lucide-react';
 import { router } from '@inertiajs/react';
 
-interface VerificationRequest {
-    id: number;
-    status: 'pending' | 'approved' | 'rejected';
-    reason?: string;
-    admin_notes?: string;
-    created_at: string;
-    reviewed_at?: string;
-}
+
 
 interface VerificationStatusCardProps {
     verificationRequest?: VerificationRequest;

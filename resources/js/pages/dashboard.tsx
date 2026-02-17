@@ -1,9 +1,9 @@
 import { Head, Link } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem } from '@/types';
-import { dashboard, home } from '@/routes';
+import { dashboard } from '@/routes';
 import { StatsCard } from '@/components/dashboard/stats-card';
-import type { DashboardStats, Listing, Transaction } from '@/types/dashboard';
+import type { DashboardStats, Listing, Transaction, VerificationRequest } from '@/types/dashboard';
 import { useTranslations } from '@/hooks/use-translations';
 import { Package, DollarSign, Eye, ShoppingCart } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,7 +22,7 @@ interface DashboardProps {
     stats: DashboardStats;
     listings: Listing[];
     transactions: Transaction[];
-    verificationRequest?: any;
+    verificationRequest?: VerificationRequest;
     isVerified: boolean;
 }
 

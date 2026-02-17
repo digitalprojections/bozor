@@ -51,3 +51,12 @@ export interface DashboardStats {
     total_views: number;
     total_revenue: number;
 }
+
+export interface VerificationRequest {
+    id: number;
+    status: 'pending' | 'approved' | 'rejected';
+    reason?: string;
+    admin_notes?: string;
+    created_at: string;
+    reviewed_at?: string;
+}

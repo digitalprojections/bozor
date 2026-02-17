@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { X, ChevronDown } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 
 interface Category {

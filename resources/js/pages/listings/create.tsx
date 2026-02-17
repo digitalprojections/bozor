@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
-import { Upload, X, Package, ShieldCheck, Sparkles } from 'lucide-react';
+import { Upload, X, Package, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CategoryMultiSelect } from '@/components/category-multi-select';
 import { ImageCompressor, type CompressionResult } from '@/lib/image-compressor';

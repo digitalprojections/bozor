@@ -1,4 +1,4 @@
-import type { Category, Listing, Transaction } from '@/types/dashboard';
+
 
 interface StatsCardProps {
     title: string;
