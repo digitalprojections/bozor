@@ -36,6 +36,7 @@ jobs:
           # Remove development files
           rm -rf .git .github node_modules tests
           
+          
           # Optimize Laravel
           php artisan optimize
 
