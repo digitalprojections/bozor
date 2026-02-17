@@ -31,26 +31,57 @@ jobs:
       - name: Build Assets
         run: npm run build
 
+      - name: Prepare deployment files
+        run: |
+          # Remove development files
+          rm -rf .git .github node_modules tests
+          
+          # Optimize Laravel
+          php artisan optimize
+
       - name: Deploy to Server
         uses: easingthemes/ssh-deploy@main
-        env:
+        with:
           SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_KEY }}
           REMOTE_HOST: ${{ secrets.DEPLOY_HOST }}
           REMOTE_USER: ${{ secrets.DEPLOY_USER }}
+          REMOTE_PORT: ${{ secrets.DEPLOY_PORT }}
           TARGET: ${{ secrets.DEPLOY_PATH }}
           ARGS: "-rlgoDzvc -i --delete"
-          SOURCE: "/"
-          EXCLUDE: "/node_modules/, /tests/, /storage/, .git/, .github/, .env"
-      - name: Run Remote Commands
+          SOURCE: "./"
+          EXCLUDE: ".git/, .github/, node_modules/, tests/, storage/framework/, storage/logs/, .env"
+
+      - name: Post-deployment Setup
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_KEY }}
+          port: ${{ secrets.DEPLOY_PORT }}
           script: |
             cd ${{ secrets.DEPLOY_PATH }}
+            
+            # Set permissions
+            find . -type f -exec chmod 644 {} \;
+            find . -type d -exec chmod 755 {} \;
+            chmod -R 775 storage bootstrap/cache
+            chmod -R 775 storage/logs storage/framework
+            
+            # Environment setup
+            if [ ! -f .env ] && [ -f .env.example ]; then
+              cp .env.example .env
+              php artisan key:generate --force
+            fi
+            
+            # Laravel optimizations
             php artisan migrate --force
             php artisan config:cache
             php artisan route:cache
             php artisan view:cache
-            php artisan storage:link
+            
+            # Storage link
+            php artisan storage:link || true
+            
+            # Clear old cache
+            php artisan cache:clear
+            php artisan view:clear
