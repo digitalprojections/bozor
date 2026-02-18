@@ -96,3 +96,18 @@ jobs:
             .gitattributes
             .editorconfig
             database/database.sqlite
+            .cursor/
+            .junie/
+            .prettier*
+            eslint.config.js
+            tsconfig.json
+            pint.json
+            components.json
+            boost.json
+            composer.json
+            composer.lock
+            package.json
+            package-lock.json
+            vite.config.ts
+            tailwind.config.js
+            postcss.config.js
