@@ -17,23 +17,25 @@ jobs:
           php-version: '8.4'
           extensions: mbstring, xml, ctype, iconv, mysql, bcmath, gd
 
-      - name: Create .env file
+      - name: Create build environment
         run: |
-          echo "APP_NAME=${{ secrets.APP_NAME }}" >> .env
-          echo "APP_ENV=production" >> .env
-          echo "APP_KEY=${{ secrets.APP_KEY }}" >> .env
-          echo "APP_DEBUG=false" >> .env
-          echo "APP_URL=${{ secrets.APP_URL }}" >> .env
-          echo "" >> .env
-          echo "DB_CONNECTION=${{ secrets.DB_CONNECTION }}" >> .env
-          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
-          echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
-          echo "DB_DATABASE=${{ secrets.DB_DATABASE }}" >> .env
-          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          # Create minimal .env for build
+          cp .env.example .env
+          echo "DB_CONNECTION=sqlite" >> .env
+          touch database/database.sqlite
+          
+          # Set APP_KEY if not exists
+          if ! grep -q "APP_KEY=" .env; then
+            echo "APP_KEY=" >> .env
+          fi
 
-      - name: Install PHP Dependencies
-        run: composer install --no-dev --optimize-autoloader
+      - name: Install PHP Dependencies (without scripts)
+        run: composer install --no-dev --optimize-autoloader --no-scripts
+
+      - name: Generate key and run discovery
+        run: |
+          php artisan key:generate
+          php artisan package:discover --ansi || true
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -46,14 +48,30 @@ jobs:
       - name: Build Assets
         run: npm run build
 
-      - name: Prepare deployment structure
+      - name: Create production .env
         run: |
-          # Create necessary storage directories
+          cat > .env << EOF
+          APP_NAME="${{ secrets.APP_NAME }}"
+          APP_ENV=production
+          APP_KEY=${{ secrets.APP_KEY }}
+          APP_DEBUG=false
+          APP_URL=${{ secrets.APP_URL }}
+          LOG_CHANNEL=stack
+          
+          DB_CONNECTION=${{ secrets.DB_CONNECTION }}
+          DB_HOST=${{ secrets.DB_HOST }}
+          DB_PORT=${{ secrets.DB_PORT }}
+          DB_DATABASE=${{ secrets.DB_DATABASE }}
+          DB_USERNAME=${{ secrets.DB_USERNAME }}
+          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          EOF
+
+      - name: Clean up build artifacts
+        run: |
+          rm -f database/database.sqlite
           mkdir -p storage/framework/{sessions,views,cache}
           mkdir -p storage/logs
           mkdir -p bootstrap/cache
-          
-          # Set proper permissions (will be applied after upload)
           chmod -R 775 storage
           chmod -R 775 bootstrap/cache
 
@@ -69,7 +87,6 @@ jobs:
           server-dir: ${{ secrets.FTP_TARGET_DIR }}/
           exclude: |
             .git*
-            .git*/
             .github/
             node_modules/
             tests/
@@ -78,6 +95,4 @@ jobs:
             README.md
             .gitattributes
             .editorconfig
-
-      - name: Post-deployment commands via SSH (if available)
-        uses: appleboy/ssh-action@v1.0.0
+            database/database.sqlite
