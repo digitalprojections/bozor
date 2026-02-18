@@ -1,11 +1,11 @@
-name: Deploy to Production
+name: Deploy to Production via FTP
 
 on:
   push:
     branches: [ main ]
 
 jobs:
-  deploy:
+  ftp-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -31,76 +31,20 @@ jobs:
       - name: Build Assets
         run: npm run build
 
-      - name: Prepare deployment files
-        run: |
-          # Remove development files
-          rm -rf .git .github node_modules tests
-          
-          # Optimize Laravel
-          php artisan optimize
-
-      ### 🔴 ADD THE SSH TEST RIGHT HERE - BETWEEN "Prepare deployment files" AND "Deploy to Server" ###
-      - name: Test SSH Connection
-        uses: appleboy/ssh-action@v1.0.0
+      - name: 📂 Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          debug: true
-          script: |
-            echo "SSH Connection Successful"
-            echo "Current directory: $(pwd)"
-            echo "Directory listing:"
-            ls -la
-            echo "PHP version: $(php -v | head -n1)"
-
-      - name: Deploy to Server
-        uses: easingthemes/ssh-deploy@v4.1.0
-        with:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          REMOTE_HOST: ${{ secrets.SSH_HOST }}
-          REMOTE_USER: ${{ secrets.SSH_USERNAME }}
-          REMOTE_PORT: ${{ secrets.SSH_PORT }}
-          TARGET: ${{ secrets.REMOTE_DIR }}
-          ARGS: "-rlgoDzvc -i --delete -v"
-          SOURCE: "./"
-          EXCLUDE: ".git/, .github/, node_modules/, tests/, storage/framework/, storage/logs/, .env"
-
-          
-      - name: Post-deployment Setup
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          port: ${{ secrets.SSH_PORT }}
-          script: |
-            cd ${{ secrets.REMOTE_DIR }}
-            
-            # Set permissions
-            find . -type f -exec chmod 644 {} \;
-            find . -type d -exec chmod 755 {} \;
-            chmod -R 775 storage bootstrap/cache
-            chmod -R 775 storage/logs storage/framework
-            
-            # Environment setup
-            if [ ! -f .env ] && [ -f .env.example ]; then
-              cp .env.example .env
-              php artisan key:generate --force
-            fi
-            
-            
-            # Laravel optimizations
-            php artisan migrate --force
-            php artisan config:cache
-            php artisan route:cache
-            php artisan view:cache            
-            
-            # Storage link
-            php artisan storage:link || true
-            
-            # Clear old cache
-            php artisan cache:clear
-            php artisan view:clear
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./
+          server-dir: ${{ secrets.FTP_TARGET_DIR }}/
+          exclude: |
+            .git*
+            .git*/
+            .github/
+            node_modules/
+            tests/
+            storage/framework/
+            storage/logs/
+            .env
