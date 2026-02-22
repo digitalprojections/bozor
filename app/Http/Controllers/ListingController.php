@@ -97,6 +97,7 @@ class ListingController extends Controller
 
         return Inertia::render('listings/show', [
             'listing' => $listing,
+            'is_watched' => auth()->check() ? auth()->user()->watchedListings()->where('listing_id', $listing->id)->exists() : false,
             'recommendations' => $recommendations,
         ]);
     }
@@ -142,6 +143,15 @@ class ListingController extends Controller
             'auction_end_date' => 'required_if:is_auction,1|nullable|date|after:now',
         ]);
 
+        // Capture relevant changes before updating
+        $changes = [];
+        if ($listing->price != $validated['price']) {
+            $changes['price'] = ['old' => $listing->price, 'new' => $validated['price']];
+        }
+        if (isset($validated['status']) && $listing->status !== $validated['status']) {
+            $changes['status'] = ['old' => $listing->status, 'new' => $validated['status']];
+        }
+
         $listing->update([
             'title' => $validated['title'],
             'description' => $validated['description'],
@@ -156,6 +166,13 @@ class ListingController extends Controller
 
         // Update categories
         $listing->categories()->sync($validated['categories']);
+
+        // Notify watchers if anything relevant changed
+        if (!empty($changes)) {
+            $listing->watchedBy()->each(function ($watcher) use ($listing, $changes) {
+                $watcher->notify(new \App\Notifications\WatchlistItemUpdated($listing, $changes));
+            });
+        }
 
         return redirect()->route('listings.show', $listing->id)->with('success', 'Listing updated successfully!');
     }

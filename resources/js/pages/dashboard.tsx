@@ -22,10 +22,7 @@ export default function Dashboard({
     const user = auth.user;
     const { t } = useTranslations();
 
-    const breadcrumbs = [
-        { title: t('welcome.browse_listings'), href: '#' },
-        { title: t('layout.header.my_listings'), href: '#' },
-    ];
+    const breadcrumbs: any[] = [];
 
     return (
         <BazaarLayout
@@ -40,8 +37,6 @@ export default function Dashboard({
                 rating="528"
                 reviewCount={99}
             />
-
-            <BazaarBalanceSection balance={8123} points={446} />
 
             {/* Your Listings Section */}
             <div className="flex flex-col gap-4">

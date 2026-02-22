@@ -115,4 +115,9 @@ class User extends Authenticatable
     {
         return $this->receivedRatings()->count();
     }
+
+    public function watchedListings()
+    {
+        return $this->belongsToMany(Listing::class , 'watchlists')->withTimestamps();
+    }
 }

@@ -139,6 +139,7 @@
     "marketplace.search.placeholder": "Search listings...",
     "marketplace.search.button": "Search",
     "marketplace.filters.all": "All",
+    "marketplace.filters.all_categories": "All Categories",
     "marketplace.filters.sort_newest": "Newest First",
     "marketplace.filters.sort_oldest": "Oldest First",
     "marketplace.filters.price_low_high": "Price: Low to High",

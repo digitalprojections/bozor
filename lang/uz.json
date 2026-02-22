@@ -137,6 +137,7 @@
     "marketplace.search.placeholder": "E'lonlarni qidirish...",
     "marketplace.search.button": "Qidirish",
     "marketplace.filters.all": "Barchasi",
+    "marketplace.filters.all_categories": "Barcha kategoriyalar",
     "marketplace.filters.sort_newest": "Yangi birinchi",
     "marketplace.filters.sort_oldest": "Eski birinchi",
     "marketplace.filters.price_low_high": "Narx: Arzonroq",

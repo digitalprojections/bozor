@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
-import { Package, Clock, Info, FileText } from 'lucide-react';
+import { Package, Clock, Info, FileText, Heart } from 'lucide-react';
 import BazaarLayout from '@/layouts/bazaar-layout';
 import { useTranslations } from '@/hooks/use-translations';
 import { ListingSidebar } from '@/components/listings/listing-sidebar';
@@ -8,7 +8,7 @@ import { RecommendationsSection } from '@/components/listings/recommendations-se
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { usePage } from '@inertiajs/react';
+import { usePage, router } from '@inertiajs/react';
 import type { BreadcrumbItem } from '@/types';
 import { ITEM_CONDITIONS } from '@/types/item-conditions';
 
@@ -41,9 +41,10 @@ interface ListingProps {
         bids_count?: number;
     };
     recommendations?: any[];
+    is_watched?: boolean;
 }
 
-export default function Show({ listing, recommendations = [] }: ListingProps) {
+export default function Show({ listing, recommendations = [], is_watched = false }: ListingProps) {
     const { t } = useTranslations();
     const { auth } = usePage().props as any;
     const [activeImage, setActiveImage] = useState(0);
@@ -118,23 +119,32 @@ export default function Show({ listing, recommendations = [] }: ListingProps) {
                                 </span>
                             </div>
                             <div className="flex flex-col items-end gap-2">
-                                <div className="flex gap-2">
-                                    {(listing as any).user_id === (auth.user as any)?.id && (
-                                        <Link href={`/listings/${listing.id}/edit`}>
-                                            <Button variant="outline" size="sm" className="rounded-full">
-                                                {t('common.edit')}
-                                            </Button>
-                                        </Link>
-                                    )}
-                                    <span className="text-xs bg-[#eef2f6] text-[#2c3e50] px-3 py-1.5 rounded-full font-medium flex items-center gap-1.5">
-                                        <Clock size={14} />
-                                        {t('listing.show.ends')}: 2/22 (Sun) 19:30
-                                    </span>
-                                </div>
-                                <Badge variant="destructive" className="bg-[#fce8e8] text-[#b13e3e] hover:bg-[#fce8e8] rounded-full px-3 h-7 border-none font-medium">
-                                    {listing.is_auction ? t('listing.show.auction') : t('dashboard.status.' + listing.status)}
-                                </Badge>
+                                {(listing as any).user_id !== (auth.user as any)?.id && (
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className={`rounded-full flex items-center gap-2 transition-all ${is_watched ? 'border-[#ff4d4f] text-[#ff4d4f] bg-[#fff1f0] hover:bg-[#ffa39e] hover:text-white hover:border-[#ffa39e]' : 'border-[#64748b] text-[#64748b] hover:bg-slate-50'}`}
+                                        onClick={() => router.post(`/watchlist/${listing.id}/toggle`, {}, { preserveScroll: true })}
+                                    >
+                                        <Heart size={16} className={is_watched ? 'fill-current' : ''} />
+                                        {is_watched ? 'Watched' : 'Watch'}
+                                    </Button>
+                                )}
+                                {(listing as any).user_id === (auth.user as any)?.id && (
+                                    <Link href={`/listings/${listing.id}/edit`}>
+                                        <Button variant="outline" size="sm" className="rounded-full">
+                                            {t('common.edit')}
+                                        </Button>
+                                    </Link>
+                                )}
+                                <span className="text-xs bg-[#eef2f6] text-[#2c3e50] px-3 py-1.5 rounded-full font-medium flex items-center gap-1.5">
+                                    <Clock size={14} />
+                                    {t('listing.show.ends')}: 2/22 (Sun) 19:30
+                                </span>
                             </div>
+                            <Badge variant="destructive" className="bg-[#fce8e8] text-[#b13e3e] hover:bg-[#fce8e8] rounded-full px-3 h-7 border-none font-medium">
+                                {listing.is_auction ? t('listing.show.auction') : t('dashboard.status.' + listing.status)}
+                            </Badge>
                         </div>
                     </CardContent>
                 </Card>
@@ -180,7 +190,7 @@ export default function Show({ listing, recommendations = [] }: ListingProps) {
                 {/* Recommendations Section */}
                 <RecommendationsSection recommendations={recommendations} />
             </div>
-        </BazaarLayout>
+        </BazaarLayout >
     );
 }
 

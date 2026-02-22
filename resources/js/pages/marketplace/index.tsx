@@ -67,12 +67,14 @@ export default function Marketplace({
     listings,
     recommendations = [],
     filters,
+    watched_ids = [],
 }: {
     stats: Stats | null;
     categories: Category[];
     listings: PaginatedListings;
     recommendations?: any[];
     filters: Filters;
+    watched_ids?: number[];
 }) {
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
@@ -122,6 +124,7 @@ export default function Marketplace({
                 <ListingsGrid
                     listings={listings.data}
                     viewMode={viewMode}
+                    watchedIds={watched_ids}
                     pagination={{
                         currentPage: listings.current_page,
                         lastPage: listings.last_page,

@@ -137,6 +137,7 @@
     "marketplace.search.placeholder": "出品を検索...",
     "marketplace.search.button": "検索",
     "marketplace.filters.all": "すべて",
+    "marketplace.filters.all_categories": "すべてのカテゴリ",
     "marketplace.filters.sort_newest": "新着順",
     "marketplace.filters.sort_oldest": "古い順",
     "marketplace.filters.price_low_high": "価格：安い順",

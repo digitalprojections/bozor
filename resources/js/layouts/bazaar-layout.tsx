@@ -86,12 +86,8 @@ export default function BazaarLayout({ children, title, breadcrumbs = [], sideba
             </div>
 
             <main className="mx-auto max-w-[1100px] px-4 py-8">
-                {/* Title Row */}
                 <div className="mb-6 flex items-center justify-between">
                     <h1 className="text-[2rem] font-semibold tracking-tight text-[#0b1b32]">{title}</h1>
-                    <span className="rounded-full bg-[#eef2f6] px-4 py-1.5 text-[0.9rem] font-normal text-[#2c3e50] cursor-pointer">
-                        {t('layout.header.guide')}
-                    </span>
                 </div>
 
                 <div className={cn(
@@ -174,7 +170,7 @@ function DefaultSidebar() {
                         <SidebarLink icon={Truck} label={t('dashboard.sold_items.title') || 'Sold Items'} href="/dashboard/sold-items" />
                     </>
                 )}
-                <SidebarLink icon={Star} label={t('layout.sidebar.watchlist')} />
+                <SidebarLink icon={Star} label={t('layout.sidebar.watchlist')} href="/watchlist" />
             </SidebarSection>
 
             {user && (
@@ -185,11 +181,7 @@ function DefaultSidebar() {
                         <SidebarLink icon={Star} label={t('layout.sidebar.saved_searches')} />
                     </SidebarSection>
 
-                    <SidebarSection title={t('layout.sidebar.payment')}>
-                        <SidebarLink icon={Receipt} label={t('layout.sidebar.invoice')} />
-                        <SidebarLink icon={CreditCard} label={t('layout.sidebar.payments')} />
-                        <SidebarLink icon={Wallet} label={t('layout.sidebar.sales_mgmt')} />
-                    </SidebarSection>
+
 
                     <SidebarSection title={t('layout.sidebar.settings')}>
                         <SidebarLink icon={Settings} label={t('layout.sidebar.options')} href="/settings/profile" />

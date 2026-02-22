@@ -45,6 +45,17 @@ class BidController extends Controller
             ]);
         });
 
+        // Notify watchers (except the bidder) about the new bid
+        $listing->load('watchedBy');
+        $bidderId = auth()->id();
+        $listing->watchedBy->each(function ($watcher) use ($listing, $validated, $bidderId) {
+            if ($watcher->id !== $bidderId) {
+                $watcher->notify(new \App\Notifications\WatchlistItemUpdated($listing, [
+                    'new_bid' => ['amount' => $validated['amount']],
+                ]));
+            }
+        });
+
         return back()->with('success', 'Bid placed successfully!');
     }
 }

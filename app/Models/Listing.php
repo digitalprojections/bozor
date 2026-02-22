@@ -89,4 +89,9 @@ class Listing extends Model
     {
         return $this->hasMany(Bid::class)->orderBy('amount', 'desc');
     }
+
+    public function watchedBy()
+    {
+        return $this->belongsToMany(User::class , 'watchlists')->withTimestamps();
+    }
 }

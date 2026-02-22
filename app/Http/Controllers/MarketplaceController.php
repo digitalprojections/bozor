@@ -70,6 +70,7 @@ class MarketplaceController extends Controller
             'categories' => $categories,
             'listings' => $listings,
             'recommendations' => $recommendations,
+            'watched_ids' => $user ? $user->watchedListings()->pluck('listing_id')->toArray() : [],
             'filters' => [
                 'search' => $request->search,
                 'category' => $request->category,

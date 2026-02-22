@@ -28,15 +28,7 @@ export function BazaarBalanceSection({ balance, points }: BazaarBalanceSectionPr
                                 <span className="text-[0.9rem] font-medium text-[#5f6c84]">{t('layout.balance.wallet')}</span>
                             </div>
                             <span className="text-3xl font-bold text-[#0b1a31]">{formatCurrency(balance)}</span>
-                            <div className="mt-1">
-                                <Badge variant="secondary" className="bg-[#f0f4fe] text-[0.7rem] text-[#1a4cbc] hover:bg-[#e0e8fd] font-normal px-2 py-0">
-                                    {t('layout.balance.auto_topup')}
-                                </Badge>
-                            </div>
                         </div>
-                        <button className="text-[0.75rem] font-medium text-[#0066cc] hover:underline">
-                            Details
-                        </button>
                     </div>
 
                     <div className="flex items-start justify-between">
@@ -44,21 +36,10 @@ export function BazaarBalanceSection({ balance, points }: BazaarBalanceSectionPr
                             <span className="text-[0.9rem] font-medium text-[#5f6c84]">{t('layout.balance.points')}</span>
                             <span className="text-3xl font-bold text-[#0b1a31]">{Math.floor(points).toLocaleString()} pt</span>
                         </div>
-                        <button className="text-[0.75rem] font-medium text-[#0066cc] hover:underline">
-                            Details
-                        </button>
                     </div>
                 </div>
 
-                {/* Right Side: Quick Links */}
-                <div className="w-full md:w-[320px] bg-[#fafcff]">
-                    <div className="flex flex-col h-full">
-                        <QuickLink label={t('layout.balance.membership')} />
-                        <QuickLink label={t('layout.balance.coupons')} />
-                        <QuickLink label={t('layout.balance.campaigns')} />
-                        <QuickLink label={t('layout.balance.security')} isLast />
-                    </div>
-                </div>
+                {/* Right Side: Quick Links - Removed as they are placeholders */}
             </CardContent>
         </Card>
     );
