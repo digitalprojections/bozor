@@ -3,6 +3,7 @@ import { usePage } from '@inertiajs/react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import {
     Select,
     SelectContent,
@@ -23,25 +24,6 @@ type AvatarUploadProps = {
     removeAvatar: boolean;
 };
 
-const AVATAR_STYLES = [
-    { value: 'initials', label: 'Initials' },
-    { value: 'avataaars', label: 'Avataaars' },
-    { value: 'personas', label: 'Personas' },
-    { value: 'lorelei', label: 'Lorelei' },
-    { value: 'micah', label: 'Micah' },
-    { value: 'bottts', label: 'Bottts (Robot)' },
-    { value: 'pixel-art', label: 'Pixel Art' },
-    { value: 'adventurer', label: 'Adventurer' },
-    { value: 'big-smile', label: 'Big Smile' },
-];
-
-const GENDER_OPTIONS = [
-    { value: 'unspecified', label: 'Not specified' },
-    { value: 'male', label: 'Male' },
-    { value: 'female', label: 'Female' },
-    { value: 'other', label: 'Other' },
-];
-
 export function AvatarUpload({
     onFileChange,
     onStyleChange,
@@ -52,9 +34,29 @@ export function AvatarUpload({
 }: AvatarUploadProps) {
     const { auth } = usePage().props;
     const user = auth.user as User;
+    const { t } = useTranslations();
     const getInitials = useInitials();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+    const AVATAR_STYLES = [
+        { value: 'initials', label: t('profile.avatar.styles.initials') },
+        { value: 'avataaars', label: t('profile.avatar.styles.avataaars') },
+        { value: 'personas', label: t('profile.avatar.styles.personas') },
+        { value: 'lorelei', label: t('profile.avatar.styles.lorelei') },
+        { value: 'micah', label: t('profile.avatar.styles.micah') },
+        { value: 'bottts', label: t('profile.avatar.styles.bottts') },
+        { value: 'pixel-art', label: t('profile.avatar.styles.pixel_art') },
+        { value: 'adventurer', label: t('profile.avatar.styles.adventurer') },
+        { value: 'big-smile', label: t('profile.avatar.styles.big_smile') },
+    ];
+
+    const GENDER_OPTIONS = [
+        { value: 'unspecified', label: t('profile.avatar.gender.not_specified') },
+        { value: 'male', label: t('profile.avatar.gender.male') },
+        { value: 'female', label: t('profile.avatar.gender.female') },
+        { value: 'other', label: t('profile.avatar.gender.other') },
+    ];
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
@@ -108,7 +110,7 @@ export function AvatarUpload({
                             onClick={() => fileInputRef.current?.click()}
                         >
                             <Upload className="mr-2 h-4 w-4" />
-                            Upload Avatar
+                            {t('profile.avatar.upload')}
                         </Button>
 
                         {(hasCustomAvatar || currentFile) && (
@@ -119,7 +121,7 @@ export function AvatarUpload({
                                 onClick={handleRemoveClick}
                             >
                                 <X className="mr-2 h-4 w-4" />
-                                Remove
+                                {t('profile.avatar.remove')}
                             </Button>
                         )}
                     </div>
@@ -133,21 +135,21 @@ export function AvatarUpload({
                     />
 
                     <p className="text-sm text-muted-foreground">
-                        JPG, PNG up to 2MB. Or choose a generated avatar style below.
+                        {t('profile.avatar.file_help')}
                     </p>
                 </div>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
                 <div className="grid gap-2">
-                    <Label htmlFor="avatar_style">Avatar Style</Label>
+                    <Label htmlFor="avatar_style">{t('profile.avatar.style')}</Label>
                     <Select
                         name="avatar_style"
                         defaultValue={user.avatar_style || 'initials'}
                         onValueChange={onStyleChange}
                     >
                         <SelectTrigger id="avatar_style">
-                            <SelectValue placeholder="Select style" />
+                            <SelectValue placeholder={t('common.select_style')} />
                         </SelectTrigger>
                         <SelectContent>
                             {AVATAR_STYLES.map((style) => (
@@ -160,14 +162,14 @@ export function AvatarUpload({
                 </div>
 
                 <div className="grid gap-2">
-                    <Label htmlFor="gender">Gender (for avatar)</Label>
+                    <Label htmlFor="gender">{t('profile.avatar.gender')}</Label>
                     <Select
                         name="gender"
                         defaultValue={user.gender || 'unspecified'}
                         onValueChange={onGenderChange}
                     >
                         <SelectTrigger id="gender">
-                            <SelectValue placeholder="Select gender" />
+                            <SelectValue placeholder={t('common.select_gender')} />
                         </SelectTrigger>
                         <SelectContent>
                             {GENDER_OPTIONS.map((option) => (
@@ -178,7 +180,7 @@ export function AvatarUpload({
                         </SelectContent>
                     </Select>
                     <p className="text-xs text-muted-foreground">
-                        Some avatar styles use gender for appearance
+                        {t('profile.avatar.gender_help')}
                     </p>
                 </div>
             </div>

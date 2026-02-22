@@ -1,9 +1,10 @@
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
-import AppLayout from '@/layouts/app-layout';
+import BazaarLayout from '@/layouts/bazaar-layout';
 import { MarketplaceHeader } from '@/components/marketplace-header';
 import { SearchAndFilters } from '@/components/search-and-filters';
 import { ListingsGrid } from '@/components/listings-grid';
+import { RecommendationsSection } from '@/components/listings/recommendations-section';
 import type { BreadcrumbItem } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -33,15 +34,17 @@ interface Listing {
     price: number;
     status: string;
     created_at: string;
+    main_image_url: string | null;
+    images: string[];
     user: {
         id: number;
         name: string;
         avatar_url: string;
     };
-    category: {
+    categories: Array<{
         id: number;
         name: string;
-    };
+    }>;
 }
 
 interface PaginatedListings {
@@ -62,11 +65,13 @@ export default function Marketplace({
     stats,
     categories,
     listings,
+    recommendations = [],
     filters,
 }: {
     stats: Stats | null;
     categories: Category[];
     listings: PaginatedListings;
+    recommendations?: any[];
     filters: Filters;
 }) {
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -96,7 +101,7 @@ export default function Marketplace({
     };
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <BazaarLayout title="Marketplace" breadcrumbs={breadcrumbs}>
             <Head title="Marketplace" />
 
             <div className="space-y-6">
@@ -123,7 +128,9 @@ export default function Marketplace({
                         total: listings.total,
                     }}
                 />
+
+                <RecommendationsSection recommendations={recommendations} />
             </div>
-        </AppLayout>
+        </BazaarLayout>
     );
 }

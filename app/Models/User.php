@@ -85,7 +85,7 @@ class User extends Authenticatable
 
     public function isVerified(): bool
     {
-        return (bool) $this->is_verified;
+        return (bool)$this->is_verified;
     }
 
     /**
@@ -94,5 +94,25 @@ class User extends Authenticatable
     public function getAvatarUrlAttribute(): string
     {
         return \App\Helpers\AvatarHelper::getAvatarUrl($this);
+    }
+
+    public function givenRatings()
+    {
+        return $this->hasMany(Rating::class , 'rater_id');
+    }
+
+    public function receivedRatings()
+    {
+        return $this->hasMany(Rating::class , 'rated_user_id');
+    }
+
+    public function getAverageRatingAttribute()
+    {
+        return $this->receivedRatings()->avg('score') ?: 0;
+    }
+
+    public function getRatingsCountAttribute()
+    {
+        return $this->receivedRatings()->count();
     }
 }

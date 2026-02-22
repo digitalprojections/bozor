@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modern Auction Item Layout (Structure Only)</title>
+  <style>
+    /* === Modern, Clean CSS Structure === */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #f4f6fa;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      padding: 2rem 1rem;
+      display: flex;
+      justify-content: center;
+      color: #1a263b;
+    }
+
+    .page-container {
+      max-width: 1200px;
+      width: 100%;
+    }
+
+    /* === Breadcrumb (simple) === */
+    .breadcrumb {
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+      color: #5f6c84;
+    }
+
+    .breadcrumb span {
+      color: #1a263b;
+      font-weight: 500;
+    }
+
+    /* === Main Layout Grid === */
+    .item-grid {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 24px;
+      align-items: start;
+    }
+
+    /* --- Left Column (Main Content) --- */
+    .left-column {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Card Style */
+    .card {
+      background: #ffffff;
+      border-radius: 24px;
+      border: 1px solid #edf2f9;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.02);
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 1.5rem 1.5rem 0.5rem 1.5rem;
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: #0b1b32;
+    }
+
+    .card-content {
+      padding: 1rem 1.5rem 1.5rem 1.5rem;
+    }
+
+    /* Product Image Area */
+    .image-gallery {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .main-image-placeholder {
+      width: 100%;
+      aspect-ratio: 4/3;
+      background: #d9e2ef;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #4d627a;
+      font-size: 1rem;
+    }
+
+    .thumbnail-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .thumb-placeholder {
+      width: 70px;
+      height: 70px;
+      background: #e6ecf5;
+      border-radius: 14px;
+    }
+
+    /* Title & Price */
+    .item-title {
+      font-size: 1.8rem;
+      font-weight: 600;
+      line-height: 1.3;
+      margin-bottom: 1rem;
+    }
+
+    .price-section {
+      background: #f8fbfe;
+      border-radius: 20px;
+      padding: 1.2rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 1.5rem 0;
+    }
+
+    .current-price {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #0e1d38;
+    }
+
+    .price-label {
+      color: #64748b;
+    }
+
+    /* Countdown / Status */
+    .time-info {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      padding: 1rem 0;
+      border-top: 1px solid #eef2f6;
+      border-bottom: 1px solid #eef2f6;
+    }
+
+    .time-badge {
+      background: #f0f5fd;
+      border-radius: 40px;
+      padding: 0.4rem 1rem;
+      font-size: 0.9rem;
+    }
+
+    /* Condition Badge */
+    .condition-badge {
+      background: #fce8e8;
+      color: #b13e3e;
+      padding: 0.4rem 1rem;
+      border-radius: 40px;
+      display: inline-block;
+      font-size: 0.9rem;
+    }
+
+    /* === Item Details Table === */
+    .details-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+    }
+
+    .detail-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .detail-label {
+      font-size: 0.8rem;
+      color: #6f7d98;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .detail-value {
+      font-weight: 500;
+    }
+
+    /* Description */
+    .description-box {
+      background: #f9fcff;
+      padding: 1.5rem;
+      border-radius: 18px;
+      line-height: 1.6;
+      color: #1d2b41;
+    }
+
+    /* --- Right Column (Sidebar) --- */
+    .right-column {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Action Card (Bid, Watch) */
+    .action-card {
+      background: #ffffff;
+      border-radius: 24px;
+      border: 1px solid #edf2f9;
+      padding: 1.8rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .bid-stats {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .bid-amount {
+      font-size: 1.6rem;
+      font-weight: 700;
+    }
+
+    .watch-button-placeholder {
+      background: #f0f5fd;
+      border-radius: 60px;
+      padding: 1rem;
+      text-align: center;
+      color: #2b4b8f;
+      font-weight: 600;
+      border: 1px solid #cddef5;
+    }
+
+    /* Shipping / Payment Info */
+    .info-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px dashed #e4ecf5;
+    }
+
+    /* Seller Card */
+    .seller-card {
+      background: #ffffff;
+      border-radius: 24px;
+      border: 1px solid #edf2f9;
+      padding: 1.5rem;
+    }
+
+    .seller-rating {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid #eef2f8;
+      margin: 1rem 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 850px) {
+      .item-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page-container">
+
+    <!-- simple breadcrumb placeholder -->
+    <div class="breadcrumb">
+      <span>←</span> オークショントップ &gt; <span>商品詳細</span>
+    </div>
+
+    <!-- main layout grid -->
+    <div class="item-grid">
+
+      <!-- LEFT COLUMN (images, title, description, details) -->
+      <div class="left-column">
+
+        <!-- image card -->
+        <div class="card">
+          <div class="card-content">
+            <div class="image-gallery">
+              <div class="main-image-placeholder">
+                [ main product image ]
+              </div>
+              <div class="thumbnail-row">
+                <div class="thumb-placeholder"></div>
+                <div class="thumb-placeholder"></div>
+                <div class="thumb-placeholder"></div>
+                <div class="thumb-placeholder"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- title and price card -->
+        <div class="card">
+          <div class="card-content">
+            <h1 class="item-title">CBR1100XX スーパーブラックバード ベース車両 …</h1>
+            <div class="price-section">
+              <span class="price-label">現在の価格</span>
+              <span class="current-price">¥121,000</span>
+            </div>
+            <div class="time-info">
+              <span class="time-badge">⏳ 終了: 2/21 (土) 21:39</span>
+              <span class="condition-badge">状態: 全体的に悪い</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- item details card (table) -->
+        <div class="card">
+          <div class="card-header">📋 商品情報</div>
+          <div class="card-content">
+            <div class="details-grid">
+              <div class="detail-item"><span class="detail-label">オークションID</span><span
+                  class="detail-value">k1219591871</span></div>
+              <div class="detail-item"><span class="detail-label">開始価格</span><span class="detail-value">¥120,000</span>
+              </div>
+              <div class="detail-item"><span class="detail-label">開始日時</span><span class="detail-value">2026/2/14</span>
+              </div>
+              <div class="detail-item"><span class="detail-label">終了日時</span><span class="detail-value">2026/2/21
+                  21:39</span></div>
+              <div class="detail-item"><span class="detail-label">早期終了</span><span class="detail-value">あり</span></div>
+              <div class="detail-item"><span class="detail-label">自動延長</span><span class="detail-value">あり</span></div>
+              <div class="detail-item"><span class="detail-label">返品</span><span class="detail-value">返品不可</span></div>
+              <div class="detail-item"><span class="detail-label">入札制限</span><span class="detail-value">あり</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- description card -->
+        <div class="card">
+          <div class="card-header">📝 商品説明</div>
+          <div class="card-content">
+            <div class="description-box">
+              CBR1100XX スーパーブラックバード JH2SC35A6VM00.... <br />
+              鍵付き ワンキー。一時抹消済み、書類あり。<br />
+              エンジン始動確認済 (要バッテリー) 動画見たい方は質問ください。
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN (bid, shipping, seller, etc) -->
+      <div class="right-column">
+
+        <!-- bid / watch action card -->
+        <div class="action-card">
+          <div class="bid-stats">
+            <span>入札数: <strong>2</strong></span>
+            <span>残り時間: <strong>2時間</strong></span>
+          </div>
+          <div class="bid-amount">¥121,000</div>
+          <div class="watch-button-placeholder">
+            ☆ ウォッチリストに追加
+          </div>
+          <div style="font-size:0.9rem; color:#3f5680;">入札するにはログイン</div>
+        </div>
+
+        <!-- shipping & payment card -->
+        <div class="card">
+          <div class="card-header">🚚 配送・支払い</div>
+          <div class="card-content">
+            <div class="info-list">
+              <div class="info-row"><span>送料</span><span>落札者負担</span></div>
+              <div class="info-row"><span>配送方法</span><span>手渡し</span></div>
+              <div class="info-row"><span>発送元</span><span>大阪府</span></div>
+              <div class="info-row"><span>支払い方法</span><span>Yahoo!かんたん決済</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- seller info card -->
+        <div class="seller-card">
+          <div style="display:flex; align-items: center; gap:12px;">
+            <div style="width:44px; height:44px; background:#d3e0f0; border-radius:50%;"></div>
+            <div>
+              <div style="font-weight:600;">出品者: バイクショップXYZ</div>
+              <div class="seller-rating">
+                <span>評価: 528 (98.7%)</span>
+              </div>
+            </div>
+          </div>
+          <hr>
+          <div style="display: flex; gap:10px;">
+            <span style="background:#eef3fc; padding:0.3rem 1rem; border-radius:30px;">質問する</span>
+            <span style="background:#eef3fc; padding:0.3rem 1rem; border-radius:30px;">ストア情報</span>
+          </div>
+        </div>
+
+        <!-- reminder / helper note -->
+        <div class="card" style="background:#f3f9ff; border-color:#d1e2fc;">
+          <div class="card-content" style="display:flex; align-items:center; gap:10px;">
+            <div style="font-size:1.8rem;">🔔</div>
+            <div>登録すると終了日時や値下げをお知らせします。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- simple footer note (layout only) -->
+    <div
+      style="margin-top: 3rem; text-align: center; color: #8a99b3; border-top: 1px solid #e2eaf5; padding-top: 2rem;">
+      <span>Yahoo!オークション スタイル · クリーンな構造プレースホルダー</span>
+    </div>
+  </div>
+</body>
+
+</html>

@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ChevronLeft, ChevronRight, Package } from 'lucide-react';
+import { useTranslations } from '@/hooks/use-translations';
 import { useInitials } from '@/hooks/use-initials';
 
 interface Listing {
@@ -43,6 +44,7 @@ export function ListingsGrid({
     viewMode,
     pagination,
 }: ListingsGridProps) {
+    const { t } = useTranslations();
     const getInitials = useInitials();
 
     const handlePageChange = (page: number) => {
@@ -57,9 +59,9 @@ export function ListingsGrid({
         return (
             <Card className="flex flex-col items-center justify-center p-12 text-center">
                 <Package className="mb-4 h-12 w-12 text-muted-foreground" />
-                <h3 className="text-lg font-semibold">No listings found</h3>
+                <h3 className="text-lg font-semibold">{t('dashboard.listings.no_results')}</h3>
                 <p className="text-sm text-muted-foreground">
-                    Try adjusting your search or filters
+                    {t('listings.grid.adjust_filters')}
                 </p>
             </Card>
         );
@@ -112,7 +114,7 @@ export function ListingsGrid({
                                         {listing.title}
                                     </h3>
                                     <Badge variant="secondary" className="shrink-0">
-                                        {listing.categories?.[0]?.name || 'Uncategorized'}
+                                        {listing.categories?.[0]?.name || t('common.not_specified')}
                                         {listing.categories?.length > 1 && ` +${listing.categories.length - 1}`}
                                     </Badge>
                                 </div>
@@ -151,7 +153,7 @@ export function ListingsGrid({
             {pagination.lastPage > 1 && (
                 <div className="flex items-center justify-between">
                     <p className="text-sm text-muted-foreground">
-                        Showing {listings.length} of {pagination.total} listings
+                        {t('listings.grid.showing_count', { count: listings.length, total: pagination.total })}
                     </p>
 
                     <div className="flex gap-2">
@@ -164,7 +166,7 @@ export function ListingsGrid({
                             disabled={pagination.currentPage === 1}
                         >
                             <ChevronLeft className="h-4 w-4" />
-                            Previous
+                            {t('listings.grid.previous')}
                         </Button>
 
                         <div className="flex items-center gap-1">
@@ -216,7 +218,7 @@ export function ListingsGrid({
                                 pagination.currentPage === pagination.lastPage
                             }
                         >
-                            Next
+                            {t('listings.grid.next')}
                             <ChevronRight className="h-4 w-4" />
                         </Button>
                     </div>

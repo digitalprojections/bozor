@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+return new class extends Migration 
 {
     /**
      * Run the migrations.
@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('category_id')->constrained();
             $table->string('title');
             $table->text('description');
-            $table->decimal('price', 10, 2);
+            $table->integer('price');
             $table->enum('status', ['draft', 'active', 'sold', 'archived'])->default('draft');
             $table->json('images')->nullable();
             $table->string('location')->nullable();

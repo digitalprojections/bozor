@@ -19,7 +19,7 @@ import { dashboard, home } from '@/routes';
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
-        href: dashboard(),
+        href: dashboard().url,
         icon: LayoutGrid,
     },
 ];
@@ -44,7 +44,7 @@ export function AppSidebar() {
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link href={home()} prefetch>
+                            <Link href={home().url} prefetch>
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>

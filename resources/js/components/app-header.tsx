@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-react';
+import { BookOpen, Folder, LayoutGrid, Menu, Search, Star } from 'lucide-react';
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -42,7 +42,7 @@ type Props = {
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
-        href: dashboard(),
+        href: dashboard().url,
         icon: LayoutGrid,
     },
 ];
@@ -138,7 +138,7 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                     </div>
 
                     <Link
-                        href={home()}
+                        href={home().url}
                         prefetch
                         className="flex items-center space-x-2"
                     >
@@ -222,9 +222,18 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                             <DropdownMenuTrigger asChild>
                                 <Button
                                     variant="ghost"
-                                    className="size-10 rounded-full p-1"
+                                    className="flex items-center gap-2 rounded-full p-1 pl-3 h-10 hover:bg-neutral-100 transition-colors"
                                 >
-                                    <Avatar className="size-8 overflow-hidden rounded-full">
+                                    <div className="flex flex-col items-end mr-1">
+                                        <div className="flex items-center gap-1 text-[10px] font-bold text-amber-500">
+                                            <Star size={10} className="fill-amber-500" />
+                                            {(auth.user.average_rating || 0).toFixed(1)}
+                                        </div>
+                                        <div className="text-[9px] text-muted-foreground leading-none">
+                                            ({auth.user.ratings_count || 0})
+                                        </div>
+                                    </div>
+                                    <Avatar className="size-8 overflow-hidden rounded-full border border-neutral-200">
                                         <AvatarImage
                                             src={auth.user.avatar_url}
                                             alt={auth.user.name}

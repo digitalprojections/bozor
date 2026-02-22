@@ -2,6 +2,7 @@ import { Search, Grid, List, SlidersHorizontal } from 'lucide-react';
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { useTranslations } from '@/hooks/use-translations';
 import {
     Select,
     SelectContent,
@@ -40,6 +41,7 @@ export function SearchAndFilters({
     onSortChange,
     onViewModeChange,
 }: SearchAndFiltersProps) {
+    const { t } = useTranslations();
     const [searchValue, setSearchValue] = useState(currentSearch);
 
     const handleSearchSubmit = (e: React.FormEvent) => {
@@ -55,13 +57,13 @@ export function SearchAndFilters({
                     <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
                         type="text"
-                        placeholder="Search listings..."
+                        placeholder={t('marketplace.search.placeholder')}
                         value={searchValue}
                         onChange={(e) => setSearchValue(e.target.value)}
                         className="pl-10"
                     />
                 </div>
-                <Button type="submit">Search</Button>
+                <Button type="submit">{t('marketplace.search.button')}</Button>
             </form>
 
             {/* Filters and View Controls */}
@@ -78,10 +80,10 @@ export function SearchAndFilters({
                         }
                     >
                         <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder="All Categories" />
+                            <SelectValue placeholder={t('marketplace.filters.all_categories')} />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="all">All Categories</SelectItem>
+                            <SelectItem value="all">{t('marketplace.filters.all_categories')}</SelectItem>
                             {categories.map((category) => (
                                 <SelectItem
                                     key={category.id}
@@ -100,13 +102,13 @@ export function SearchAndFilters({
                         <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="newest">Newest First</SelectItem>
-                        <SelectItem value="oldest">Oldest First</SelectItem>
+                        <SelectItem value="newest">{t('marketplace.filters.sort_newest')}</SelectItem>
+                        <SelectItem value="oldest">{t('marketplace.filters.sort_oldest')}</SelectItem>
                         <SelectItem value="price_low">
-                            Price: Low to High
+                            {t('marketplace.filters.price_low_high')}
                         </SelectItem>
                         <SelectItem value="price_high">
-                            Price: High to Low
+                            {t('marketplace.filters.price_high_low')}
                         </SelectItem>
                     </SelectContent>
                 </Select>
@@ -135,7 +137,7 @@ export function SearchAndFilters({
                 <div className="flex flex-wrap gap-2">
                     {currentSearch && (
                         <Badge variant="secondary">
-                            Search: {currentSearch}
+                            {t('marketplace.filters.active_search')}: {currentSearch}
                             <button
                                 onClick={() => {
                                     setSearchValue('');
@@ -149,7 +151,7 @@ export function SearchAndFilters({
                     )}
                     {currentCategory && (
                         <Badge variant="secondary">
-                            Category:{' '}
+                            {t('marketplace.filters.active_category')}:{' '}
                             {
                                 categories.find((c) => c.id === currentCategory)
                                     ?.name

@@ -1,6 +1,6 @@
 import { Head, useForm } from '@inertiajs/react';
 import { useState, useRef } from 'react';
-import AppLayout from '@/layouts/app-layout';
+import BazaarLayout from '@/layouts/bazaar-layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,6 +11,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CategoryMultiSelect } from '@/components/category-multi-select';
 import { ImageCompressor, type CompressionResult } from '@/lib/image-compressor';
 import { synth } from '@/lib/synth-service';
+import { ITEM_CONDITIONS, type ItemCondition } from '@/types/item-conditions';
+import { useTranslations } from '@/hooks/use-translations';
 import type { BreadcrumbItem } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -35,6 +37,7 @@ export default function CreateListing({
 }: {
     categories: Category[];
 }) {
+    const { t } = useTranslations();
     const { data, setData, post, processing, errors, transform } = useForm({
         title: '',
         description: '',
@@ -43,6 +46,10 @@ export default function CreateListing({
         location: '',
         images: [] as File[],
         status: 'draft',
+        condition: '' as ItemCondition | '',
+        is_auction: false,
+        buy_now_price: '',
+        auction_end_date: '',
     });
 
     const statusRef = useRef<'draft' | 'active'>('draft');
@@ -105,16 +112,16 @@ export default function CreateListing({
     };
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Create Listing" />
+        <BazaarLayout title={t('listing.create.title')} breadcrumbs={breadcrumbs}>
+            <Head title={t('listing.create.title')} />
 
             <div className="space-y-6 p-4 sm:p-6">
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-                        Create New Listing
+                        {t('listing.create.title')}
                     </h1>
                     <p className="mt-1 text-sm text-muted-foreground sm:text-base">
-                        Fill in the details to create your listing
+                        {t('listing.create.subtitle')}
                     </p>
                 </div>
 
@@ -122,14 +129,14 @@ export default function CreateListing({
                     {/* Basic Information */}
                     <Card className="p-4 sm:p-6">
                         <h2 className="mb-4 text-lg font-semibold sm:text-xl">
-                            Basic Information
+                            {t('listing.create.basic_info')}
                         </h2>
 
                         <div className="space-y-4">
                             {/* Title */}
                             <div>
                                 <Label htmlFor="title">
-                                    Title <span className="text-red-500">*</span>
+                                    {t('listing.create.item_title')} <span className="text-red-500">*</span>
                                 </Label>
                                 <Input
                                     id="title"
@@ -151,7 +158,7 @@ export default function CreateListing({
                             {/* Description */}
                             <div>
                                 <Label htmlFor="description">
-                                    Description{' '}
+                                    {t('listing.create.description')}{' '}
                                     <span className="text-red-500">*</span>
                                 </Label>
                                 <Textarea
@@ -175,19 +182,19 @@ export default function CreateListing({
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div>
                                     <Label htmlFor="price">
-                                        Price (¥){' '}
+                                        {data.is_auction ? t('listing.create.starting_bid') : t('listing.create.price')}{' (¥)'}{' '}
                                         <span className="text-red-500">*</span>
                                     </Label>
                                     <Input
                                         id="price"
                                         type="number"
-                                        step="0.01"
+                                        step="1"
                                         min="0"
                                         value={data.price}
                                         onChange={(e) =>
                                             setData('price', e.target.value)
                                         }
-                                        placeholder="0.00"
+                                        placeholder="0"
                                         className="mt-1"
                                     />
                                     {errors.price && (
@@ -199,7 +206,7 @@ export default function CreateListing({
 
                                 <div>
                                     <Label>
-                                        Categories (up to 5){' '}
+                                        {t('listing.create.categories')}{' '}
                                         <span className="text-red-500">*</span>
                                     </Label>
                                     <div className="mt-1">
@@ -216,37 +223,114 @@ export default function CreateListing({
                                 </div>
                             </div>
 
-                            {/* Location */}
-                            <div>
-                                <Label htmlFor="location">Location</Label>
-                                <Input
-                                    id="location"
-                                    type="text"
-                                    value={data.location}
-                                    onChange={(e) =>
-                                        setData('location', e.target.value)
-                                    }
-                                    placeholder="e.g., Tokyo, Shibuya"
-                                    className="mt-1"
-                                />
-                                {errors.location && (
-                                    <p className="mt-1 text-sm text-red-500">
-                                        {errors.location}
-                                    </p>
+                            {/* Condition and Location */}
+                            <div className="grid gap-4 md:grid-cols-2">
+                                <div>
+                                    <Label htmlFor="condition">
+                                        {t('listing.create.item_condition')} <span className="text-red-500">*</span>
+                                    </Label>
+                                    <div className="mt-1 flex flex-wrap gap-2">
+                                        {ITEM_CONDITIONS.map((condition) => (
+                                            <Button
+                                                key={condition.value}
+                                                type="button"
+                                                variant={data.condition === condition.value ? 'default' : 'outline'}
+                                                size="sm"
+                                                onClick={() => setData('condition', condition.value)}
+                                                className="rounded-full"
+                                            >
+                                                {t(condition.labelKey)}
+                                            </Button>
+                                        ))}
+                                    </div>
+                                    {errors.condition && (
+                                        <p className="mt-1 text-sm text-red-500">
+                                            {errors.condition}
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <Label htmlFor="location">{t('listing.create.location')}</Label>
+                                    <Input
+                                        id="location"
+                                        type="text"
+                                        value={data.location}
+                                        onChange={(e) =>
+                                            setData('location', e.target.value)
+                                        }
+                                        placeholder="e.g., Tokyo, Shibuya"
+                                        className="mt-1"
+                                    />
+                                    {errors.location && (
+                                        <p className="mt-1 text-sm text-red-500">
+                                            {errors.location}
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Auction and Buy Now */}
+                            <div className="space-y-4 rounded-lg border bg-muted/30 p-4">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <h3 className="font-medium">{t('listing.create.auction_mode')}</h3>
+                                        <p className="text-sm text-muted-foreground">{t('listing.create.auction_mode_desc')}</p>
+                                    </div>
+                                    <Button
+                                        type="button"
+                                        variant={data.is_auction ? 'default' : 'outline'}
+                                        onClick={() => setData('is_auction', !data.is_auction)}
+                                    >
+                                        {data.is_auction ? t('listing.create.enabled') : t('listing.create.disabled')}
+                                    </Button>
+                                </div>
+
+                                {data.is_auction && (
+                                    <div className="grid gap-4 md:grid-cols-2">
+                                        <div>
+                                            <Label htmlFor="auction_end_date">{t('listing.create.auction_end_date')}</Label>
+                                            <Input
+                                                id="auction_end_date"
+                                                type="datetime-local"
+                                                value={data.auction_end_date}
+                                                onChange={(e) => setData('auction_end_date', e.target.value)}
+                                                className="mt-1"
+                                            />
+                                            {errors.auction_end_date && (
+                                                <p className="mt-1 text-sm text-red-500">{errors.auction_end_date}</p>
+                                            )}
+                                        </div>
+                                    </div>
                                 )}
+
+                                <div>
+                                    <Label htmlFor="buy_now_price">{t('listing.create.buy_now_price')}{' (¥)'}</Label>
+                                    <Input
+                                        id="buy_now_price"
+                                        type="number"
+                                        value={data.buy_now_price}
+                                        onChange={(e) => setData('buy_now_price', e.target.value)}
+                                        placeholder={t('listing.create.buy_now_placeholder')}
+                                        className="mt-1"
+                                    />
+                                    {errors.buy_now_price && (
+                                        <p className="mt-1 text-sm text-red-500">{errors.buy_now_price}</p>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </Card>
 
                     {/* Images */}
                     <Card className="p-4 sm:p-6">
-                        <h2 className="mb-4 text-lg font-semibold sm:text-xl">Images</h2>
+                        <h2 className="mb-4 text-lg font-semibold sm:text-xl">{t('listing.create.images_title')}</h2>
 
                         <div className="space-y-4">
                             {/* Image Upload */}
                             <div>
                                 <Label>
-                                    Upload Images (Max 5)
+                                    {t('listing.create.upload_images')}
                                 </Label>
                                 <div className="mt-2">
                                     <label
@@ -255,10 +339,10 @@ export default function CreateListing({
                                     >
                                         <Upload className="mb-2 h-8 w-8 text-gray-400" />
                                         <span className="text-sm text-gray-600 dark:text-gray-400">
-                                            Click to upload images
+                                            {t('listing.create.click_to_upload')}
                                         </span>
                                         <span className="mt-1 text-xs text-gray-500">
-                                            PNG, JPG, GIF up to 2MB each
+                                            {t('listing.create.file_types')}
                                         </span>
                                     </label>
                                     <input
@@ -279,7 +363,7 @@ export default function CreateListing({
                                                 className="mt-2 flex items-center justify-center gap-2 overflow-hidden text-sm text-muted-foreground"
                                             >
                                                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
-                                                Compressing images to save traffic...
+                                                {t('listing.create.compressing')}
                                             </motion.div>
                                         )}
                                     </AnimatePresence>
@@ -356,7 +440,7 @@ export default function CreateListing({
                                         <div className="flex items-center gap-2">
                                             <Sparkles className="h-4 w-4 text-green-500" />
                                             <span>
-                                                Traffic Optimization: Compressed{' '}
+                                                {t('listing.create.optimization')}: Compressed{' '}
                                                 <span className="font-bold">
                                                     {ImageCompressor.formatBytes(
                                                         compressionStats.reduce((acc, curr) => acc + curr.originalSize, 0)
@@ -386,7 +470,7 @@ export default function CreateListing({
                             }
                             className="w-full sm:w-auto"
                         >
-                            Cancel
+                            {t('common.cancel')}
                         </Button>
                         <Button
                             type="submit"
@@ -395,7 +479,7 @@ export default function CreateListing({
                             onClick={() => { statusRef.current = 'draft'; }}
                             className="w-full sm:w-auto"
                         >
-                            Save as Draft
+                            {t('listing.create.save_draft')}
                         </Button>
                         <Button
                             type="submit"
@@ -404,11 +488,11 @@ export default function CreateListing({
                             className="w-full sm:w-auto"
                         >
                             <Package className="mr-2 h-4 w-4" />
-                            {processing ? 'Publishing...' : 'Publish Listing'}
+                            {processing ? t('listing.create.publishing') : t('listing.create.publish')}
                         </Button>
                     </div>
                 </form>
             </div>
-        </AppLayout>
+        </BazaarLayout>
     );
 }

@@ -8,6 +8,8 @@ export type User = {
     avatar_seed?: string;
     gender?: 'male' | 'female' | 'other' | 'unspecified';
     email_verified_at: string | null;
+    average_rating?: number;
+    ratings_count?: number;
     two_factor_enabled?: boolean;
     created_at: string;
     updated_at: string;

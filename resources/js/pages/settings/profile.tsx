@@ -8,7 +8,7 @@ import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import AppLayout from '@/layouts/app-layout';
+import BazaarLayout from '@/layouts/bazaar-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 import type { BreadcrumbItem } from '@/types';
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
@@ -29,7 +29,7 @@ export default function Profile({
     mustVerifyEmail: boolean;
     status?: string;
 }) {
-    const { auth } = usePage().props;
+    const { auth } = usePage().props as any;
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
     const [avatarStyle, setAvatarStyle] = useState<string>('');
     const [gender, setGender] = useState<string>('');
@@ -47,7 +47,7 @@ export default function Profile({
     }, [status, avatarFile, removeAvatar]);
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <BazaarLayout title="Profile Settings" breadcrumbs={breadcrumbs}>
             <Head title="Profile settings" />
 
             <h1 className="sr-only">Profile Settings</h1>
@@ -171,7 +171,7 @@ export default function Profile({
                                                 Your email address is
                                                 unverified.{' '}
                                                 <Link
-                                                    href={send()}
+                                                    href={send().url}
                                                     as="button"
                                                     className="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
                                                 >
@@ -218,6 +218,6 @@ export default function Profile({
 
                 <DeleteUser />
             </SettingsLayout>
-        </AppLayout>
+        </BazaarLayout>
     );
 }

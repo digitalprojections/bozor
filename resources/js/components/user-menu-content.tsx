@@ -1,5 +1,6 @@
 import { Link, router } from '@inertiajs/react';
-import { LogOut, Settings } from 'lucide-react';
+import { LogOut, Settings, Star } from 'lucide-react';
+import { useTranslations } from '@/hooks/use-translations';
 import {
     DropdownMenuGroup,
     DropdownMenuItem,
@@ -17,6 +18,7 @@ type Props = {
 };
 
 export function UserMenuContent({ user }: Props) {
+    const { t } = useTranslations();
     const cleanup = useMobileNavigation();
 
     const handleLogout = () => {
@@ -36,7 +38,21 @@ export function UserMenuContent({ user }: Props) {
                 <DropdownMenuItem asChild>
                     <Link
                         className="block w-full cursor-pointer"
-                        href={edit()}
+                        href={`/users/${user.id}`}
+                        prefetch
+                        onClick={cleanup}
+                    >
+                        <Star className="mr-2" />
+                        {t('auth.profile.title') || 'Public Profile'}
+                    </Link>
+                </DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+                <DropdownMenuItem asChild>
+                    <Link
+                        className="block w-full cursor-pointer"
+                        href={edit().url}
                         prefetch
                         onClick={cleanup}
                     >
@@ -49,7 +65,7 @@ export function UserMenuContent({ user }: Props) {
             <DropdownMenuItem asChild>
                 <Link
                     className="block w-full cursor-pointer"
-                    href={logout()}
+                    href={logout().url}
                     as="button"
                     onClick={handleLogout}
                     data-test="logout-button"

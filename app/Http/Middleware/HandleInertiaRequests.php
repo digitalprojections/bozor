@@ -44,9 +44,9 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
             'name' => config('app.name'),
             'auth' => [
-                'user' => $request->user(),
+                'user' => $request->user() ? $request->user()->append(['average_rating', 'ratings_count']) : null,
             ],
-            'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+            'sidebarOpen' => !$request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'locale' => $locale,
             'translations' => $this->loadTranslationsForLocale($locale, $fallback),
             'supportedLocales' => config('locales.supported', ['en' => ['name' => 'English', 'native' => 'English']]),
@@ -60,8 +60,8 @@ class HandleInertiaRequests extends Middleware
      */
     private function loadTranslationsForLocale(string $locale, string $fallback): array
     {
-        $path = lang_path($locale.'.json');
-        $fallbackPath = lang_path($fallback.'.json');
+        $path = lang_path($locale . '.json');
+        $fallbackPath = lang_path($fallback . '.json');
 
         $fallbackStrings = $fallbackPath !== $path && File::exists($fallbackPath)
             ? (json_decode(File::get($fallbackPath), true) ?? [])

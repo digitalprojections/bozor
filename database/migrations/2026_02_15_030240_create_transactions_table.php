@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+return new class extends Migration 
 {
     /**
      * Run the migrations.
@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('listing_id')->constrained();
             $table->foreignId('buyer_id')->constrained('users');
             $table->foreignId('seller_id')->constrained('users');
-            $table->decimal('amount', 10, 2);
+            $table->integer('amount');
             $table->enum('status', ['pending', 'completed', 'cancelled'])->default('pending');
             $table->timestamp('completed_at')->nullable();
             $table->timestamps();

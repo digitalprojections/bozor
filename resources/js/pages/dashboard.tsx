@@ -1,204 +1,111 @@
-import { Head, Link } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
-import type { BreadcrumbItem } from '@/types';
-import { dashboard } from '@/routes';
-import { StatsCard } from '@/components/dashboard/stats-card';
-import type { DashboardStats, Listing, Transaction, VerificationRequest } from '@/types/dashboard';
+import { Head, Link, usePage } from '@inertiajs/react';
+import { DashboardProfileCard } from '@/components/dashboard/dashboard-profile-card';
+import { BazaarBalanceSection } from '@/components/dashboard/bazaar-balance-section';
+import BazaarLayout from '@/layouts/bazaar-layout';
 import { useTranslations } from '@/hooks/use-translations';
-import { Package, DollarSign, Eye, ShoppingCart } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { VerificationStatusCard } from '@/components/verification-status-card';
+import { Card, CardContent } from '@/components/ui/card';
+import { Package, ShoppingBag } from 'lucide-react';
+import { RecommendationsSection } from '@/components/listings/recommendations-section';
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard().url,
-    },
-];
-
-interface DashboardProps {
-    stats: DashboardStats;
-    listings: Listing[];
-    transactions: Transaction[];
-    verificationRequest?: VerificationRequest;
-    isVerified: boolean;
-}
-
-export default function Dashboard({ stats, listings, transactions, verificationRequest, isVerified }: DashboardProps) {
+export default function Dashboard({
+    isVerified = false,
+    stats,
+    listings = [],
+    recommendations = []
+}: {
+    isVerified?: boolean;
+    stats?: any;
+    listings?: any[];
+    recommendations?: any[];
+}) {
+    const { auth } = usePage().props as any;
+    const user = auth.user;
     const { t } = useTranslations();
 
-    const getStatusBadgeVariant = (status: string) => {
-        switch (status) {
-            case 'active':
-                return 'default';
-            case 'sold':
-                return 'secondary';
-            case 'draft':
-                return 'outline';
-            case 'archived':
-                return 'destructive';
-            default:
-                return 'default';
-        }
-    };
-
-    const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat('ja-JP', {
-            style: 'currency',
-            currency: 'JPY',
-        }).format(amount);
-    };
+    const breadcrumbs = [
+        { title: t('welcome.browse_listings'), href: '#' },
+        { title: t('layout.header.my_listings'), href: '#' },
+    ];
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <BazaarLayout
+            title={t('layout.header.my_listings')}
+            breadcrumbs={breadcrumbs}
+        >
             <Head title={t('common.dashboard')} />
-            <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto p-4 md:p-6">
-                {/* Stats Cards */}
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                    <StatsCard
-                        title={t('dashboard.stats.total_listings')}
-                        value={stats.total_listings}
-                        icon={<Package className="size-5" />}
-                    />
-                    <StatsCard
-                        title={t('dashboard.stats.active_listings')}
-                        value={stats.active_listings}
-                        icon={<ShoppingCart className="size-5" />}
-                    />
-                    <StatsCard
-                        title={t('dashboard.stats.total_views')}
-                        value={stats.total_views.toLocaleString()}
-                        icon={<Eye className="size-5" />}
-                    />
-                    <StatsCard
-                        title={t('dashboard.stats.revenue')}
-                        value={formatCurrency(stats.total_revenue)}
-                        icon={<DollarSign className="size-5" />}
-                    />
+
+            <DashboardProfileCard
+                user={user}
+                isVerified={isVerified}
+                rating="528"
+                reviewCount={99}
+            />
+
+            <BazaarBalanceSection balance={8123} points={446} />
+
+            {/* Your Listings Section */}
+            <div className="flex flex-col gap-4">
+                <div className="flex items-center justify-between px-2">
+                    <h2 className="text-xl font-bold tracking-tight text-[#0b1a31]">
+                        {t('dashboard.listings.title')}
+                    </h2>
+                    <div className="flex items-center gap-4">
+                        <Link href="/dashboard/won-items" className="text-sm font-semibold text-[#2b4b8f] hover:underline flex items-center gap-1">
+                            <ShoppingBag size={14} /> {t('dashboard.won_items.title')}
+                        </Link>
+                        <Link href="/listings/create" className="text-sm font-semibold text-[#0d9488] hover:underline">
+                            + {t('dashboard.listings.create_new')}
+                        </Link>
+                    </div>
                 </div>
 
-                <div className="grid gap-6 lg:grid-cols-3">
-                    {/* Listings Section */}
-                    <Card className="lg:col-span-2">
-                        <CardHeader>
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <CardTitle>{t('dashboard.listings.title')}</CardTitle>
-                                    <CardDescription>
-                                        {t('dashboard.listings.manage_description')}
-                                    </CardDescription>
-                                </div>
-                                <Link href="/listings/create">
-                                    <Button size="sm">{t('dashboard.listings.create_new')}</Button>
-                                </Link>
-                            </div>
-                        </CardHeader>
-                        <CardContent>
-                            {listings.length === 0 ? (
-                                <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">
-                                    {t('dashboard.listings.no_results')}
-                                </div>
-                            ) : (
-                                <div className="space-y-4">
-                                    {listings.slice(0, 5).map((listing) => (
-                                        <div
-                                            key={listing.id}
-                                            className="flex items-center gap-4 rounded-lg border p-4"
-                                        >
-                                            <div className="h-16 w-16 shrink-0 overflow-hidden rounded-md bg-muted">
-                                                {listing.main_image_url ? (
-                                                    <img
-                                                        src={listing.main_image_url}
-                                                        alt={listing.title}
-                                                        className="h-full w-full object-cover"
-                                                    />
-                                                ) : (
-                                                    <div className="flex h-full items-center justify-center">
-                                                        <Package className="h-6 w-6 text-muted-foreground" />
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <div className="flex-1 space-y-1">
-                                                <div className="flex flex-wrap items-center gap-2">
-                                                    <h4 className="font-medium">{listing.title}</h4>
-                                                    <Badge variant={getStatusBadgeVariant(listing.status)}>
-                                                        {t(`dashboard.status.${listing.status}`)}
-                                                    </Badge>
-                                                </div>
-                                                <p className="text-sm text-muted-foreground">
-                                                    {(listing.categories && listing.categories.length > 0)
-                                                        ? listing.categories[0].name
-                                                        : 'Uncategorized'} • {formatCurrency(listing.price)}
-                                                </p>
-                                                <p className="text-xs text-muted-foreground">
-                                                    {listing.views} {t('dashboard.stats.views')}
-                                                </p>
-                                            </div>
+                <div className="flex flex-col gap-3">
+                    {listings.length > 0 ? (
+                        listings.map((listing) => (
+                            <Card key={listing.id} className="rounded-[4px] border-[#f0f2f5] shadow-sm overflow-hidden hover:border-[#ced9e5] transition-colors">
+                                <CardContent className="p-4 flex items-center gap-4">
+                                    <div className="h-16 w-16 rounded bg-[#f0f5fd] flex items-center justify-center shrink-0 border border-[#e1e9f2]">
+                                        {listing.images && listing.images.length > 0 ? (
+                                            <img src={`/storage/${listing.images[0]}`} alt="" className="h-full w-full object-cover rounded" />
+                                        ) : (
+                                            <Package className="text-[#a3b6cc]" size={24} />
+                                        )}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <h3 className="font-semibold text-[#1a263b] truncate">{listing.title}</h3>
+                                        <div className="flex items-center gap-3 mt-1 text-sm text-[#5f6c84]">
+                                            <span className="font-bold text-[#0e1d38]">¥{listing.price.toLocaleString()}</span>
+                                            <span>•</span>
+                                            <span className="capitalize">{t('dashboard.status.' + listing.status)}</span>
                                         </div>
-                                    ))}
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
-
-                    {/* Transactions Section */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>{t('dashboard.transactions.title')}</CardTitle>
-                            <CardDescription>
-                                {t('dashboard.transactions.recent_activity')}
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            {/* Verification Status */}
-                            <div className="mb-6">
-                                <VerificationStatusCard
-                                    verificationRequest={verificationRequest}
-                                    isVerified={isVerified}
-                                />
-                            </div>
-
-                            {/* Transactions List */}
-                            <div>
-                                <h3 className="mb-4 font-semibold">{t('dashboard.transactions.title')}</h3>
-                                {transactions.length === 0 ? (
-                                    <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">
-                                        {t('dashboard.transactions.no_results')}
                                     </div>
-                                ) : (
-                                    <div className="space-y-4">
-                                        {transactions.map((transaction) => (
-                                            <div key={transaction.id} className="space-y-1">
-                                                <div className="flex items-center justify-between">
-                                                    <p className="text-sm font-medium">
-                                                        {transaction.listing.title}
-                                                    </p>
-                                                    <Badge
-                                                        variant={
-                                                            transaction.status === 'completed'
-                                                                ? 'default'
-                                                                : transaction.status === 'pending'
-                                                                    ? 'secondary'
-                                                                    : 'destructive'
-                                                        }
-                                                    >
-                                                        {transaction.status}
-                                                    </Badge>
-                                                </div>
-                                                <p className="text-xs text-muted-foreground">
-                                                    {formatCurrency(transaction.amount)}
-                                                </p>
-                                            </div>
-                                        ))}
+                                    <div className="flex gap-2">
+                                        <Link
+                                            href={`/listings/${listing.id}/edit`}
+                                            className="px-4 py-2 text-sm font-semibold bg-[#f3f9ff] text-[#2b4b8f] rounded-full hover:bg-[#e1f0ff]"
+                                        >
+                                            {t('common.edit')}
+                                        </Link>
+                                        <Link
+                                            href={`/listings/${listing.id}`}
+                                            className="px-4 py-2 text-sm font-semibold bg-[#f0f5fd] text-[#2b4b8f] rounded-full hover:bg-[#e1ecfb]"
+                                        >
+                                            {t('common.view')}
+                                        </Link>
                                     </div>
-                                )}
-                            </div>
-                        </CardContent>
-                    </Card>
+                                </CardContent>
+                            </Card>
+                        ))
+                    ) : (
+                        <Card className="rounded-[4px] border-[#f0f2f5] shadow-sm p-12 text-center text-[#5f6c84]">
+                            <p>{t('dashboard.listings.no_results')}</p>
+                        </Card>
+                    )}
                 </div>
             </div>
-        </AppLayout>
+
+            {/* Recommendations Section */}
+            <RecommendationsSection recommendations={recommendations} />
+        </BazaarLayout>
     );
 }

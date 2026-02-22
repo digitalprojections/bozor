@@ -14,6 +14,7 @@ export interface Listing {
     status: 'draft' | 'active' | 'sold' | 'archived';
     images: string[];
     location?: string;
+    condition?: 'new' | 'like_new' | 'used_good' | 'used_fair' | 'for_parts';
     views: number;
     created_at: string;
     main_image_url: string | null;

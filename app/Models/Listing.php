@@ -19,11 +19,21 @@ class Listing extends Model
         'images',
         'location',
         'views',
+        'condition',
+        'buy_now_price',
+        'is_auction',
+        'auction_end_date',
+        'current_high_bid',
     ];
 
     protected $casts = [
         'images' => 'array',
-        'price' => 'decimal:2',
+        'price' => 'integer',
+        'buy_now_price' => 'integer',
+        'is_auction' => 'boolean',
+        'auction_end_date' => 'datetime',
+        'current_high_bid' => 'integer',
+        'views' => 'integer',
     ];
 
     protected $appends = ['main_image_url', 'all_image_urls'];
@@ -73,5 +83,10 @@ class Listing extends Model
     public function transactions()
     {
         return $this->hasMany(Transaction::class);
+    }
+
+    public function bids()
+    {
+        return $this->hasMany(Bid::class)->orderBy('amount', 'desc');
     }
 }

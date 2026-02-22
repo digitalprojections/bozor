@@ -1,6 +1,7 @@
 import { ShoppingCart, Package, DollarSign, TrendingUp } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { useTranslations } from '@/hooks/use-translations';
 import { Link } from '@inertiajs/react';
 
 interface Stats {
@@ -11,30 +12,31 @@ interface Stats {
 }
 
 export function MarketplaceHeader({ stats }: { stats: Stats }) {
+    const { t } = useTranslations();
     const statCards = [
         {
-            label: 'Active Listings',
+            label: t('marketplace.stats.active_listings'),
             value: stats.active_listings,
             icon: Package,
             color: 'text-blue-600',
             bgColor: 'bg-blue-50 dark:bg-blue-950',
         },
         {
-            label: 'Sold Items',
+            label: t('marketplace.stats.sold_items'),
             value: stats.sold_items,
             icon: TrendingUp,
             color: 'text-green-600',
             bgColor: 'bg-green-50 dark:bg-green-950',
         },
         {
-            label: 'Total Earnings',
+            label: t('marketplace.stats.total_earnings'),
             value: `¥${stats.total_earnings.toLocaleString()}`,
             icon: DollarSign,
             color: 'text-purple-600',
             bgColor: 'bg-purple-50 dark:bg-purple-950',
         },
         {
-            label: 'Cart',
+            label: t('marketplace.stats.cart'),
             value: stats.cart_items,
             icon: ShoppingCart,
             color: 'text-orange-600',
@@ -47,16 +49,16 @@ export function MarketplaceHeader({ stats }: { stats: Stats }) {
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">
-                        Marketplace
+                        {t('marketplace.title')}
                     </h1>
                     <p className="text-muted-foreground">
-                        Browse and manage your listings
+                        {t('marketplace.description')}
                     </p>
                 </div>
                 <Link href="/listings/create">
                     <Button size="lg">
                         <Package className="mr-2 h-4 w-4" />
-                        Create Listing
+                        {t('marketplace.create_listing')}
                     </Button>
                 </Link>
             </div>
