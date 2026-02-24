@@ -1,11 +1,11 @@
-name: Deploy to Production via FTP
+name: Deploy to AWS EC2
 
 on:
   push:
     branches: [ main ]
 
 jobs:
-  ftp-deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,17 +19,15 @@ jobs:
 
       - name: Create build environment
         run: |
-          # Create minimal .env for build
           cp .env.example .env
           echo "DB_CONNECTION=sqlite" >> .env
+          echo "FILESYSTEM_DISK=local" >> .env
           touch database/database.sqlite
-          
-          # Set APP_KEY if not exists
           if ! grep -q "APP_KEY=" .env; then
             echo "APP_KEY=" >> .env
           fi
 
-      - name: Install PHP Dependencies (without scripts)
+      - name: Install PHP Dependencies
         run: composer install --no-dev --optimize-autoloader --no-scripts
 
       - name: Generate key and run discovery
@@ -45,69 +43,56 @@ jobs:
       - name: Install Node Dependencies
         run: npm ci
 
+      - name: Restore custom routes index
+        run: |
+          if [ ! -f resources/js/routes/index.ts ]; then
+            cp resources/js/routes/index.ts.example resources/js/routes/index.ts
+          fi
+
       - name: Build Assets
         run: npm run build
 
-      - name: Create production .env
-        run: |
-          cat > .env << EOF
-          APP_NAME="${{ secrets.APP_NAME }}"
-          APP_ENV=production
-          APP_KEY=${{ secrets.APP_KEY }}
-          APP_DEBUG=false
-          APP_URL=${{ secrets.APP_URL }}
-          LOG_CHANNEL=stack
-          
-          DB_CONNECTION=${{ secrets.DB_CONNECTION }}
-          DB_HOST=${{ secrets.DB_HOST }}
-          DB_PORT=${{ secrets.DB_PORT }}
-          DB_DATABASE=${{ secrets.DB_DATABASE }}
-          DB_USERNAME=${{ secrets.DB_USERNAME }}
-          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-          EOF
-
-      - name: Clean up build artifacts
-        run: |
-          rm -f database/database.sqlite
-          mkdir -p storage/framework/{sessions,views,cache}
-          mkdir -p storage/logs
-          mkdir -p bootstrap/cache
-          chmod -R 775 storage
-          chmod -R 775 bootstrap/cache
-
-      - name: 📂 Deploy via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      # ── Deploy PHP source to EC2 via SSH ──────────────────────────────────
+      - name: Deploy source to EC2
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftp
-          port: 21
-          local-dir: ./
-          server-dir: ${{ secrets.FTP_TARGET_DIR }}/
-          exclude: |
-            .git*
-            .github/
-            node_modules/
-            tests/
-            .env.example
-            phpunit.xml
-            README.md
-            .gitattributes
-            .editorconfig
-            database/database.sqlite
-            .cursor/
-            .junie/
-            .prettier*
-            eslint.config.js
-            tsconfig.json
-            pint.json
-            components.json
-            boost.json
-            composer.json
-            composer.lock
-            package.json
-            package-lock.json
-            vite.config.ts
-            tailwind.config.js
-            postcss.config.js
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            set -e
+            cd /var/www/bozor
+
+            # Pull latest code
+            git pull origin main
+
+            # PHP dependencies (no dev, optimised)
+            composer install --no-dev --optimize-autoloader --no-interaction
+
+            # Run migrations safely
+            php artisan migrate --force
+
+            # Clear and rebuild caches
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+            php artisan event:cache
+
+            # Restart PHP-FPM and Nginx
+            sudo systemctl reload php8.4-fpm
+            sudo systemctl reload nginx
+
+            # Restart queue worker so it picks up new code
+            sudo systemctl restart bozor-worker
+
+      # ── Upload built frontend assets via SCP ──────────────────────────────
+      - name: Upload built assets to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "public/build"
+          target: "/var/www/bozor/public"
+          overwrite: true
+          strip_components: 1
