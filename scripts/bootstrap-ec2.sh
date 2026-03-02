@@ -5,7 +5,7 @@
 
 set -e
 
-DOMAIN="yourdomain.com"
+DOMAIN="bazaar-japan.com"
 APP_DIR="/var/www/bozor"
 REPO_URL="git@github.com:YOUR_ORG/bozor.git"
 PHP_VERSION="8.4"
