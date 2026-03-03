@@ -51,7 +51,7 @@ class ProfileController extends Controller
         }
         
         // Update other profile fields
-        $user->fill($request->only(['name', 'email', 'avatar_style', 'gender']));
+        $user->fill($request->only(['name', 'email', 'avatar_style', 'avatar_seed', 'gender']));
 
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;

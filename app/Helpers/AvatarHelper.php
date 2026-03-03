@@ -15,7 +15,10 @@ class AvatarHelper
         $style = $style ?? $user->avatar_style ?? 'initials';
         $seed = $user->avatar_seed ?? $user->email;
         
-        $baseUrl = "https://api.dicebear.com/7.x/{$style}/svg";
+        // Use bottts as a fallback for mascot style when using DiceBear API
+        $diceBearStyle = ($style === 'mascot') ? 'bottts' : $style;
+        
+        $baseUrl = "https://api.dicebear.com/7.x/{$diceBearStyle}/svg";
         $params = ['seed' => urlencode($seed)];
         
         // Add gender parameter for styles that support it

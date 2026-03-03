@@ -31,7 +31,8 @@ export default function Profile({
 }) {
     const { auth } = usePage().props as any;
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
-    const [avatarStyle, setAvatarStyle] = useState<string>('');
+    const [avatarStyle, setAvatarStyle] = useState<string>(auth.user.avatar_style || '');
+    const [avatarSeed, setAvatarSeed] = useState<string>(auth.user.avatar_seed || '');
     const [gender, setGender] = useState<string>('');
     const [removeAvatar, setRemoveAvatar] = useState(false);
 
@@ -73,6 +74,7 @@ export default function Profile({
                                     <AvatarUpload
                                         onFileChange={setAvatarFile}
                                         onStyleChange={setAvatarStyle}
+                                        onSeedChange={setAvatarSeed}
                                         onGenderChange={setGender}
                                         onRemoveAvatar={setRemoveAvatar}
                                         currentFile={avatarFile}
@@ -108,6 +110,13 @@ export default function Profile({
                                         type="hidden"
                                         name="avatar_style"
                                         value={avatarStyle}
+                                    />
+                                )}
+                                {avatarSeed && (
+                                    <input
+                                        type="hidden"
+                                        name="avatar_seed"
+                                        value={avatarSeed}
                                     />
                                 )}
                                 {gender && gender !== 'unspecified' && (
