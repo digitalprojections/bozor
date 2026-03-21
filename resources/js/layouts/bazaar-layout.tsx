@@ -8,6 +8,7 @@ import { LocaleSwitcher } from '@/components/locale-switcher';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import type { BreadcrumbItem } from '@/types';
+import AppLogo from '@/components/app-logo';
 
 interface BazaarLayoutProps {
     children: ReactNode;
@@ -31,7 +32,7 @@ export default function BazaarLayout({ children, title, breadcrumbs = [], sideba
                 <div className="mx-auto flex h-16 max-w-[1100px] items-center justify-between px-4">
                     <div className="flex items-center gap-8 flex-1">
                         <Link href="/" className="flex items-center gap-2">
-                            <span className="text-2xl font-bold tracking-tight text-[#0b1b32]">{t('common.app_name')}</span>
+                            <AppLogo />
                         </Link>
 
                         {/* Search Bar */}
