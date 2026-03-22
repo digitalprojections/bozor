@@ -4,13 +4,13 @@ export default function AppLogo() {
             <img
                 src="/images/logo.png"
                 alt="Bozor"
-                className="size-8 shrink-0 rounded-md object-cover"
+                className="h-8 w-8 shrink-0 rounded-md object-cover md:h-9 md:w-9"
             />
-            <div className="ml-1 grid flex-1 text-left text-sm">
-                <span className="mb-0.5 truncate leading-tight font-semibold">
-                    Bozor
-                </span>
-            </div>
+            <span className="text-2xl font-bold tracking-tight text-[#0b1b32]">
+                Bozor
+            </span>
         </>
     );
 }
+
+

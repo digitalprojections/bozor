@@ -23,13 +23,16 @@ export default function AuthCardLayout({
             <div className="flex w-full max-w-md flex-col gap-6">
                 <Link
                     href={home()}
-                    className="flex items-center gap-2 self-center font-medium"
+                    className="flex items-center gap-2 self-center"
                 >
                     <img
                         src="/images/logo.png"
                         alt="Bozor"
-                        className="h-9 w-9 rounded-md object-cover"
+                        className="h-10 w-10 rounded-md object-cover"
                     />
+                    <span className="text-2xl font-bold tracking-tight text-[#0b1b32]">
+                        Bozor
+                    </span>
                 </Link>
 
                 <div className="flex flex-col gap-6">

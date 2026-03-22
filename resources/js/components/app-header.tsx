@@ -95,7 +95,7 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                                     <img
                                         src="/images/logo.png"
                                         alt="Bozor"
-                                        className="h-6 w-6 rounded object-cover"
+                                        className="h-8 w-8 rounded object-cover"
                                     />
                                 </SheetHeader>
                                 <div className="flex h-full flex-1 flex-col space-y-4 p-4">
