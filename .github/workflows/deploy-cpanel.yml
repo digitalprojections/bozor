@@ -1,4 +1,4 @@
-name: Deploy to cPanel (SFTP)
+name: Deploy via SSH/SCP
 
 on:
   push:
@@ -23,16 +23,30 @@ jobs:
           npm run build
 
         
-      - name: SFTP Deploy
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      - name: Create Deployment Archive
+        run: |
+          zip -r deploy.zip . -x "*.git*" "node_modules/*" "tests/*" "storage/*.php" "bozor_rsa" "bozor_database" ".env" "deploy.zip"
+
+      - name: Copy Archive via SCP
+        uses: appleboy/scp-action@v0.1.7
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: /freemarket.created.link/
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
-            **/tests/**
-            .env
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          source: "deploy.zip"
+          target: "/home/${{ secrets.SSH_USERNAME }}/public_html/freemarket.created.link/"
+
+      - name: Extract and Post-Deployment
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd /home/${{ secrets.SSH_USERNAME }}/public_html/freemarket.created.link/
+            unzip -o deploy.zip
+            rm deploy.zip
+            php artisan optimize:clear
+            php artisan optimize
