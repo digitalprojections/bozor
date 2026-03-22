@@ -22,7 +22,7 @@ jobs:
           npm ci
           npm run build
 
-          
+        
       - name: SFTP Deploy
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
