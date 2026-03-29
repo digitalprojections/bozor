@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from '@inertiajs/react';
+import { Link, Head, router } from '@inertiajs/react';
 import { Heart, MessageCircle, Info, Truck, CreditCard, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,10 @@ import { synth } from '@/lib/synth-service';
 interface ListingSidebarProps {
     listing: {
         id: number;
+        title: string;
+        description: string;
+        images: string[];
+        location?: string | null;
         price: number;
         buy_now_price: number | null;
         is_auction: boolean;
@@ -85,7 +89,7 @@ export function ListingSidebar({ listing }: ListingSidebarProps) {
                         </div>
                     </div>
 
-                    {auth.user ? (
+                    {auth?.user ? (
                         <div className="flex flex-col gap-4">
                             {listing.is_auction && (
                                 <form onSubmit={submitBid} className="space-y-3">
@@ -131,10 +135,23 @@ export function ListingSidebar({ listing }: ListingSidebarProps) {
                         </div>
                     )}
 
-                    <Button variant="outline" className="w-full h-12 rounded-full border-[#cddef5] bg-[#f0f5fd] text-[#2b4b8f] font-bold hover:bg-[#e1ecfb]">
-                        <Star className="mr-2 h-5 w-5 fill-[#2b4b8f]" />
-                        {t('listing.sidebar.add_to_watchlist')}
-                    </Button>
+                    {auth?.user ? (
+                        <Button
+                            variant="outline"
+                            className="w-full h-12 rounded-full border-[#cddef5] bg-[#f0f5fd] text-[#2b4b8f] font-bold hover:bg-[#e1ecfb]"
+                            onClick={() => router.post(`/watchlist/${listing.id}/toggle`, {}, { preserveScroll: true })}
+                        >
+                            <Star className="mr-2 h-5 w-5 fill-[#2b4b8f]" />
+                            {t('listing.sidebar.add_to_watchlist')}
+                        </Button>
+                    ) : (
+                        <Link href="/login" className="w-full">
+                            <Button variant="outline" className="w-full h-12 rounded-full border-[#cddef5] bg-[#f0f5fd] text-[#2b4b8f] font-bold hover:bg-[#e1ecfb]">
+                                <Star className="mr-2 h-5 w-5" />
+                                {t('listing.sidebar.add_to_watchlist')}
+                            </Button>
+                        </Link>
+                    )}
                 </CardContent>
             </Card>
 

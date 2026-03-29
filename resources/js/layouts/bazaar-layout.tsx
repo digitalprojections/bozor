@@ -50,32 +50,52 @@ export default function BazaarLayout({ children, title, breadcrumbs = [], sideba
 
                     <div className="flex items-center gap-6">
                         <LocaleSwitcher variant="ghost" size="sm" className="hidden sm:flex text-[#5f6b7a] hover:text-[#0d9488]" />
-                        <Link
-                            href="/dashboard"
-                            className="text-sm font-semibold text-[#1a263b] hover:text-[#0d9488] transition-colors hidden sm:block"
-                        >
-                            {t('layout.header.my_listings')}
-                        </Link>
+                        {user ? (
+                            <>
+                                <Link
+                                    href="/dashboard"
+                                    className="text-sm font-semibold text-[#1a263b] hover:text-[#0d9488] transition-colors hidden sm:block"
+                                >
+                                    {t('layout.header.my_listings')}
+                                </Link>
 
-                        <div className="flex items-center gap-3 text-sm font-medium">
-                            <div className="flex flex-col items-end mr-0.5">
-                                <div className="flex items-center gap-1 text-[10px] font-bold text-amber-500">
-                                    <Star size={10} className="fill-amber-500" />
-                                    {(user?.average_rating || 0).toFixed(1)}
+                                <div className="flex items-center gap-3 text-sm font-medium">
+                                    <div className="flex flex-col items-end mr-0.5">
+                                        <div className="flex items-center gap-1 text-[10px] font-bold text-amber-500">
+                                            <Star size={10} className="fill-amber-500" />
+                                            {(user?.average_rating || 0).toFixed(1)}
+                                        </div>
+                                        <div className="text-[9px] text-[#5f6c84] leading-none">
+                                            ({user?.ratings_count || 0})
+                                        </div>
+                                    </div>
+                                    <Avatar className="h-8 w-8 border border-[#e1e9f2]">
+                                        <AvatarImage src={user?.avatar_url || undefined} alt={user?.name} className="object-cover" />
+                                        <AvatarFallback className="bg-[#d9e2ef] text-[#3a5670] text-xs font-semibold">
+                                            {user?.name ? getInitials(user.name) : <Star size={14} />}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    <span className="hidden lg:inline text-[#0b1b32] font-bold">{user?.name}</span>
                                 </div>
-                                <div className="text-[9px] text-[#5f6c84] leading-none">
-                                    ({user?.ratings_count || 0})
-                                </div>
+                            </>
+                        ) : (
+                            <div className="flex items-center gap-3">
+                                <Link
+                                    href="/login"
+                                    className="text-sm font-semibold text-[#1a263b] hover:text-[#0d9488] transition-colors"
+                                >
+                                    {t('common.login')}
+                                </Link>
+                                <Link
+                                    href="/register"
+                                    className="inline-flex h-9 items-center justify-center rounded-sm bg-[#0d9488] px-4 text-sm font-bold text-white shadow-sm transition hover:bg-[#0f766e]"
+                                >
+                                    {t('common.register')}
+                                </Link>
                             </div>
-                            <Avatar className="h-8 w-8 border border-[#e1e9f2]">
-                                <AvatarImage src={user?.avatar_url || undefined} alt={user?.name} className="object-cover" />
-                                <AvatarFallback className="bg-[#d9e2ef] text-[#3a5670] text-xs font-semibold">
-                                    {user?.name ? getInitials(user.name) : <Star size={14} />}
-                                </AvatarFallback>
-                            </Avatar>
-                            <span className="hidden lg:inline text-[#0b1b32] font-bold">{user?.name}</span>
-                        </div>
+                        )}
                     </div>
+
                 </div>
             </header>
 
@@ -168,7 +188,7 @@ function DefaultSidebar() {
                 {user && (
                     <>
                         <SidebarLink icon={CheckCircle} label={t('dashboard.won_items.title')} href="/dashboard/won-items" />
-                        <SidebarLink icon={Truck} label={t('dashboard.sold_items.title') || 'Sold Items'} href="/dashboard/sold-items" />
+                        <SidebarLink icon={Truck} label={t('layout.sidebar.sold_items')} href="/dashboard/sold-items" />
                     </>
                 )}
                 <SidebarLink icon={Star} label={t('layout.sidebar.watchlist')} href="/watchlist" />
@@ -186,9 +206,10 @@ function DefaultSidebar() {
 
                     <SidebarSection title={t('layout.sidebar.settings')}>
                         <SidebarLink icon={Settings} label={t('layout.sidebar.options')} href="/settings/profile" />
-                        <SidebarLink icon={Lock} label={t('layout.sidebar.password') || 'Password'} href="/settings/password" />
+                        <SidebarLink icon={Lock} label={t('layout.sidebar.password')} href="/settings/password" />
                         <SidebarLink icon={ShieldCheck} label={t('layout.sidebar.auth')} href="/settings/two-factor" />
-                        <SidebarLink icon={Palette} label={t('layout.sidebar.appearance') || 'Appearance'} href="/settings/appearance" />
+                        <SidebarLink icon={Palette} label={t('layout.sidebar.appearance')} href="/settings/appearance" />
+
                         <SidebarLink icon={Bell} label={t('layout.sidebar.notifications')} />
                     </SidebarSection>
                 </>

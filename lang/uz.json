@@ -2,7 +2,10 @@
     "common.app_name": "Bozor",
     "common.dashboard": "Boshqaruv paneli",
     "common.log_in": "Kirish",
+    "common.login": "Kirish",
     "common.sign_up": "Ro'yxatdan o'tish",
+    "common.register": "Ro'yxatdan o'tish",
+
     "common.create_free_account": "Bepul akkaunt yaratish",
     "welcome.title": "O'z narsalaringizni",
     "welcome.title_highlight": "onlayn soting",
@@ -118,6 +121,8 @@
     "layout.sidebar.linked": "Bog'langan xizmatlar",
     "layout.sidebar.auth": "Autentifikatsiya",
     "layout.sidebar.notifications": "Bildirishnomalar",
+    "layout.sidebar.sold_items": "Sotilgan mahsulotlar",
+
     "layout.balance.wallet": "Hamyon balansi",
     "layout.balance.points": "Mukofot ballari",
     "layout.balance.auto_topup": "avtomatik to'ldirish",

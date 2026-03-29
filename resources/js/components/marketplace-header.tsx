@@ -2,7 +2,8 @@ import { ShoppingCart, Package, DollarSign, TrendingUp } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useTranslations } from '@/hooks/use-translations';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
+
 
 interface Stats {
     active_listings: number;
@@ -11,9 +12,12 @@ interface Stats {
     cart_items: number;
 }
 
-export function MarketplaceHeader({ stats }: { stats: Stats }) {
+export function MarketplaceHeader({ stats }: { stats: Stats | null }) {
     const { t } = useTranslations();
-    const statCards = [
+    const { auth } = usePage().props as any;
+    const user = auth.user;
+
+    const statCards = stats ? [
         {
             label: t('marketplace.stats.active_listings'),
             value: stats.active_listings,
@@ -42,7 +46,8 @@ export function MarketplaceHeader({ stats }: { stats: Stats }) {
             color: 'text-orange-600',
             bgColor: 'bg-orange-50 dark:bg-orange-950',
         },
-    ];
+    ] : [];
+
 
     return (
         <div className="space-y-4">
@@ -55,38 +60,43 @@ export function MarketplaceHeader({ stats }: { stats: Stats }) {
                         {t('marketplace.description')}
                     </p>
                 </div>
-                <Link href="/listings/create">
-                    <Button size="lg">
-                        <Package className="mr-2 h-4 w-4" />
-                        {t('marketplace.create_listing')}
-                    </Button>
-                </Link>
+                {user && (
+                    <Link href="/listings/create">
+                        <Button size="lg">
+                            <Package className="mr-2 h-4 w-4" />
+                            {t('marketplace.create_listing')}
+                        </Button>
+                    </Link>
+                )}
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                {statCards.map((stat) => {
-                    const Icon = stat.icon;
-                    return (
-                        <Card key={stat.label} className="p-6">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-sm font-medium text-muted-foreground">
-                                        {stat.label}
-                                    </p>
-                                    <p className="text-2xl font-bold">
-                                        {stat.value}
-                                    </p>
+            {stats && (
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                    {statCards.map((stat) => {
+                        const Icon = stat.icon;
+                        return (
+                            <Card key={stat.label} className="p-6">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className="text-sm font-medium text-muted-foreground">
+                                            {stat.label}
+                                        </p>
+                                        <p className="text-2xl font-bold">
+                                            {stat.value}
+                                        </p>
+                                    </div>
+                                    <div
+                                        className={`rounded-full p-3 ${stat.bgColor}`}
+                                    >
+                                        <Icon className={`h-5 w-5 ${stat.color}`} />
+                                    </div>
                                 </div>
-                                <div
-                                    className={`rounded-full p-3 ${stat.bgColor}`}
-                                >
-                                    <Icon className={`h-5 w-5 ${stat.color}`} />
-                                </div>
-                            </div>
-                        </Card>
-                    );
-                })}
-            </div>
+                            </Card>
+                        );
+                    })}
+                </div>
+            )}
+
         </div>
     );
 }

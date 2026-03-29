@@ -34,11 +34,12 @@ export default function Welcome({
                             </Link>
                         )}
                         <Link
-                            href={dashboard().url}
+                            href="/marketplace"
                             className="inline-flex h-12 items-center justify-center rounded-sm border border-[#cfddee] bg-white px-8 text-base font-bold text-[#1a263b] transition hover:bg-[#f8fafd]"
                         >
                             {t('welcome.browse_listings')}
                         </Link>
+
                     </div>
                 </CardContent>
             </Card>

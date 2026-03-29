@@ -2,7 +2,10 @@
     "common.app_name": "Bozor",
     "common.dashboard": "Dashboard",
     "common.log_in": "Log in",
+    "common.login": "Log in",
     "common.sign_up": "Sign up",
+    "common.register": "Register",
+
     "common.create_free_account": "Create free account",
     "welcome.title": "Sell your things",
     "welcome.title_highlight": "online",
@@ -120,6 +123,8 @@
     "layout.sidebar.linked": "Linked Services",
     "layout.sidebar.auth": "Authentication",
     "layout.sidebar.notifications": "Notifications",
+    "layout.sidebar.sold_items": "Sold Items",
+
     "layout.balance.wallet": "Wallet Balance",
     "layout.balance.points": "Reward Points",
     "layout.balance.auto_topup": "auto-topup",

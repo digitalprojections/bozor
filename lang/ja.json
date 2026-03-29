@@ -2,7 +2,10 @@
     "common.app_name": "Bozor",
     "common.dashboard": "ダッシュボード",
     "common.log_in": "ログイン",
+    "common.login": "ログイン",
     "common.sign_up": "新規登録",
+    "common.register": "新規登録",
+
     "common.create_free_account": "無料でアカウント作成",
     "welcome.title": "あなたのものを",
     "welcome.title_highlight": "オンラインで売る",
@@ -118,6 +121,8 @@
     "layout.sidebar.linked": "外部サービス連携",
     "layout.sidebar.auth": "認証設定",
     "layout.sidebar.notifications": "通知設定",
+    "layout.sidebar.sold_items": "売却済みの商品",
+
     "layout.balance.wallet": "ウォレット残高",
     "layout.balance.points": "ポイント",
     "layout.balance.auto_topup": "自動チャージ",

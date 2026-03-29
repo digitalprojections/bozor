@@ -13,9 +13,9 @@ Route::post('locale', function (Request $request) {
 
 Route::get('/', function () {
     // Redirect authenticated users to marketplace
-    if (auth()->check()) {
+    /* if (auth()->check()) {
         return redirect()->route('marketplace');
-    }
+    } */
 
     return Inertia::render('welcome', [
     'canRegister' => Features::enabled(Features::registration()),

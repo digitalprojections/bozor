@@ -60,7 +60,63 @@ export default function Show({ listing, recommendations = [], is_watched = false
             breadcrumbs={breadcrumbs}
             sidebar={<ListingSidebar listing={listing} />}
         >
-            <Head title={`${listing.title} - ${t('marketplace.title')}`} />
+            <Head title={`${listing.title} - ${t('marketplace.title')}`}>
+                <link rel="canonical" href={`${window.location.origin}/listings/${listing.id}`} />
+                <meta name="description" content={listing.description.substring(0, 160)} />
+
+                <meta property="og:title" content={listing.title} />
+                <meta property="og:description" content={listing.description.substring(0, 160)} />
+                <meta property="og:type" content="product" />
+                {listing.images && listing.images.length > 0 && (
+                    <meta property="og:image" content={`${window.location.origin}/storage/${listing.images[0]}`} />
+                )}
+                <script type="application/ld+json">
+                    {JSON.stringify({
+                        "@context": "https://schema.org/",
+                        "@type": "Product",
+                        "name": listing.title,
+                        "image": listing.images.map(img => `${window.location.origin}/storage/${img}`),
+                        "description": listing.description,
+                        "offers": {
+                            "@type": "Offer",
+                            "priceCurrency": "JPY",
+                            "price": listing.price,
+                            "availability": "https://schema.org/InStock",
+                            "url": `${window.location.origin}/listings/${listing.id}`,
+                            "areaServed": {
+                                "@type": "Country",
+                                "name": "Japan"
+                            },
+                            "eligibleRegion": listing.location ? {
+                                "@type": "State",
+                                "name": listing.location
+                            } : undefined
+                        }
+                    })}
+                </script>
+                <script type="application/ld+json">
+                    {JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@type": "BreadcrumbList",
+                        "itemListElement": [
+                            {
+                                "@type": "ListItem",
+                                "position": 1,
+                                "name": t('marketplace.title'),
+                                "item": `${window.location.origin}/marketplace`
+                            },
+                            {
+                                "@type": "ListItem",
+                                "position": 2,
+                                "name": listing.title,
+                                "item": `${window.location.origin}/listings/${listing.id}`
+                            }
+                        ]
+                    })}
+                </script>
+            </Head>
+
+
 
             <div className="flex flex-col gap-8">
                 {/* Images Section */}

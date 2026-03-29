@@ -1,4 +1,4 @@
-import { Link, router } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ChevronLeft, ChevronRight, Package, Heart } from 'lucide-react';
 import { useTranslations } from '@/hooks/use-translations';
 import { useInitials } from '@/hooks/use-initials';
+
 
 interface Listing {
     id: number;
@@ -48,6 +49,9 @@ export function ListingsGrid({
 }: ListingsGridProps) {
     const { t } = useTranslations();
     const getInitials = useInitials();
+    const { auth } = usePage().props as any;
+    const user = auth.user;
+
 
     const handlePageChange = (page: number) => {
         router.get(
@@ -107,21 +111,22 @@ export function ListingsGrid({
                                         <Package className="h-12 w-12 text-muted-foreground" />
                                     </div>
                                 )}
-                                {/* Watchlist star button */}
-                                <button
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        router.post(`/watchlist/${listing.id}/toggle`, {}, { preserveScroll: true });
-                                    }}
-                                    className={`absolute top-2 right-2 h-8 w-8 flex items-center justify-center rounded-full shadow transition-all ${watchedIds.includes(listing.id)
-                                            ? 'bg-white text-rose-500'
-                                            : 'bg-black/30 text-white hover:bg-white hover:text-rose-400'
-                                        }`}
-                                    title={watchedIds.includes(listing.id) ? 'Remove from watchlist' : 'Add to watchlist'}
-                                >
-                                    <Heart size={15} className={watchedIds.includes(listing.id) ? 'fill-current' : ''} />
-                                </button>
+                                {user && (
+                                    <button
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            router.post(`/watchlist/${listing.id}/toggle`, {}, { preserveScroll: true });
+                                        }}
+                                        className={`absolute top-2 right-2 h-8 w-8 flex items-center justify-center rounded-full shadow transition-all ${watchedIds.includes(listing.id)
+                                                ? 'bg-white text-rose-500'
+                                                : 'bg-black/30 text-white hover:bg-white hover:text-rose-400'
+                                            }`}
+                                        title={watchedIds.includes(listing.id) ? 'Remove from watchlist' : 'Add to watchlist'}
+                                    >
+                                        <Heart size={15} className={watchedIds.includes(listing.id) ? 'fill-current' : ''} />
+                                    </button>
+                                )}
                             </div>
 
                             {/* Listing Details */}
@@ -139,6 +144,7 @@ export function ListingsGrid({
                                 <p className="mb-3 line-clamp-2 text-sm text-muted-foreground">
                                     {listing.description}
                                 </p>
+
 
                                 <div className="mt-auto space-y-3">
                                     <p className="text-2xl font-bold">
