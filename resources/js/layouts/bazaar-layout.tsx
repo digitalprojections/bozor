@@ -29,7 +29,7 @@ export default function BazaarLayout({ children, title, breadcrumbs = [], sideba
 
             {/* Header */}
             <header className="sticky top-0 z-50 border-b border-[#e8e7e5] bg-white shadow-sm">
-                <div className="mx-auto flex h-16 max-w-[1100px] items-center justify-between px-4">
+                <div className="mx-auto flex h-16 w-full items-center justify-between px-4 md:px-8">
                     <div className="flex items-center gap-8 flex-1">
                         <Link href="/" className="flex items-center gap-2">
                             <AppLogo />
@@ -81,12 +81,12 @@ export default function BazaarLayout({ children, title, breadcrumbs = [], sideba
 
             {/* Breadcrumbs Section */}
             <div className="bg-white border-b border-[#f0f2f5] py-2">
-                <div className="mx-auto max-w-[1100px] px-4">
+                <div className="mx-auto w-full px-4 md:px-8">
                     <Breadcrumbs breadcrumbs={breadcrumbs} />
                 </div>
             </div>
 
-            <main className="mx-auto max-w-[1100px] px-4 py-8">
+            <main className="mx-auto w-full px-4 py-8 md:px-8">
                 <div className="mb-6 flex items-center justify-between">
                     <h1 className="text-[2rem] font-semibold tracking-tight text-[#0b1b32]">{title}</h1>
                 </div>
@@ -116,7 +116,7 @@ export default function BazaarLayout({ children, title, breadcrumbs = [], sideba
 
             {/* Footer */}
             <footer className="mt-12 border-t border-[#e1e9f2] bg-white py-12">
-                <div className="mx-auto max-w-[1100px] px-4 text-center">
+                <div className="mx-auto w-full px-4 md:px-8 text-center">
                     <p className="text-sm text-[#7f8fa4]">{t('layout.footer.disclaimer')}</p>
                 </div>
             </footer>
