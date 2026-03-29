@@ -26,7 +26,7 @@ export class ImageCompressor {
             maxWidth = 1200,
             maxHeight = 1200,
             quality = 0.8,
-            type = 'image/webp',
+            type = file.type === 'image/gif' ? 'image/gif' : 'image/webp', // Default to webp unless gif
         } = options;
 
         return new Promise((resolve, reject) => {
@@ -71,7 +71,12 @@ export class ImageCompressor {
                                 return;
                             }
 
-                            const compressedFile = new File([blob], file.name, {
+                            // Generate new filename with correct extension
+                            const extension = type.split('/')[1] || 'webp';
+                            const baseName = file.name.replace(/\.[^/.]+$/, "");
+                            const newFileName = `${baseName}.${extension}`;
+
+                            const compressedFile = new File([blob], newFileName, {
                                 type: type,
                                 lastModified: Date.now(),
                             });
