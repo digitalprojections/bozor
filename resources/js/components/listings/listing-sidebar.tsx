@@ -89,7 +89,7 @@ export function ListingSidebar({ listing }: ListingSidebarProps) {
                         </div>
                     </div>
 
-                    {auth?.user ? (
+                    {auth?.user && auth.user.id !== listing.user.id ? (
                         <div className="flex flex-col gap-4">
                             {listing.is_auction && (
                                 <form onSubmit={submitBid} className="space-y-3">
@@ -125,6 +125,10 @@ export function ListingSidebar({ listing }: ListingSidebarProps) {
                                 </Button>
                             )}
                         </div>
+                    ) : auth?.user && auth.user.id === listing.user.id ? (
+                        <div className="text-center text-sm text-amber-600 bg-amber-50 p-4 rounded-2xl border border-dashed border-amber-200">
+                             {t('listing.owner_actions_restricted') || 'You cannot bid on or buy your own listing.'}
+                        </div>
                     ) : (
                         <div className="text-center text-sm text-[#5f6c84] bg-muted/50 p-4 rounded-2xl border border-dashed">
                             {t('listing.sidebar.login_prefix')}{' '}
@@ -135,7 +139,7 @@ export function ListingSidebar({ listing }: ListingSidebarProps) {
                         </div>
                     )}
 
-                    {auth?.user ? (
+                    {auth?.user && auth.user.id !== listing.user.id ? (
                         <Button
                             variant="outline"
                             className="w-full h-12 rounded-full border-[#cddef5] bg-[#f0f5fd] text-[#2b4b8f] font-bold hover:bg-[#e1ecfb]"
@@ -144,7 +148,7 @@ export function ListingSidebar({ listing }: ListingSidebarProps) {
                             <Star className="mr-2 h-5 w-5 fill-[#2b4b8f]" />
                             {t('listing.sidebar.add_to_watchlist')}
                         </Button>
-                    ) : (
+                    ) : !auth?.user && (
                         <Link href="/login" className="w-full">
                             <Button variant="outline" className="w-full h-12 rounded-full border-[#cddef5] bg-[#f0f5fd] text-[#2b4b8f] font-bold hover:bg-[#e1ecfb]">
                                 <Star className="mr-2 h-5 w-5" />

@@ -61,6 +61,9 @@ class ListingController extends Controller
             }
         }
 
+        // Default auction_end_date to 30 days if not provided
+        $auctionEndDate = $validated['auction_end_date'] ?? now()->addDays(30);
+
         $listing = Listing::create([
             'user_id' => auth()->id(),
             'title' => $validated['title'],
@@ -72,7 +75,7 @@ class ListingController extends Controller
             'condition' => $validated['condition'],
             'buy_now_price' => $validated['buy_now_price'] ?? null,
             'is_auction' => $validated['is_auction'],
-            'auction_end_date' => $validated['auction_end_date'] ?? null,
+            'auction_end_date' => $auctionEndDate,
         ]);
 
         // Attach categories to listing
@@ -107,7 +110,7 @@ class ListingController extends Controller
      */
     public function edit(Listing $listing): Response
     {
-        if ($listing->user_id !== auth()->id()) {
+        if ((int) $listing->user_id !== (int) auth()->id()) {
             abort(403);
         }
 
@@ -125,7 +128,7 @@ class ListingController extends Controller
      */
     public function update(Request $request, Listing $listing)
     {
-        if ($listing->user_id !== auth()->id()) {
+        if ((int) $listing->user_id !== (int) auth()->id()) {
             abort(403);
         }
 
@@ -180,8 +183,19 @@ class ListingController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Listing $listing)
     {
-    //
+        if ((int) $listing->user_id !== (int) auth()->id()) {
+            abort(403);
+        }
+
+        // Delete images from storage
+        foreach ($listing->images ?? [] as $imagePath) {
+            Storage::disk('public')->delete($imagePath);
+        }
+
+        $listing->delete();
+
+        return redirect()->route('dashboard')->with('success', 'Listing deleted successfully.');
     }
 }

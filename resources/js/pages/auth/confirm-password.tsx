@@ -6,14 +6,17 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/auth-layout';
 import { store } from '@/routes/password/confirm';
+import { useTranslations } from '@/hooks/use-translations';
 
 export default function ConfirmPassword() {
+    const { t } = useTranslations();
+
     return (
         <AuthLayout
-            title="Confirm your password"
-            description="This is a secure area of the application. Please confirm your password before continuing."
+            title={t('auth.confirm_password_title')}
+            description={t('auth.confirm_password_description')}
         >
-            <Head title="Confirm password" />
+            <Head title={t('auth.confirm_password')} />
 
             <Form {...store.form()} resetOnSuccess={['password']}>
                 {({ processing, errors }) => (
@@ -32,14 +35,23 @@ export default function ConfirmPassword() {
                             <InputError message={errors.password} />
                         </div>
 
-                        <div className="flex items-center">
+                        <div className="flex flex-col gap-4">
                             <Button
                                 className="w-full"
                                 disabled={processing}
                                 data-test="confirm-password-button"
                             >
                                 {processing && <Spinner />}
-                                Confirm password
+                                {t('auth.confirm_password_button')}
+                            </Button>
+
+                            <Button
+                                variant="ghost"
+                                type="button"
+                                className="w-full"
+                                onClick={() => window.history.back()}
+                            >
+                                {t('common.cancel')}
                             </Button>
                         </div>
                     </div>

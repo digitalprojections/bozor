@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
-import { Package, Clock, Info, FileText, Heart } from 'lucide-react';
+import { Package, Clock, Info, FileText, Heart, Trash2 } from 'lucide-react';
 import BazaarLayout from '@/layouts/bazaar-layout';
 import { useTranslations } from '@/hooks/use-translations';
 import { ListingSidebar } from '@/components/listings/listing-sidebar';
@@ -187,15 +187,34 @@ export default function Show({ listing, recommendations = [], is_watched = false
                                     </Button>
                                 )}
                                 {(listing as any).user_id === (auth.user as any)?.id && (
-                                    <Link href={`/listings/${listing.id}/edit`}>
-                                        <Button variant="outline" size="sm" className="rounded-full">
-                                            {t('common.edit')}
+                                    <div className="flex items-center gap-2">
+                                        <Link href={`/listings/${listing.id}/edit`}>
+                                            <Button variant="outline" size="sm" className="rounded-full">
+                                                {t('common.edit')}
+                                            </Button>
+                                        </Link>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            className="rounded-full border-red-300 text-red-500 hover:bg-red-50"
+                                            onClick={() => {
+                                                if (confirm(t('listing.delete_confirm'))) {
+                                                    router.delete(`/listings/${listing.id}`);
+                                                }
+                                            }}
+                                        >
+                                            <Trash2 size={14} className="mr-1" />
+                                            {t('common.delete')}
                                         </Button>
-                                    </Link>
+                                    </div>
                                 )}
                                 <span className="text-xs bg-[#eef2f6] text-[#2c3e50] px-3 py-1.5 rounded-full font-medium flex items-center gap-1.5">
                                     <Clock size={14} />
-                                    {t('listing.show.ends')}: 2/22 (Sun) 19:30
+                                    {t('listing.show.published')}: {new Date(listing.created_at).toLocaleDateString()}
+                                </span>
+                                <span className="text-xs bg-[#eef2f6] text-[#2c3e50] px-3 py-1.5 rounded-full font-medium flex items-center gap-1.5">
+                                    <Clock size={14} />
+                                    {t('listing.show.ends')}: {listing.auction_end_date ? new Date(listing.auction_end_date).toLocaleDateString() : t('common.n_a')}
                                 </span>
                             </div>
                             <Badge variant="destructive" className="bg-[#fce8e8] text-[#b13e3e] hover:bg-[#fce8e8] rounded-full px-3 h-7 border-none font-medium">
@@ -217,7 +236,8 @@ export default function Show({ listing, recommendations = [], is_watched = false
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-12">
                             <InfoRow label={t('listing.show.auction_id')} value={`k${listing.id.toString().padStart(9, '0')}`} />
                             <InfoRow label={t('listing.show.start_price')} value={`¥${listing.price.toLocaleString()}`} />
-                            <InfoRow label={t('listing.show.start_date')} value={new Date(listing.created_at).toLocaleDateString()} />
+                            <InfoRow label={t('listing.show.published')} value={new Date(listing.created_at).toLocaleDateString()} />
+                            <InfoRow label={t('listing.show.ends')} value={listing.auction_end_date ? new Date(listing.auction_end_date).toLocaleDateString() : t('common.n_a')} />
                             <InfoRow label={t('listing.show.location')} value={listing.location || t('common.not_specified')} />
                             <InfoRow label={t('listing.show.auto_extension')} value={t('common.yes')} />
                             <InfoRow label={t('listing.show.early_termination')} value={t('common.permitted')} />

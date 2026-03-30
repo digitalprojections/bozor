@@ -289,17 +289,18 @@ export default function CreateListing({
                                 {data.is_auction && (
                                     <div className="grid gap-4 md:grid-cols-2">
                                         <div>
-                                            <Label htmlFor="auction_end_date">{t('listing.create.auction_end_date')}</Label>
-                                            <Input
-                                                id="auction_end_date"
-                                                type="datetime-local"
-                                                value={data.auction_end_date}
-                                                onChange={(e) => setData('auction_end_date', e.target.value)}
-                                                className="mt-1"
-                                            />
-                                            {errors.auction_end_date && (
-                                                <p className="mt-1 text-sm text-red-500">{errors.auction_end_date}</p>
-                                            )}
+                                                <Label htmlFor="auction_end_date">{t('listing.create.auction_end_date')}</Label>
+                                                <Input
+                                                    id="auction_end_date"
+                                                    type="datetime-local"
+                                                    value={data.auction_end_date}
+                                                    onChange={(e) => setData('auction_end_date', e.target.value)}
+                                                    className="mt-1"
+                                                />
+                                                <p className="mt-1 text-xs text-muted-foreground">{t('listing.create.date_help') || 'Leave blank for default 30-day duration.'}</p>
+                                                {errors.auction_end_date && (
+                                                    <p className="mt-1 text-sm text-red-500">{errors.auction_end_date}</p>
+                                                )}
                                         </div>
                                     </div>
                                 )}

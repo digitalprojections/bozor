@@ -1,5 +1,5 @@
-import { Head, Link, usePage } from '@inertiajs/react';
-import { Search, Star, Gavel, CheckCircle, Package, Clock, Heart, CreditCard, Receipt, Wallet, ShieldCheck, Bell, MessageCircle, Settings, ChevronRight, LayoutDashboard, ShoppingCart, Lock, Palette, Truck } from 'lucide-react';
+import { Head, Link, usePage, router } from '@inertiajs/react';
+import { Search, Star, Gavel, CheckCircle, Package, Clock, Heart, CreditCard, Receipt, Wallet, ShieldCheck, Bell, MessageCircle, Settings, ChevronRight, LayoutDashboard, ShoppingCart, Lock, Palette, Truck, LogOut } from 'lucide-react';
 import React, { ReactNode } from 'react';
 import { useTranslations } from '@/hooks/use-translations';
 import { useInitials } from '@/hooks/use-initials';
@@ -76,6 +76,13 @@ export default function BazaarLayout({ children, title, breadcrumbs = [], sideba
                                         </AvatarFallback>
                                     </Avatar>
                                     <span className="hidden lg:inline text-[#0b1b32] font-bold">{user?.name}</span>
+                                    <button
+                                        onClick={() => router.post('/logout')}
+                                        className="ml-1 flex items-center gap-1 text-xs text-[#5f6c84] hover:text-red-500 transition-colors"
+                                        title={t('common.logout')}
+                                    >
+                                        <LogOut size={15} />
+                                    </button>
                                 </div>
                             </>
                         ) : (

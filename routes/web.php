@@ -35,6 +35,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         )->name('listings.index');
         Route::get('/listings/{listing}/edit', [App\Http\Controllers\ListingController::class , 'edit'])->name('listings.edit');
         Route::patch('/listings/{listing}', [App\Http\Controllers\ListingController::class , 'update'])->name('listings.update');
+        Route::delete('/listings/{listing}', [App\Http\Controllers\ListingController::class , 'destroy'])->name('listings.destroy');
 
         // Bidding and Buy Now routes
         Route::post('/listings/{listing}/bid', [App\Http\Controllers\BidController::class , 'store'])->name('listings.bid');

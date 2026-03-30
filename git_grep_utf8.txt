@@ -1,0 +1,321 @@
+﻿resources/js/components/avatar-upload.tsx:57:        { value: 'initials', label: t('profile.avatar.styles.initials') },
+resources/js/components/avatar-upload.tsx:59:        { value: 'avataaars', label: t('profile.avatar.styles.avataaars') },
+resources/js/components/avatar-upload.tsx:60:        { value: 'personas', label: t('profile.avatar.styles.personas') },
+resources/js/components/avatar-upload.tsx:61:        { value: 'lorelei', label: t('profile.avatar.styles.lorelei') },
+resources/js/components/avatar-upload.tsx:62:        { value: 'micah', label: t('profile.avatar.styles.micah') },
+resources/js/components/avatar-upload.tsx:63:        { value: 'bottts', label: t('profile.avatar.styles.bottts') },
+resources/js/components/avatar-upload.tsx:64:        { value: 'pixel-art', label: t('profile.avatar.styles.pixel_art') },
+resources/js/components/avatar-upload.tsx:65:        { value: 'adventurer', label: t('profile.avatar.styles.adventurer') },
+resources/js/components/avatar-upload.tsx:66:        { value: 'big-smile', label: t('profile.avatar.styles.big_smile') },
+resources/js/components/avatar-upload.tsx:70:        { value: 'unspecified', label: t('profile.avatar.gender.not_specified') },
+resources/js/components/avatar-upload.tsx:71:        { value: 'male', label: t('profile.avatar.gender.male') },
+resources/js/components/avatar-upload.tsx:72:        { value: 'female', label: t('profile.avatar.gender.female') },
+resources/js/components/avatar-upload.tsx:73:        { value: 'other', label: t('profile.avatar.gender.other') },
+resources/js/components/avatar-upload.tsx:181:                            {t('profile.avatar.upload')}
+resources/js/components/avatar-upload.tsx:192:                                {t('common.randomize') || 'Randomize'}
+resources/js/components/avatar-upload.tsx:204:                                {t('profile.avatar.remove')}
+resources/js/components/avatar-upload.tsx:218:                        {t('profile.avatar.file_help')}
+resources/js/components/avatar-upload.tsx:225:                    <Label htmlFor="avatar_style">{t('profile.avatar.style')}</Label>
+resources/js/components/avatar-upload.tsx:235:                            <SelectValue placeholder={t('common.select_style')} />
+resources/js/components/avatar-upload.tsx:411:                <Label htmlFor="gender">{t('profile.avatar.gender')}</Label>
+resources/js/components/avatar-upload.tsx:418:                        <SelectValue placeholder={t('common.select_gender')} />
+resources/js/components/avatar-upload.tsx:429:                    {t('profile.avatar.gender_help')}
+resources/js/components/dashboard/balance-tiles.tsx:11:        return new Intl.NumberFormat('ja-JP', {
+resources/js/components/dashboard/bazaar-balance-section.tsx:28:                                <span className="text-[0.9rem] font-medium text-[#5f6c84]">{t('layout.balance.wallet')}</span>
+resources/js/components/dashboard/bazaar-balance-section.tsx:36:                            <span className="text-[0.9rem] font-medium text-[#5f6c84]">{t('layout.balance.points')}</span>
+resources/js/components/dashboard/dashboard-profile-card.tsx:42:                                    {t('common.edit')}
+resources/js/components/dashboard/dashboard-profile-card.tsx:63:                                <span className="ml-1">{t('listing.sidebar.rating')} {(user.average_rating || 0).toFixed(1)}</span>
+resources/js/components/dashboard/dashboard-profile-card.tsx:70:                                    <span>{t('verification.status.approved')}</span>
+resources/js/components/delete-user.tsx:28:                title={t('profile.delete_account.title')}
+resources/js/components/delete-user.tsx:29:                description={t('profile.delete_account.description')}
+resources/js/components/delete-user.tsx:33:                    <p className="font-medium">{t('profile.delete_account.warning')}</p>
+resources/js/components/delete-user.tsx:35:                        {t('profile.delete_account.caution')}
+resources/js/components/delete-user.tsx:45:                            {t('profile.delete_account.button')}
+resources/js/components/delete-user.tsx:50:                            {t('profile.delete_account.confirm_title')}
+resources/js/components/delete-user.tsx:53:                            {t('profile.delete_account.confirm_description')}
+resources/js/components/delete-user.tsx:72:                                            {t('auth.password')}
+resources/js/components/delete-user.tsx:80:                                            placeholder={t('auth.password')}
+resources/js/components/delete-user.tsx:95:                                                {t('common.cancel')}
+resources/js/components/delete-user.tsx:108:                                                {t('profile.delete_account.button')}
+resources/js/components/listings-grid.tsx:68:                <h3 className="text-lg font-semibold">{t('dashboard.listings.no_results')}</h3>
+resources/js/components/listings-grid.tsx:70:                    {t('listings.grid.adjust_filters')}
+resources/js/components/listings-grid.tsx:139:                                        {listing.categories?.[0]?.name || t('common.not_specified')}
+resources/js/components/listings-grid.tsx:179:                        {t('listings.grid.showing_count', { count: listings.length, total: pagination.total })}
+resources/js/components/listings-grid.tsx:192:                            {t('listings.grid.previous')}
+resources/js/components/listings-grid.tsx:244:                            {t('listings.grid.next')}
+resources/js/components/listings/listing-sidebar.tsx:58:        if (confirm(t('common.confirm_purchase'))) {
+resources/js/components/listings/listing-sidebar.tsx:76:                            <span>{t('listing.sidebar.bids')}: <strong className="text-[#0b1b32]">{listing.bids_count ?? 0}</strong></span>
+resources/js/components/listings/listing-sidebar.tsx:77:                            <span>{t('listing.sidebar.time_remaining')}: <strong className="text-[#0b1b32]">
+resources/js/components/listings/listing-sidebar.tsx:78:                                {listing.auction_end_date ? new Date(listing.auction_end_date).toLocaleDateString() : t('common.n_a')}
+resources/js/components/listings/listing-sidebar.tsx:85:                            {listing.is_auction ? t('listing.show.current_price') : t('listing.create.price')}
+resources/js/components/listings/listing-sidebar.tsx:110:                                                {t('listing.show.bid')}
+resources/js/components/listings/listing-sidebar.tsx:124:                                    {t('listing.show.buy_now')} (ﾂ･{listing.buy_now_price.toLocaleString()})
+resources/js/components/listings/listing-sidebar.tsx:130:                             {t('listing.owner_actions_restricted') || 'You cannot bid on or buy your own listing.'}
+resources/js/components/listings/listing-sidebar.tsx:134:                            {t('listing.sidebar.login_prefix')}{' '}
+resources/js/components/listings/listing-sidebar.tsx:136:                                {t('listing.sidebar.login_link')}
+resources/js/components/listings/listing-sidebar.tsx:138:                            {t('listing.sidebar.login_suffix')}
+resources/js/components/listings/listing-sidebar.tsx:149:                            {t('listing.sidebar.add_to_watchlist')}
+resources/js/components/listings/listing-sidebar.tsx:155:                                {t('listing.sidebar.add_to_watchlist')}
+resources/js/components/listings/listing-sidebar.tsx:166:                    {t('listing.sidebar.shipping_payment')}
+resources/js/components/listings/listing-sidebar.tsx:171:                            <span className="text-[#5f6c84]">{t('listing.sidebar.shipping')}</span>
+resources/js/components/listings/listing-sidebar.tsx:172:                            <span className="font-medium text-[#1a263b]">{t('listing.sidebar.buyer_pays')}</span>
+resources/js/components/listings/listing-sidebar.tsx:175:                            <span className="text-[#5f6c84]">{t('listing.sidebar.shipping_method')}</span>
+resources/js/components/listings/listing-sidebar.tsx:176:                            <span className="font-medium text-[#1a263b]">{t('listing.sidebar.domestic_delivery')}</span>
+resources/js/components/listings/listing-sidebar.tsx:179:                            <span className="text-[#5f6c84]">{t('listing.show.location')}</span>
+resources/js/components/listings/listing-sidebar.tsx:183:                            <span className="text-[#5f6c84]">{t('listing.sidebar.payment')}</span>
+resources/js/components/listings/listing-sidebar.tsx:201:                            {t('listing.sidebar.seller')}:
+resources/js/components/listings/listing-sidebar.tsx:230:                        {t('listing.sidebar.ask_provider')}
+resources/js/components/listings/listing-sidebar.tsx:233:                        {t('listing.sidebar.store_info')}
+resources/js/components/listings/listing-sidebar.tsx:241:                <div>{t('listing.sidebar.watchlist_reminder')}</div>
+resources/js/components/listings/recommendations-section.tsx:30:                    {title || t('dashboard.recommendations.title')}
+resources/js/components/marketplace-header.tsx:22:            label: t('marketplace.stats.active_listings'),
+resources/js/components/marketplace-header.tsx:29:            label: t('marketplace.stats.sold_items'),
+resources/js/components/marketplace-header.tsx:36:            label: t('marketplace.stats.total_earnings'),
+resources/js/components/marketplace-header.tsx:43:            label: t('marketplace.stats.cart'),
+resources/js/components/marketplace-header.tsx:57:                        {t('marketplace.title')}
+resources/js/components/marketplace-header.tsx:60:                        {t('marketplace.description')}
+resources/js/components/marketplace-header.tsx:67:                            {t('marketplace.create_listing')}
+resources/js/components/nav-main.tsx:19:            <SidebarGroupLabel>{t('common.platform')}</SidebarGroupLabel>
+resources/js/components/search-and-filters.tsx:60:                        placeholder={t('marketplace.search.placeholder')}
+resources/js/components/search-and-filters.tsx:66:                <Button type="submit">{t('marketplace.search.button')}</Button>
+resources/js/components/search-and-filters.tsx:83:                            <SelectValue placeholder={t('marketplace.filters.all_categories')} />
+resources/js/components/search-and-filters.tsx:86:                            <SelectItem value="all">{t('marketplace.filters.all_categories')}</SelectItem>
+resources/js/components/search-and-filters.tsx:105:                        <SelectItem value="newest">{t('marketplace.filters.sort_newest')}</SelectItem>
+resources/js/components/search-and-filters.tsx:106:                        <SelectItem value="oldest">{t('marketplace.filters.sort_oldest')}</SelectItem>
+resources/js/components/search-and-filters.tsx:108:                            {t('marketplace.filters.price_low_high')}
+resources/js/components/search-and-filters.tsx:111:                            {t('marketplace.filters.price_high_low')}
+resources/js/components/search-and-filters.tsx:140:                            {t('marketplace.filters.active_search')}: {currentSearch}
+resources/js/components/search-and-filters.tsx:154:                            {t('marketplace.filters.active_category')}:{' '}
+resources/js/components/user-menu-content.tsx:46:                        {t('auth.profile.title') || 'Public Profile'}
+resources/js/components/verification-status-card.tsx:46:        router.visit('/verification/request');
+resources/js/components/verification-status-card.tsx:58:                <CardTitle>{t('verification.status.title')}</CardTitle>
+resources/js/components/verification-status-card.tsx:61:                        ? t('verification.status.verified_description')
+resources/js/components/verification-status-card.tsx:62:                        : t('verification.status.not_verified_description')}
+resources/js/components/verification-status-card.tsx:70:                            {t('verification.status.approved')}
+resources/js/components/verification-status-card.tsx:88:                                    {t('verification.cancel_request')}
+resources/js/components/verification-status-card.tsx:95:                                <p className="text-sm font-medium">{t('verification.admin.notes')}</p>
+resources/js/components/verification-status-card.tsx:104:                                {t('verification.request.resubmit')}
+resources/js/components/verification-status-card.tsx:111:                            {t('verification.request.description')}
+resources/js/components/verification-status-card.tsx:114:                            {t('verification.request.submit')}
+resources/js/components/verified-badge.tsx:47:                    <p>{t('verification.badge.tooltip')}</p>
+resources/js/hooks/use-initials.tsx:7:        const names = fullName.trim().split(' ');
+resources/js/layouts/bazaar-layout.tsx:42:                                placeholder={t('layout.header.search_placeholder')}
+resources/js/layouts/bazaar-layout.tsx:59:                                    {t('layout.header.my_listings')}
+resources/js/layouts/bazaar-layout.tsx:87:                                    {t('common.login')}
+resources/js/layouts/bazaar-layout.tsx:93:                                    {t('common.register')}
+resources/js/layouts/bazaar-layout.tsx:140:                    <p className="text-sm text-[#7f8fa4]">{t('layout.footer.disclaimer')}</p>
+resources/js/layouts/bazaar-layout.tsx:185:            <SidebarSection title={t('layout.sidebar.activity')}>
+resources/js/layouts/bazaar-layout.tsx:186:                <SidebarLink icon={LayoutDashboard} label={t('common.dashboard')} href="/dashboard" />
+resources/js/layouts/bazaar-layout.tsx:187:                <SidebarLink icon={ShoppingCart} label={t('marketplace.title')} href="/marketplace" />
+resources/js/layouts/bazaar-layout.tsx:190:                        <SidebarLink icon={CheckCircle} label={t('dashboard.won_items.title')} href="/dashboard/won-items" />
+resources/js/layouts/bazaar-layout.tsx:191:                        <SidebarLink icon={Truck} label={t('layout.sidebar.sold_items')} href="/dashboard/sold-items" />
+resources/js/layouts/bazaar-layout.tsx:194:                <SidebarLink icon={Star} label={t('layout.sidebar.watchlist')} href="/watchlist" />
+resources/js/layouts/bazaar-layout.tsx:199:                    <SidebarSection title={t('layout.sidebar.extra')}>
+resources/js/layouts/bazaar-layout.tsx:200:                        <SidebarLink icon={Search} label={t('layout.sidebar.history')} />
+resources/js/layouts/bazaar-layout.tsx:201:                        <SidebarLink icon={Heart} label={t('layout.sidebar.following')} />
+resources/js/layouts/bazaar-layout.tsx:202:                        <SidebarLink icon={Star} label={t('layout.sidebar.saved_searches')} />
+resources/js/layouts/bazaar-layout.tsx:207:                    <SidebarSection title={t('layout.sidebar.settings')}>
+resources/js/layouts/bazaar-layout.tsx:208:                        <SidebarLink icon={Settings} label={t('layout.sidebar.options')} href="/settings/profile" />
+resources/js/layouts/bazaar-layout.tsx:209:                        <SidebarLink icon={Lock} label={t('layout.sidebar.password')} href="/settings/password" />
+resources/js/layouts/bazaar-layout.tsx:210:                        <SidebarLink icon={ShieldCheck} label={t('layout.sidebar.auth')} href="/settings/two-factor" />
+resources/js/layouts/bazaar-layout.tsx:211:                        <SidebarLink icon={Palette} label={t('layout.sidebar.appearance')} href="/settings/appearance" />
+resources/js/layouts/bazaar-layout.tsx:213:                        <SidebarLink icon={Bell} label={t('layout.sidebar.notifications')} />
+resources/js/pages/dashboard.tsx:29:            title={t('layout.header.my_listings')}
+resources/js/pages/dashboard.tsx:32:            <Head title={t('common.dashboard')} />
+resources/js/pages/dashboard.tsx:45:                        {t('dashboard.listings.title')}
+resources/js/pages/dashboard.tsx:49:                            <ShoppingBag size={14} /> {t('dashboard.won_items.title')}
+resources/js/pages/dashboard.tsx:52:                            + {t('dashboard.listings.create_new')}
+resources/js/pages/dashboard.tsx:74:                                            <span className="capitalize">{t('dashboard.status.' + listing.status)}</span>
+resources/js/pages/dashboard.tsx:82:                                            {t('common.edit')}
+resources/js/pages/dashboard.tsx:88:                                            {t('common.view')}
+resources/js/pages/dashboard.tsx:96:                            <p>{t('dashboard.listings.no_results')}</p>
+resources/js/pages/dashboard/sold-items.tsx:33:        { title: t('common.dashboard'), href: '/dashboard' },
+resources/js/pages/dashboard/sold-items.tsx:34:        { title: t('dashboard.sold_items.title') || 'Sold Items', href: '#' },
+resources/js/pages/dashboard/sold-items.tsx:51:                return <Badge className="bg-amber-50 text-amber-700 border-amber-100 hover:bg-amber-50">{t('transaction.status.pending_payment') || 'Pending Payment'}</Badge>;
+resources/js/pages/dashboard/sold-items.tsx:53:                return <Badge className="bg-blue-50 text-blue-700 border-blue-100 hover:bg-blue-50">{t('transaction.status.paid')}</Badge>;
+resources/js/pages/dashboard/sold-items.tsx:55:                return <Badge className="bg-indigo-50 text-indigo-700 border-indigo-100 hover:bg-indigo-50">{t('transaction.status.shipped')}</Badge>;
+resources/js/pages/dashboard/sold-items.tsx:57:                return <Badge className="bg-green-50 text-green-700 border-green-100 hover:bg-green-50">{t('transaction.status.delivered')}</Badge>;
+resources/js/pages/dashboard/sold-items.tsx:59:                return <Badge className="bg-gray-50 text-gray-700 border-gray-100 hover:bg-gray-50">{t('transaction.status.completed')}</Badge>;
+resources/js/pages/dashboard/sold-items.tsx:61:                return <Badge className="bg-red-50 text-red-700 border-red-100 hover:bg-red-50">{t('transaction.status.cancelled')}</Badge>;
+resources/js/pages/dashboard/sold-items.tsx:69:            title={t('dashboard.sold_items.title') || 'Sold Items'}
+resources/js/pages/dashboard/sold-items.tsx:72:            <Head title={t('dashboard.sold_items.title') || 'Sold Items'} />
+resources/js/pages/dashboard/sold-items.tsx:77:                        {t('dashboard.sold_items.title') || 'Sold Items'}
+resources/js/pages/dashboard/sold-items.tsx:80:                        {t('dashboard.sold_items.subtitle') || 'Manage your sales and shipping progress'}
+resources/js/pages/dashboard/sold-items.tsx:89:                        {t('marketplace.filters.all')}
+resources/js/pages/dashboard/sold-items.tsx:96:                        {t('transaction.status.pending_payment') || 'Awaiting Payment'}
+resources/js/pages/dashboard/sold-items.tsx:108:                        {t('transaction.status.pending') || 'To Ship / In Transit'}
+resources/js/pages/dashboard/sold-items.tsx:114:                        {t('transaction.status.completed')}
+resources/js/pages/dashboard/sold-items.tsx:120:                        {t('transaction.cancel') || 'Cancelled'}
+resources/js/pages/dashboard/sold-items.tsx:141:                                                        <Trophy size={10} /> {t('listing.type.auction')}
+resources/js/pages/dashboard/sold-items.tsx:145:                                                        <ShoppingBag size={10} /> {t('listing.type.purchase')}
+resources/js/pages/dashboard/sold-items.tsx:161:                                                <span>{t('transaction.buyer') || 'Buyer'}: <span className="text-[#2b4b8f] font-medium">{item.buyer.name}</span></span>
+resources/js/pages/dashboard/sold-items.tsx:167:                                                {t('common.view')}
+resources/js/pages/dashboard/sold-items.tsx:178:                            <p className="font-medium">{t('dashboard.sold_items.no_items') + ' in ' + activeFilter}</p>
+resources/js/pages/dashboard/won-items.tsx:33:        { title: t('common.dashboard'), href: '/dashboard' },
+resources/js/pages/dashboard/won-items.tsx:34:        { title: t('dashboard.won_items.title'), href: '#' },
+resources/js/pages/dashboard/won-items.tsx:51:                return <Badge className="bg-amber-50 text-amber-700 border-amber-100 hover:bg-amber-50">{t('transaction.status.pending_payment')}</Badge>;
+resources/js/pages/dashboard/won-items.tsx:53:                return <Badge className="bg-blue-50 text-blue-700 border-blue-100 hover:bg-blue-50">{t('transaction.status.paid')}</Badge>;
+resources/js/pages/dashboard/won-items.tsx:55:                return <Badge className="bg-indigo-50 text-indigo-700 border-indigo-100 hover:bg-indigo-50">{t('transaction.status.shipped')}</Badge>;
+resources/js/pages/dashboard/won-items.tsx:57:                return <Badge className="bg-green-50 text-green-700 border-green-100 hover:bg-green-50">{t('transaction.status.delivered')}</Badge>;
+resources/js/pages/dashboard/won-items.tsx:59:                return <Badge className="bg-gray-50 text-gray-700 border-gray-100 hover:bg-gray-50">{t('transaction.status.completed')}</Badge>;
+resources/js/pages/dashboard/won-items.tsx:61:                return <Badge className="bg-red-50 text-red-700 border-red-100 hover:bg-red-50">{t('transaction.status.cancelled')}</Badge>;
+resources/js/pages/dashboard/won-items.tsx:69:            title={t('dashboard.won_items.title')}
+resources/js/pages/dashboard/won-items.tsx:72:            <Head title={t('dashboard.won_items.title')} />
+resources/js/pages/dashboard/won-items.tsx:77:                        {t('dashboard.won_items.title')}
+resources/js/pages/dashboard/won-items.tsx:80:                        {t('dashboard.won_items.subtitle')}
+resources/js/pages/dashboard/won-items.tsx:89:                        {t('marketplace.filters.all_categories').split(' ')[1] || 'All'}
+resources/js/pages/dashboard/won-items.tsx:96:                        {t('transaction.payment_required.title')}
+resources/js/pages/dashboard/won-items.tsx:108:                        {t('transaction.status.pending')}
+resources/js/pages/dashboard/won-items.tsx:114:                        {t('transaction.status.completed')}
+resources/js/pages/dashboard/won-items.tsx:120:                        {t('transaction.cancel') || 'Cancelled'}
+resources/js/pages/dashboard/won-items.tsx:141:                                                        <Trophy size={10} /> {t('listing.type.auction')}
+resources/js/pages/dashboard/won-items.tsx:145:                                                        <ShoppingBag size={10} /> {t('listing.type.purchase')}
+resources/js/pages/dashboard/won-items.tsx:161:                                                <span>{t('listing.sidebar.seller')}: <span className="text-[#2b4b8f] font-medium">{item.seller.name}</span></span>
+resources/js/pages/dashboard/won-items.tsx:167:                                                {t('common.view')}
+resources/js/pages/dashboard/won-items.tsx:178:                            <p className="font-medium">{t('dashboard.won_items.no_items')}</p>
+resources/js/pages/dashboard/won-items.tsx:180:                                {t('welcome.browse_listings')}
+resources/js/pages/listings/create.tsx:64:            alert('Maximum 5 images allowed');
+resources/js/pages/listings/create.tsx:86:            alert('Failed to process some images. Please try again.');
+resources/js/pages/listings/create.tsx:111:        post('/listings');
+resources/js/pages/listings/create.tsx:115:        <BazaarLayout title={t('listing.create.title')} breadcrumbs={breadcrumbs}>
+resources/js/pages/listings/create.tsx:116:            <Head title={t('listing.create.title')} />
+resources/js/pages/listings/create.tsx:121:                        {t('listing.create.title')}
+resources/js/pages/listings/create.tsx:124:                        {t('listing.create.subtitle')}
+resources/js/pages/listings/create.tsx:132:                            {t('listing.create.basic_info')}
+resources/js/pages/listings/create.tsx:139:                                    {t('listing.create.item_title')} <span className="text-red-500">*</span>
+resources/js/pages/listings/create.tsx:161:                                    {t('listing.create.description')}{' '}
+resources/js/pages/listings/create.tsx:185:                                        {data.is_auction ? t('listing.create.starting_bid') : t('listing.create.price')}{' (ﾂ･)'}{' '}
+resources/js/pages/listings/create.tsx:209:                                        {t('listing.create.categories')}{' '}
+resources/js/pages/listings/create.tsx:230:                                        {t('listing.create.item_condition')} <span className="text-red-500">*</span>
+resources/js/pages/listings/create.tsx:254:                                    <Label htmlFor="location">{t('listing.create.location')}</Label>
+resources/js/pages/listings/create.tsx:277:                                        <h3 className="font-medium">{t('listing.create.auction_mode')}</h3>
+resources/js/pages/listings/create.tsx:278:                                        <p className="text-sm text-muted-foreground">{t('listing.create.auction_mode_desc')}</p>
+resources/js/pages/listings/create.tsx:285:                                        {data.is_auction ? t('listing.create.enabled') : t('listing.create.disabled')}
+resources/js/pages/listings/create.tsx:292:                                                <Label htmlFor="auction_end_date">{t('listing.create.auction_end_date')}</Label>
+resources/js/pages/listings/create.tsx:300:                                                <p className="mt-1 text-xs text-muted-foreground">{t('listing.create.date_help') || 'Leave blank for default 30-day duration.'}</p>
+resources/js/pages/listings/create.tsx:309:                                    <Label htmlFor="buy_now_price">{t('listing.create.buy_now_price')}{' (ﾂ･)'}</Label>
+resources/js/pages/listings/create.tsx:315:                                        placeholder={t('listing.create.buy_now_placeholder')}
+resources/js/pages/listings/create.tsx:328:                        <h2 className="mb-4 text-lg font-semibold sm:text-xl">{t('listing.create.images_title')}</h2>
+resources/js/pages/listings/create.tsx:334:                                    {t('listing.create.upload_images')}
+resources/js/pages/listings/create.tsx:343:                                            {t('listing.create.click_to_upload')}
+resources/js/pages/listings/create.tsx:346:                                            {t('listing.create.file_types')}
+resources/js/pages/listings/create.tsx:367:                                                {t('listing.create.compressing')}
+resources/js/pages/listings/create.tsx:444:                                                {t('listing.create.optimization')}: Compressed{' '}
+resources/js/pages/listings/create.tsx:474:                            {t('common.cancel')}
+resources/js/pages/listings/create.tsx:483:                            {t('listing.create.save_draft')}
+resources/js/pages/listings/create.tsx:492:                            {processing ? t('listing.create.publishing') : t('listing.create.publish')}
+resources/js/pages/listings/edit.tsx:59:        { title: t('marketplace.title'), href: '/marketplace' },
+resources/js/pages/listings/edit.tsx:60:        { title: t('listing.edit.title'), href: `/listings/${listing.id}/edit` },
+resources/js/pages/listings/edit.tsx:73:        <BazaarLayout title={t('listing.edit.title')} breadcrumbs={breadcrumbs}>
+resources/js/pages/listings/edit.tsx:74:            <Head title={t('listing.edit.title')} />
+resources/js/pages/listings/edit.tsx:79:                        {t('listing.edit.title')}
+resources/js/pages/listings/edit.tsx:82:                        {t('listing.edit.subtitle')}
+resources/js/pages/listings/edit.tsx:89:                            {t('listing.create.basic_info')}
+resources/js/pages/listings/edit.tsx:95:                                    {t('listing.create.item_title')} <span className="text-red-500">*</span>
+resources/js/pages/listings/edit.tsx:110:                                    {t('listing.create.description')} <span className="text-red-500">*</span>
+resources/js/pages/listings/edit.tsx:126:                                        {data.is_auction ? t('listing.create.starting_bid') : t('listing.create.price')} (ﾂ･) <span className="text-red-500">*</span>
+resources/js/pages/listings/edit.tsx:140:                                    <Label>{t('listing.create.categories')} <span className="text-red-500">*</span></Label>
+resources/js/pages/listings/edit.tsx:156:                                        {t('listing.create.item_condition')} <span className="text-red-500">*</span>
+resources/js/pages/listings/edit.tsx:176:                                    <Label htmlFor="location">{t('listing.create.location')}</Label>
+resources/js/pages/listings/edit.tsx:192:                                        <h3 className="font-medium">{t('listing.create.auction_mode')}</h3>
+resources/js/pages/listings/edit.tsx:193:                                        <p className="text-sm text-muted-foreground">{t('listing.create.auction_mode_desc')}</p>
+resources/js/pages/listings/edit.tsx:200:                                        {data.is_auction ? t('listing.create.enabled') : t('listing.create.disabled')}
+resources/js/pages/listings/edit.tsx:207:                                            <Label htmlFor="auction_end_date">{t('listing.create.auction_end_date')}</Label>
+resources/js/pages/listings/edit.tsx:215:                                            <p className="mt-1 text-xs text-muted-foreground">{t('listing.create.date_help') || 'Leave blank for default 30-day duration.'}</p>
+resources/js/pages/listings/edit.tsx:222:                                    <Label htmlFor="buy_now_price">{t('listing.create.buy_now_price')} (ﾂ･)</Label>
+resources/js/pages/listings/edit.tsx:229:                                        placeholder={t('listing.create.buy_now_placeholder')}
+resources/js/pages/listings/edit.tsx:245:                            {t('common.cancel')}
+resources/js/pages/listings/edit.tsx:254:                            {t('listing.create.save_draft')}
+resources/js/pages/listings/edit.tsx:263:                            {processing ? t('listing.edit.updating') : t('listing.edit.update')}
+resources/js/pages/listings/show.tsx:53:        { title: t('marketplace.title'), href: '/marketplace' },
+resources/js/pages/listings/show.tsx:54:        { title: t('listing.show.title'), href: '#' },
+resources/js/pages/listings/show.tsx:59:            title={t('listing.show.title')}
+resources/js/pages/listings/show.tsx:63:            <Head title={`${listing.title} - ${t('marketplace.title')}`}>
+resources/js/pages/listings/show.tsx:105:                                "name": t('marketplace.title'),
+resources/js/pages/listings/show.tsx:136:                                        <span className="font-medium">{t('listing.show.no_images')}</span>
+resources/js/pages/listings/show.tsx:172:                                <span className="text-[#64748b] text-sm font-medium uppercase tracking-wider">{t('listing.show.current_price')}</span>
+resources/js/pages/listings/show.tsx:192:                                            {t('common.edit')}
+resources/js/pages/listings/show.tsx:198:                                    {t('listing.show.published')}: {new Date(listing.created_at).toLocaleDateString()}
+resources/js/pages/listings/show.tsx:202:                                    {t('listing.show.ends')}: {listing.auction_end_date ? new Date(listing.auction_end_date).toLocaleDateString() : t('common.n_a')}
+resources/js/pages/listings/show.tsx:206:                                {listing.is_auction ? t('listing.show.auction') : t('dashboard.status.' + listing.status)}
+resources/js/pages/listings/show.tsx:217:                            {t('listing.show.details_title')}
+resources/js/pages/listings/show.tsx:222:                            <InfoRow label={t('listing.show.auction_id')} value={`k${listing.id.toString().padStart(9, '0')}`} />
+resources/js/pages/listings/show.tsx:223:                            <InfoRow label={t('listing.show.start_price')} value={`ﾂ･${listing.price.toLocaleString()}`} />
+resources/js/pages/listings/show.tsx:224:                            <InfoRow label={t('listing.show.published')} value={new Date(listing.created_at).toLocaleDateString()} />
+resources/js/pages/listings/show.tsx:225:                            <InfoRow label={t('listing.show.ends')} value={listing.auction_end_date ? new Date(listing.auction_end_date).toLocaleDateString() : t('common.n_a')} />
+resources/js/pages/listings/show.tsx:226:                            <InfoRow label={t('listing.show.location')} value={listing.location || t('common.not_specified')} />
+resources/js/pages/listings/show.tsx:227:                            <InfoRow label={t('listing.show.auto_extension')} value={t('common.yes')} />
+resources/js/pages/listings/show.tsx:228:                            <InfoRow label={t('listing.show.early_termination')} value={t('common.permitted')} />
+resources/js/pages/listings/show.tsx:229:                            <InfoRow label={t('listing.show.returns')} value={t('common.not_accepted')} />
+resources/js/pages/listings/show.tsx:230:                            <InfoRow label={t('listing.show.bid_restriction')} value={t('common.none')} />
+resources/js/pages/listings/show.tsx:231:                            <InfoRow label={t('listing.show.condition')} value={t(ITEM_CONDITIONS.find(c => c.value === listing.condition)?.labelKey || 'common.not_specified')} />
+resources/js/pages/listings/show.tsx:241:                            {t('listing.show.description_title')}
+resources/js/pages/profile/show.tsx:53:        { title: t('marketplace.title'), href: '/marketplace' },
+resources/js/pages/profile/show.tsx:62:            <Head title={`${profileUser.name} - ${t('marketplace.title')}`} />
+resources/js/pages/profile/show.tsx:80:                                    {t('verification.status.approved')}
+resources/js/pages/profile/show.tsx:88:                                    <span className="text-[#5f6c84]">{t('rating.score')}</span>
+resources/js/pages/profile/show.tsx:106:                                    <span className="text-[#5f6c84]">{t('rating.title')}</span>
+resources/js/pages/profile/show.tsx:112:                                        {t('auth.profile.joined')}
+resources/js/pages/profile/show.tsx:129:                            {t('marketplace.active_listings')}
+resources/js/pages/profile/show.tsx:163:                                {t('listing.show.no_listings')}
+resources/js/pages/profile/show.tsx:174:                            {t('rating.title')}
+resources/js/pages/profile/show.tsx:223:                                {t('listing.show.no_ratings')}
+resources/js/pages/transactions/show.tsx:76:        if (confirm(t('transaction.mark_as_paid_confirm') || 'Are you sure you have completed the payment for this item?')) {
+resources/js/pages/transactions/show.tsx:82:        if (confirm(t('transaction.cancel_confirm') || 'Are you sure you want to cancel this transaction? The listing will be returned to the marketplace.')) {
+resources/js/pages/transactions/show.tsx:93:        if (confirm(t('transaction.confirm_receipt_confirm') || 'Have you received the item and are you happy with it? This will complete the transaction.')) {
+resources/js/pages/transactions/show.tsx:107:        { title: t('common.dashboard'), href: '/dashboard' },
+resources/js/pages/transactions/show.tsx:108:        { title: isBuyer ? t('dashboard.won_items.title') : (t('dashboard.sold_items.title') || 'Sold Items'), href: isBuyer ? '/dashboard/won-items' : '/dashboard/sold-items' },
+resources/js/pages/transactions/show.tsx:109:        { title: `${t('common.transaction')} #${transaction.id}`, href: '#' },
+resources/js/pages/transactions/show.tsx:115:            label: t('transaction.status.purchased') || 'Item Won',
+resources/js/pages/transactions/show.tsx:122:            label: t('transaction.status.paid') || 'Payment Completed',
+resources/js/pages/transactions/show.tsx:129:            label: t('transaction.status.shipped') || 'Shipped',
+resources/js/pages/transactions/show.tsx:136:            label: t('transaction.status.received') || 'Received & Finalized',
+resources/js/pages/transactions/show.tsx:147:            title={t('common.transaction')}
+resources/js/pages/transactions/show.tsx:150:            <Head title={`${t('common.transaction')} #${transaction.id}`} />
+resources/js/pages/transactions/show.tsx:160:                                <h3 className="font-bold text-[#92400e] text-lg">{t('transaction.payment_required.title') || 'Payment Required'}</h3>
+resources/js/pages/transactions/show.tsx:162:                                    {t('transaction.payment_required.desc') || 'Please complete the payment to the seller and mark it as paid to proceed with the transaction.'}
+resources/js/pages/transactions/show.tsx:173:                                {t('transaction.mark_as_paid')}
+resources/js/pages/transactions/show.tsx:187:                                <h3 className="font-bold text-[#0369a1] text-lg">{t('transaction.ship_item.title') || 'Ship the Item'}</h3>
+resources/js/pages/transactions/show.tsx:189:                                    {t('transaction.ship_item.desc') || 'The buyer has paid. Please ship the item and provide tracking details below.'}
+resources/js/pages/transactions/show.tsx:195:                                <label className="text-xs font-bold text-[#0369a1] uppercase">{t('transaction.details.method')}</label>
+resources/js/pages/transactions/show.tsx:207:                                <label className="text-xs font-bold text-[#0369a1] uppercase">{t('transaction.details.tracking')}</label>
+resources/js/pages/transactions/show.tsx:223:                                    {t('transaction.mark_as_shipped') || 'Mark as Shipped'}
+resources/js/pages/transactions/show.tsx:238:                                <h3 className="font-bold text-[#166534] text-lg">{t('transaction.confirm_receipt.title') || 'Did you receive it?'}</h3>
+resources/js/pages/transactions/show.tsx:240:                                    {t('transaction.confirm_receipt.desc') || 'Please confirm once you have received the item and everything is in order.'}
+resources/js/pages/transactions/show.tsx:249:                            {t('transaction.confirm_receipt') || 'Confirm Receipt'}
+resources/js/pages/transactions/show.tsx:267:                                {t('transaction.cancel') || t('common.cancel')} {t('common.transaction')}
+resources/js/pages/transactions/show.tsx:278:                            <h3 className="font-bold text-red-900 text-lg">{t('transaction.status.cancelled') || 'Transaction Cancelled'}</h3>
+resources/js/pages/transactions/show.tsx:291:                            {t('rating.title') || 'Rate Transaction'}
+resources/js/pages/transactions/show.tsx:299:                                    {t('rating.rate_user', { name: isBuyer ? transaction.seller.name : transaction.buyer.name })}
+resources/js/pages/transactions/show.tsx:325:                                            placeholder={t('rating.comment') || "Write a comment..."}
+resources/js/pages/transactions/show.tsx:335:                                        {t('rating.submit') || 'Submit Rating'}
+resources/js/pages/transactions/show.tsx:376:                            {isBuyer ? t('dashboard.won_items.title') : (t('dashboard.sold_items.title') || 'Sold Items')}
+resources/js/pages/transactions/show.tsx:379:                            {t('common.transaction')} #{transaction.id}
+resources/js/pages/transactions/show.tsx:400:                            {t('transaction.tracking.title') || 'Transaction Progress'}
+resources/js/pages/transactions/show.tsx:448:                                                            {isPast ? (t('transaction.status.completed') || 'Completed') : (t('transaction.status.pending') || 'In Progress')}
+resources/js/pages/transactions/show.tsx:467:                                {t('transaction.details.item') || 'Item Details'}
+resources/js/pages/transactions/show.tsx:485:                                        {t('transaction.details.view_original') || 'View Original Listing'}
+resources/js/pages/transactions/show.tsx:497:                                {t('transaction.details.shipping') || 'Shipping Info'}
+resources/js/pages/transactions/show.tsx:503:                                    <span className="text-[#5f6c84]">{t('transaction.details.method') || 'Method'}</span>
+resources/js/pages/transactions/show.tsx:504:                                    <span className="font-medium text-[#1a263b]">{transaction.shipping_method || t('common.n_a')}</span>
+resources/js/pages/transactions/show.tsx:507:                                    <span className="text-[#5f6c84]">{t('transaction.details.tracking') || 'Tracking Number'}</span>
+resources/js/pages/transactions/show.tsx:509:                                        {transaction.tracking_number || t('common.n_a')}
+resources/js/pages/transactions/show.tsx:521:                                {t('transaction.details.seller') || 'Seller Info'}
+resources/js/pages/transactions/show.tsx:531:                                    <p className="text-xs text-[#5f6c84]">{t('transaction.details.contact_seller') || 'Contact Seller'}</p>
+resources/js/pages/transactions/show.tsx:542:                                {t('transaction.details.payment') || 'Payment Info'}
+resources/js/pages/transactions/show.tsx:548:                                    <span className="text-[#5f6c84]">{t('transaction.details.total') || 'Total Amount'}</span>
+resources/js/pages/transactions/show.tsx:552:                                    <span className="text-[#5f6c84]">{t('transaction.details.paid_date') || 'Paid Date'}</span>
+resources/js/pages/transactions/show.tsx:554:                                        {transaction.paid_at ? new Date(transaction.paid_at).toLocaleDateString() : t('transaction.status.pending')}
+resources/js/pages/watchlist.tsx:35:        <BazaarLayout title={t('layout.sidebar.watchlist')}>
+resources/js/pages/watchlist.tsx:36:            <Head title={t('layout.sidebar.watchlist')} />
+resources/js/pages/welcome.tsx:15:        <BazaarLayout title={t('welcome.title')}>
+resources/js/pages/welcome.tsx:16:            <Head title={`${t('common.app_name')} 窶・${t('welcome.title')} ${t('welcome.title_highlight')}`} />
+resources/js/pages/welcome.tsx:21:                        {t('welcome.title')} <br />
+resources/js/pages/welcome.tsx:22:                        <span className="text-[#0d9488]">{t('welcome.title_highlight')}</span>
+resources/js/pages/welcome.tsx:25:                        {t('welcome.tagline')}
+resources/js/pages/welcome.tsx:33:                                {t('welcome.start_selling')}
+resources/js/pages/welcome.tsx:40:                            {t('welcome.browse_listings')}
+resources/js/pages/welcome.tsx:50:                    {t('welcome.how_it_works')}
+resources/js/pages/welcome.tsx:73:                        {t('welcome.cta_heading')}
+resources/js/pages/welcome.tsx:76:                        {t('welcome.cta_sub')}
+resources/js/pages/welcome.tsx:83:                            {t('common.create_free_account')}

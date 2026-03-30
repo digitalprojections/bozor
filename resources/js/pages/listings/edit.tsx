@@ -212,6 +212,7 @@ export default function EditListing({
                                                 onChange={(e) => setData('auction_end_date', e.target.value)}
                                                 className="mt-1"
                                             />
+                                            <p className="mt-1 text-xs text-muted-foreground">{t('listing.create.date_help') || 'Leave blank for default 30-day duration.'}</p>
                                             {errors.auction_end_date && <p className="mt-1 text-sm text-red-500">{errors.auction_end_date}</p>}
                                         </div>
                                     </div>
