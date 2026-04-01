@@ -57,7 +57,7 @@ interface Transaction {
 
 export default function Show({ transaction }: { transaction: Transaction }) {
     const { t } = useTranslations();
-    const { auth } = usePage<{ auth: { user: UserType } }>().props;
+    const { auth } = usePage<{ auth: { user: UserType | null } }>().props;
 
     const { data, setData, post, processing, errors } = useForm({
         shipping_method: '',
@@ -69,7 +69,9 @@ export default function Show({ transaction }: { transaction: Transaction }) {
         comment: '',
     });
 
-    const isBuyer = auth.user.id === transaction.buyer_id;
+    const isBuyer = auth.user?.id === transaction.buyer_id;
+    const isSeller = auth.user?.id === transaction.seller_id;
+    const isParticipant = isBuyer || isSeller;
     const canMarkAsPaid = isBuyer && transaction.status === TRANSACTION_STATUS.PENDING_PAYMENT;
 
     const handleMarkAsPaid = () => {
@@ -107,7 +109,7 @@ export default function Show({ transaction }: { transaction: Transaction }) {
         { title: t('common.dashboard'), href: '/dashboard' },
         { title: isBuyer ? t('dashboard.won_items.title') : (t('dashboard.sold_items.title') || 'Sold Items'), href: isBuyer ? '/dashboard/won-items' : '/dashboard/sold-items' },
         { title: `${t('common.transaction')} #${transaction.id}`, href: '#' },
-    ];
+    ].filter(b => b.title !== ''); // filter empty breadcrumbs for guest
 
     const steps = [
         {
@@ -150,6 +152,35 @@ export default function Show({ transaction }: { transaction: Transaction }) {
             <Head title={`${t('common.transaction')} #${transaction.id}`} />
 
             <div className="flex flex-col gap-6 max-w-4xl mx-auto">
+                {!auth.user && (
+                    <div className="bg-[#f0f9ff] border border-[#bae6fd] rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div className="flex gap-4">
+                            <div className="bg-[#bae6fd] p-3 rounded-xl h-fit">
+                                <Info size={24} className="text-[#0369a1]" />
+                            </div>
+                            <div>
+                                <h3 className="font-bold text-[#0369a1] text-lg">{t('common.login')}</h3>
+                                <p className="text-[#075985] text-sm">
+                                    {t('transaction.login_to_manage') || 'Please log in to manage your transaction.'}
+                                </p>
+                            </div>
+                        </div>
+                        <Link href="/login" className="w-full md:w-auto">
+                            <Button className="w-full bg-[#0369a1] hover:bg-[#075985] text-white rounded-xl px-8 h-12 font-bold shadow-lg shadow-blue-100">
+                                {t('common.login')}
+                            </Button>
+                        </Link>
+                    </div>
+                )}
+
+                {auth.user && !isParticipant && (
+                    <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex items-center gap-3">
+                        <Info size={18} className="text-slate-400" />
+                        <p className="text-sm text-slate-500 font-medium">
+                            {t('transaction.view_only_notice') || 'This transaction is being viewed in read-only mode.'}
+                        </p>
+                    </div>
+                )}
                 {canMarkAsPaid && (
                     <div className="bg-[#fffbeb] border border-[#fef3c7] rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
                         <div className="flex gap-4">
@@ -177,7 +208,7 @@ export default function Show({ transaction }: { transaction: Transaction }) {
                 )}
 
                 {/* Seller: Mark as Shipped Form */}
-                {auth.user.id === transaction.seller_id && transaction.status === TRANSACTION_STATUS.PAID && (
+                {isSeller && transaction.status === TRANSACTION_STATUS.PAID && (
                     <div className="bg-[#f0f9ff] border border-[#bae6fd] rounded-2xl p-6 flex flex-col gap-4">
                         <div className="flex gap-4">
                             <div className="bg-[#bae6fd] p-3 rounded-xl h-fit">
@@ -252,7 +283,7 @@ export default function Show({ transaction }: { transaction: Transaction }) {
                 )}
 
                 {/* Secondary Actions Area (Visible to both buyer/seller before shipping) */}
-                {(auth.user.id === transaction.buyer_id || auth.user.id === transaction.seller_id) &&
+                {isParticipant &&
                     transaction.status !== TRANSACTION_STATUS.CANCELLED &&
                     transaction.status !== TRANSACTION_STATUS.SHIPPED &&
                     transaction.status !== TRANSACTION_STATUS.DELIVERED &&
@@ -293,7 +324,7 @@ export default function Show({ transaction }: { transaction: Transaction }) {
                     </CardHeader>
                     <CardContent className="px-8 pb-8 flex flex-col gap-6">
                         {/* Rating Form */}
-                        {transaction.status !== TRANSACTION_STATUS.CANCELLED && (
+                        {isParticipant && transaction.status !== TRANSACTION_STATUS.CANCELLED && (
                             <form onSubmit={handleRate} className="bg-[#f8fafc] rounded-2xl p-6 border border-[#f1f5f9]">
                                 <p className="text-sm font-bold text-[#475569] mb-4 uppercase tracking-wider">
                                     {t('rating.rate_user', { name: isBuyer ? transaction.seller.name : transaction.buyer.name })}

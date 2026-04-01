@@ -41,11 +41,6 @@ class TransactionController extends Controller
     }
     public function show(Transaction $transaction)
     {
-        // Simple manual check if policy not ready
-        if (auth()->id() !== $transaction->buyer_id && auth()->id() !== $transaction->seller_id) {
-            abort(403);
-        }
-
         $transaction->load(['listing', 'seller', 'buyer', 'ratings.rater']);
 
         return inertia('transactions/show', [

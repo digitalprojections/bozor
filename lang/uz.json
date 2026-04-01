@@ -314,5 +314,7 @@
     "terms.modal_title": "Rozilik talab qilinadi",
     "terms.modal_description": "Xavfsiz savdo muhitini ta'minlash uchun, iltimos, savdolarda qatnashishdan yoki sotib olishdan oldin foydalanish shartlari va maxfiylik siyosati bilan tanishib chiqing.",
     "terms.accept_button": "Roziman",
-    "terms.platform_free_notice": "Ushbu platforma ochiq va bepul. Foydalanuvchilar o'z harakatlari va tranzaksiyalari uchun to'liq mas'uliyatni o'z zimmalariga oladilar."
+    "terms.platform_free_notice": "Ushbu platforma ochiq va bepul. Foydalanuvchilar o'z harakatlari va tranzaksiyalari uchun to'liq mas'uliyatni o'z zimmalariga oladilar.",
+    "transaction.login_to_manage": "Tranzaksiyani boshqarish uchun tizimga kiring.",
+    "transaction.view_only_notice": "Ushbu tranzaksiya faqat ko'rish rejimida ko'rsatilmoqda."
 }

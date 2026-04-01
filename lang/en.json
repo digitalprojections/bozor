@@ -316,5 +316,7 @@
     "terms.modal_title": "Agreement Required",
     "terms.modal_description": "To ensure a safe environment for everyone, please review and agree to our Terms of Use and Privacy Policy before bidding or buying.",
     "terms.accept_button": "I Agree",
-    "terms.platform_free_notice": "This platform is open and free. Users take full responsibility for their actions and transactions."
+    "terms.platform_free_notice": "This platform is open and free. Users take full responsibility for their actions and transactions.",
+    "transaction.login_to_manage": "Please log in to manage your transaction.",
+    "transaction.view_only_notice": "This transaction is being viewed in read-only mode."
 }

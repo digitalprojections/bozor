@@ -316,5 +316,7 @@
     "terms.modal_title": "利用規約への同意",
     "terms.modal_description": "安心・安全な取引環境を維持するため、入札や購入の前に利用規約とプライバシーポリシーをご確認いただき、同意をお願いいたします。",
     "terms.accept_button": "同意する",
-    "terms.platform_free_notice": "本プラットフォームはオープンかつ無料です。ユーザーは自身の行動および取引に対して全責任を負うものとします。"
+    "terms.platform_free_notice": "本プラットフォームはオープンかつ無料です。ユーザーは自身の行動および取引に対して全責任を負うものとします。",
+    "transaction.login_to_manage": "取引を管理するにはログインしてください。",
+    "transaction.view_only_notice": "この取引は閲覧専用モードで表示されています。"
 }
