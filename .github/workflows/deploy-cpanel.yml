@@ -32,6 +32,7 @@ jobs:
           npm ci --prefer-offline --no-audit
           npm run build
 
+          
       - name: 📂 Sync Files via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
