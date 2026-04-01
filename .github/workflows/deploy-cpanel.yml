@@ -40,7 +40,7 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           port: 21
           # Set the destination to your subdomain root
-          server-dir: /bozorvoy.created.link/
+          server-dir: /public_html/freemarket/
           # Ensure a more secure connection if supported
           force-ssl: true
           # Upload only changed files from the current directory
