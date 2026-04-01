@@ -1,7 +1,8 @@
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, Link } from '@inertiajs/react';
 import { useState, useRef } from 'react';
 import BazaarLayout from '@/layouts/bazaar-layout';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -50,6 +51,7 @@ export default function CreateListing({
         is_auction: false,
         buy_now_price: '',
         auction_end_date: '',
+        terms_accepted: false,
     });
 
     const statusRef = useRef<'draft' | 'active'>('draft');
@@ -103,6 +105,12 @@ export default function CreateListing({
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
+        
+        if (!data.terms_accepted) {
+            alert(t('terms.must_accept'));
+            return;
+        }
+
         synth.playFanfare();
         transform((data) => ({
             ...data,
@@ -460,6 +468,32 @@ export default function CreateListing({
                             </AnimatePresence>
                         </div>
                     </Card>
+                    <div className="flex flex-col space-y-4 px-1">
+                        <div className="flex items-start space-x-3">
+                            <Checkbox 
+                                id="terms_accepted" 
+                                checked={data.terms_accepted}
+                                onCheckedChange={(checked) => setData('terms_accepted', !!checked)}
+                                className="mt-1 border-[#cfddee]"
+                            />
+                            <Label htmlFor="terms_accepted" className="text-sm font-normal leading-relaxed text-[#1a263b] cursor-pointer">
+                                {t('terms.accept_checkbox')}{' '}
+                                <Link href="/terms" className="text-[#0d9488] font-bold hover:underline" target="_blank">
+                                    {t('layout.footer.terms')}
+                                </Link>
+                                {' & '}
+                                <Link href="/privacy" className="text-[#0d9488] font-bold hover:underline" target="_blank">
+                                    {t('layout.footer.privacy')}
+                                </Link>
+                            </Label>
+                        </div>
+                        {errors.terms_accepted && (
+                            <p className="text-sm text-red-500 font-medium">{errors.terms_accepted}</p>
+                        )}
+                        <p className="text-xs text-[#5f6c84] italic pl-7 border-l-2 border-[#edf2f9]">
+                            {t('terms.platform_free_notice')}
+                        </p>
+                    </div>
 
                     {/* Actions */}
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">

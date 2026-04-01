@@ -304,5 +304,15 @@
     "rating.previous_rating": "Sizning avvalgi bahoyingiz",
     "rating.stars": "yulduz",
     "listing.create.date_help": "Bo'sh qoldiring — standart 30 kunlik muddat qo'llaniladi.",
-    "listing.delete_confirm": "Bu e'lonni o'chirishga ishonchingiz komilmi? Bu amalni bekor qilib bo'lmaydi."
+    "listing.delete_confirm": "Bu e'lonni o'chirishga ishonchingiz komilmi? Bu amalni bekor qilib bo'lmaydi.",
+    "layout.footer.privacy": "Maxfiylik siyosati",
+    "layout.footer.terms": "Foydalanish shartlari",
+    "terms.title": "Foydalanish shartlari",
+    "privacy.title": "Maxfiylik siyosati",
+    "terms.accept_checkbox": "Foydalanish shartlari va Maxfiylik siyosati bilan tanishdim va roziman",
+    "terms.must_accept": "Davom etish uchun foydalanish shartlariga rozilik bildirishingiz kerak.",
+    "terms.modal_title": "Rozilik talab qilinadi",
+    "terms.modal_description": "Xavfsiz savdo muhitini ta'minlash uchun, iltimos, savdolarda qatnashishdan yoki sotib olishdan oldin foydalanish shartlari va maxfiylik siyosati bilan tanishib chiqing.",
+    "terms.accept_button": "Roziman",
+    "terms.platform_free_notice": "Ushbu platforma ochiq va bepul. Foydalanuvchilar o'z harakatlari va tranzaksiyalari uchun to'liq mas'uliyatni o'z zimmalariga oladilar."
 }

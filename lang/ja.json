@@ -280,6 +280,8 @@
     "transaction.payment_required.title": "お支払いが必要です",
     "transaction.payment_required.desc": "出品者へのお支払いを完了し、「支払い完了」ボタンを押して取引を進めてください。",
     "transaction.status.completed": "完了",
+    "transaction.payment.cash": "現金",
+    "transaction.payment.cod": "代金引換",
     "transaction.cancel_confirm": "この取引をキャンセルしてもよろしいですか？出品物はマーケットプレイスに戻されます。",
     "transaction.cancel": "キャンセル",
     "transaction.status.cancelled": "取引キャンセル済み",
@@ -304,5 +306,15 @@
     "rating.previous_rating": "前回の評価",
     "rating.stars": "つ星",
     "listing.create.date_help": "空欄の場合、デフォルトの30日間が設定されます。",
-    "listing.delete_confirm": "この出品を削除してもよろしいですか？この操作は取り消せません。"
+    "listing.delete_confirm": "この出品を削除してもよろしいですか？この操作は取り消せません。",
+    "layout.footer.privacy": "プライバシーポリシー",
+    "layout.footer.terms": "利用規約",
+    "terms.title": "利用規約",
+    "privacy.title": "プライバシーポリシー",
+    "terms.accept_checkbox": "利用規約およびプライバシーポリシーを読み、同意します",
+    "terms.must_accept": "続行するには利用規約への同意が必要です。",
+    "terms.modal_title": "利用規約への同意",
+    "terms.modal_description": "安心・安全な取引環境を維持するため、入札や購入の前に利用規約とプライバシーポリシーをご確認いただき、同意をお願いいたします。",
+    "terms.accept_button": "同意する",
+    "terms.platform_free_notice": "本プラットフォームはオープンかつ無料です。ユーザーは自身の行動および取引に対して全責任を負うものとします。"
 }

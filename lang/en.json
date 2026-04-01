@@ -280,6 +280,8 @@
     "transaction.payment_required.title": "Payment Required",
     "transaction.payment_required.desc": "Please complete the payment to the seller and mark it as paid to proceed with the transaction.",
     "transaction.status.completed": "Completed",
+    "transaction.payment.cash": "Cash",
+    "transaction.payment.cod": "COD",
     "transaction.cancel_confirm": "Are you sure you want to cancel this transaction? The listing will be returned to the marketplace.",
     "transaction.cancel": "Cancel",
     "transaction.status.cancelled": "Transaction Cancelled",
@@ -304,5 +306,15 @@
     "rating.previous_rating": "Your previous rating",
     "rating.stars": "stars",
     "listing.create.date_help": "Leave blank for default 30-day duration.",
-    "listing.delete_confirm": "Are you sure you want to delete this listing? This action cannot be undone."
+    "listing.delete_confirm": "Are you sure you want to delete this listing? This action cannot be undone.",
+    "layout.footer.privacy": "Privacy Policy",
+    "layout.footer.terms": "Terms of Use",
+    "terms.title": "Terms of Use",
+    "privacy.title": "Privacy Policy",
+    "terms.accept_checkbox": "I have read and agree to the Terms of Use and Privacy Policy",
+    "terms.must_accept": "You must agree to the Terms of Use to proceed.",
+    "terms.modal_title": "Agreement Required",
+    "terms.modal_description": "To ensure a safe environment for everyone, please review and agree to our Terms of Use and Privacy Policy before bidding or buying.",
+    "terms.accept_button": "I Agree",
+    "terms.platform_free_notice": "This platform is open and free. Users take full responsibility for their actions and transactions."
 }

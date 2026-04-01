@@ -164,8 +164,16 @@ export default function BazaarLayout({ children, title, breadcrumbs = [], sideba
 
             {/* Footer */}
             <footer className="mt-12 border-t border-[#e1e9f2] bg-white py-12">
-                <div className="mx-auto w-full px-4 md:px-8 text-center">
+                <div className="mx-auto w-full px-4 md:px-8 text-center space-y-4">
                     <p className="text-sm text-[#7f8fa4]">{t('layout.footer.disclaimer')}</p>
+                    <div className="flex justify-center gap-6 text-sm font-medium text-[#5f6c84]">
+                        <Link href="/terms" className="hover:text-[#0d9488] transition-colors">
+                            {t('layout.footer.terms')}
+                        </Link>
+                        <Link href="/privacy" className="hover:text-[#0d9488] transition-colors">
+                            {t('layout.footer.privacy')}
+                        </Link>
+                    </div>
                 </div>
             </footer>
         </div>

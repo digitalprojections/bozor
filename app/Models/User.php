@@ -28,6 +28,7 @@ class User extends Authenticatable
         'gender',
         'is_guest',
         'guest_id',
+        'terms_accepted_at',
     ];
 
     /**
@@ -50,6 +51,7 @@ class User extends Authenticatable
     protected $appends = [
         'avatar_url',
         'masked_name',
+        'has_accepted_terms',
     ];
 
     /**
@@ -63,6 +65,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
+            'terms_accepted_at' => 'datetime',
         ];
     }
 
@@ -145,5 +148,13 @@ class User extends Authenticatable
         }, $parts);
 
         return implode(' ', $maskedParts);
+    }
+
+    /**
+     * Check if the user has accepted the terms of use
+     */
+    public function getHasAcceptedTermsAttribute(): bool
+    {
+        return $this->terms_accepted_at !== null;
     }
 }

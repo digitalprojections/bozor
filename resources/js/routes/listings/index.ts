@@ -133,7 +133,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     
     store.form = storeForm
 /**
- * @see routes/web.php:32
+ * @see routes/web.php:47
  * @route '/listings'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -147,7 +147,7 @@ index.definition = {
 } satisfies RouteDefinition<["get","head"]>
 
 /**
- * @see routes/web.php:32
+ * @see routes/web.php:47
  * @route '/listings'
  */
 index.url = (options?: RouteQueryOptions) => {
@@ -155,7 +155,7 @@ index.url = (options?: RouteQueryOptions) => {
 }
 
 /**
- * @see routes/web.php:32
+ * @see routes/web.php:47
  * @route '/listings'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -163,7 +163,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     method: 'get',
 })
 /**
- * @see routes/web.php:32
+ * @see routes/web.php:47
  * @route '/listings'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -172,7 +172,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
     /**
- * @see routes/web.php:32
+ * @see routes/web.php:47
  * @route '/listings'
  */
     const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -181,7 +181,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     })
 
             /**
- * @see routes/web.php:32
+ * @see routes/web.php:47
  * @route '/listings'
  */
         indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -189,7 +189,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
             method: 'get',
         })
             /**
- * @see routes/web.php:32
+ * @see routes/web.php:47
  * @route '/listings'
  */
         indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

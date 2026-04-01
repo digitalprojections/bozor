@@ -11,6 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useForm, usePage } from '@inertiajs/react';
 import { Input } from '@/components/ui/input';
 import { synth } from '@/lib/synth-service';
+import { TermsAcceptanceModal } from '@/components/terms-acceptance-modal';
 
 interface ListingSidebarProps {
     listing: {
@@ -45,22 +46,38 @@ export function ListingSidebar({ listing }: ListingSidebarProps) {
         amount: Math.max(listing.price, listing.current_high_bid) + 1,
     });
 
+    const [isTermsModalOpen, setIsTermsModalOpen] = React.useState(false);
+    const [pendingAction, setPendingAction] = React.useState<null | (() => void)>(null);
+
+    const checkTermsAndExecute = (action: () => void) => {
+        if (auth?.user && !auth.user.has_accepted_terms) {
+            setPendingAction(() => action);
+            setIsTermsModalOpen(true);
+            return;
+        }
+        action();
+    };
+
     const submitBid = (e: React.FormEvent) => {
         e.preventDefault();
-        post(`/listings/${listing.id}/bid`, {
-            onSuccess: () => {
-                synth.playSuccess();
-                reset();
-            },
+        checkTermsAndExecute(() => {
+            post(`/listings/${listing.id}/bid`, {
+                onSuccess: () => {
+                    synth.playSuccess();
+                    reset();
+                },
+            });
         });
     };
 
     const buyNow = () => {
-        if (confirm(t('common.confirm_purchase'))) {
-            post(`/listings/${listing.id}/buy-now`, {
-                onSuccess: () => synth.playFanfare(),
-            });
-        }
+        checkTermsAndExecute(() => {
+            if (confirm(t('common.confirm_purchase'))) {
+                post(`/listings/${listing.id}/buy-now`, {
+                    onSuccess: () => synth.playFanfare(),
+                });
+            }
+        });
     };
 
     const currentPrice = listing.is_auction
@@ -182,7 +199,9 @@ export function ListingSidebar({ listing }: ListingSidebarProps) {
                         </div>
                         <div className="flex justify-between">
                             <span className="text-[#5f6c84]">{t('listing.sidebar.payment')}</span>
-                            <span className="font-medium text-[#1a263b] text-right">Credit Card, Bank Transfer</span>
+                            <span className="font-medium text-[#1a263b] text-right">
+                                {t('transaction.payment.cash')}, {t('transaction.payment.cod')}
+                            </span>
                         </div>
                     </div>
                 </CardContent>
@@ -241,6 +260,17 @@ export function ListingSidebar({ listing }: ListingSidebarProps) {
                 <div className="text-lg sm:text-xl">🔔</div>
                 <div>{t('listing.sidebar.watchlist_reminder')}</div>
             </div>
+
+            <TermsAcceptanceModal 
+                isOpen={isTermsModalOpen} 
+                onClose={() => setIsTermsModalOpen(false)} 
+                onAccepted={() => {
+                    if (pendingAction) {
+                        pendingAction();
+                        setPendingAction(null);
+                    }
+                }}
+            />
         </div>
     );
 }

@@ -11,6 +11,21 @@ Route::post('locale', function (Request $request) {
     return redirect()->back();
 })->name('locale.update');
 
+Route::get('/privacy', function () {
+    return Inertia::render('privacy');
+})->name('privacy');
+
+Route::get('/terms', function () {
+    return Inertia::render('terms');
+})->name('terms');
+
+Route::middleware(['auth'])->group(function () {
+    Route::post('/user/accept-terms', function () {
+        auth()->user()->update(['terms_accepted_at' => now()]);
+        return back();
+    })->name('user.accept-terms');
+});
+
 Route::get('/', function () {
     // Redirect authenticated users to marketplace
     /* if (auth()->check()) {
