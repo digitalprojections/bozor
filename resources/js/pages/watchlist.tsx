@@ -14,6 +14,7 @@ interface Listing {
     status: string;
     user: {
         name: string;
+        masked_name: string;
     };
     categories: Array<{
         name: string;
@@ -89,7 +90,7 @@ export default function Watchlist({ listings }: Props) {
                                         <div className="mt-auto pt-2">
                                             <span className="text-xl font-bold text-[#0b1a31]">{formatCurrency(listing.price)}</span>
                                             <div className="flex items-center gap-2 mt-1">
-                                                <span className="text-[0.8rem] text-[#5f6c84]">by {listing.user.name}</span>
+                                                <span className="text-[0.8rem] text-[#5f6c84]">by {listing.user.masked_name || listing.user.name}</span>
                                             </div>
                                         </div>
                                     </CardContent>

@@ -133,6 +133,11 @@ class User extends Authenticatable
             return $this->name;
         }
 
+        // If the authenticated user is THIS user, show full name
+        if (auth()->check() && auth()->id() === $this->id) {
+            return $this->name;
+        }
+
         $parts = explode(' ', $this->name);
         $maskedParts = array_map(function ($part) {
             if (empty($part)) return '';

@@ -28,6 +28,7 @@ interface ListingSidebarProps {
         user: {
             id: number;
             name: string;
+            masked_name: string;
             avatar_url: string;
             average_rating?: number;
             ratings_count?: number;
@@ -200,7 +201,7 @@ export function ListingSidebar({ listing }: ListingSidebarProps) {
                         <div className="font-bold text-[#0b1b32] text-sm sm:text-base truncate">
                             {t('listing.sidebar.seller')}:
                             <Link href={`/users/${listing.user.id}`} className="ml-1 text-[#0d9488] hover:underline">
-                                {listing.user.name}
+                                {listing.user.masked_name || listing.user.name}
                             </Link>
                         </div>
                         <div className="text-[10px] sm:text-sm text-[#5f6c84] flex items-center gap-1.5 mt-0.5">

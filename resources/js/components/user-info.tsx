@@ -22,7 +22,7 @@ export function UserInfo({
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
                 <div className="flex items-center gap-2">
-                    <span className="truncate font-medium">{user.name}</span>
+                    <span className="truncate font-medium">{user.masked_name || user.name}</span>
                     <div className="flex items-center gap-0.5 text-amber-500">
                         <Star size={12} className="fill-amber-500" />
                         <span className="text-[10px] font-bold">{(user.average_rating || 0).toFixed(1)}</span>
