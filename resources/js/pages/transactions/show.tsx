@@ -152,7 +152,7 @@ export default function Show({ transaction }: { transaction: Transaction }) {
             <Head title={`${t('common.transaction')} #${transaction.id}`} />
 
             <div className="flex flex-col gap-6 max-w-4xl mx-auto">
-                {!auth.user && (
+                {!!(!auth.user || auth.user.is_guest) && (
                     <div className="bg-[#f0f9ff] border border-[#bae6fd] rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
                         <div className="flex gap-4">
                             <div className="bg-[#bae6fd] p-3 rounded-xl h-fit">
@@ -161,7 +161,9 @@ export default function Show({ transaction }: { transaction: Transaction }) {
                             <div>
                                 <h3 className="font-bold text-[#0369a1] text-lg">{t('common.login')}</h3>
                                 <p className="text-[#075985] text-sm">
-                                    {t('transaction.login_to_manage') || 'Please log in to manage your transaction.'}
+                                    {auth.user?.is_guest 
+                                        ? (t('transaction.login_to_win') || 'Please log in with your Google account to participate in transactions.')
+                                        : (t('transaction.login_to_manage') || 'Please log in to manage your transaction.')}
                                 </p>
                             </div>
                         </div>
@@ -173,7 +175,7 @@ export default function Show({ transaction }: { transaction: Transaction }) {
                     </div>
                 )}
 
-                {auth.user && !isParticipant && (
+                {auth.user && !auth.user.is_guest && !isParticipant && (
                     <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex items-center gap-3">
                         <Info size={18} className="text-slate-400" />
                         <p className="text-sm text-slate-500 font-medium">
@@ -314,91 +316,93 @@ export default function Show({ transaction }: { transaction: Transaction }) {
                     </div>
                 )}
 
-                {/* Rating Section */}
-                <Card className="rounded-[24px] border-[#edf2f9] shadow-sm overflow-hidden">
-                    <CardHeader className="px-8 pt-8 pb-4">
-                        <h2 className="font-bold text-lg text-[#0b1b32] flex items-center gap-2">
-                            <Star size={20} className="text-amber-500 fill-amber-500" />
-                            {t('rating.title') || 'Rate Transaction'}
-                        </h2>
-                    </CardHeader>
-                    <CardContent className="px-8 pb-8 flex flex-col gap-6">
-                        {/* Rating Form */}
-                        {isParticipant && transaction.status !== TRANSACTION_STATUS.CANCELLED && (
-                            <form onSubmit={handleRate} className="bg-[#f8fafc] rounded-2xl p-6 border border-[#f1f5f9]">
-                                <p className="text-sm font-bold text-[#475569] mb-4 uppercase tracking-wider">
-                                    {t('rating.rate_user', { name: isBuyer ? transaction.seller.name : transaction.buyer.name })}
-                                </p>
-                                <div className="flex flex-col gap-4">
-                                    <div className="flex items-center gap-2">
-                                        {[1, 2, 3, 4, 5].map((star) => (
-                                            <button
-                                                key={star}
-                                                type="button"
-                                                onClick={() => ratingForm.setData('score', star)}
-                                                className="transition-transform active:scale-95"
-                                            >
-                                                <Star
-                                                    size={32}
-                                                    className={cn(
-                                                        "transition-colors",
-                                                        star <= ratingForm.data.score ? "text-amber-500 fill-amber-500" : "text-slate-300"
-                                                    )}
-                                                />
-                                            </button>
-                                        ))}
-                                        {ratingForm.errors.score && <span className="text-xs text-red-500 ml-2">{ratingForm.errors.score}</span>}
-                                    </div>
-                                    <div className="flex flex-col gap-1">
-                                        <textarea
-                                            value={ratingForm.data.comment}
-                                            onChange={e => ratingForm.setData('comment', e.target.value)}
-                                            placeholder={t('rating.comment') || "Write a comment..."}
-                                            className="rounded-xl border-[#e2e8f0] text-sm focus:ring-amber-500/20 w-full min-h-[100px]"
-                                        />
-                                        {ratingForm.errors.comment && <span className="text-xs text-red-500">{ratingForm.errors.comment}</span>}
-                                    </div>
-                                    <Button
-                                        type="submit"
-                                        disabled={ratingForm.processing || ratingForm.data.score === 0}
-                                        className="bg-[#1a263b] hover:bg-[#0b1a31] text-white rounded-xl h-12 font-bold w-fit px-8"
-                                    >
-                                        {t('rating.submit') || 'Submit Rating'}
-                                    </Button>
-                                </div>
-                            </form>
-                        )}
-
-                        {/* Rating List */}
-                        <div className="flex flex-col gap-4">
-                            {transaction.ratings.map((rating) => (
-                                <div key={rating.id} className="flex gap-4 p-4 rounded-2xl border border-[#f1f5f9]">
-                                    <div className="h-10 w-10 rounded-full bg-[#f1f5f9] flex items-center justify-center font-bold text-[#64748b] shrink-0">
-                                        {rating.rater.name.charAt(0)}
-                                    </div>
-                                    <div className="flex-1 flex flex-col gap-1">
-                                        <div className="flex items-center justify-between">
-                                            <span className="font-bold text-[#1a263b] text-sm">{rating.rater.name}</span>
-                                            <div className="flex items-center gap-0.5">
-                                                {[1, 2, 3, 4, 5].map((star) => (
+                {/* Rating Section - Participant Only */}
+                {isParticipant && (
+                    <Card className="rounded-[24px] border-[#edf2f9] shadow-sm overflow-hidden">
+                        <CardHeader className="px-8 pt-8 pb-4">
+                            <h2 className="font-bold text-lg text-[#0b1b32] flex items-center gap-2">
+                                <Star size={20} className="text-amber-500 fill-amber-500" />
+                                {t('rating.title') || 'Rate Transaction'}
+                            </h2>
+                        </CardHeader>
+                        <CardContent className="px-8 pb-8 flex flex-col gap-6">
+                            {/* Rating Form */}
+                            {transaction.status !== TRANSACTION_STATUS.CANCELLED && (
+                                <form onSubmit={handleRate} className="bg-[#f8fafc] rounded-2xl p-6 border border-[#f1f5f9]">
+                                    <p className="text-sm font-bold text-[#475569] mb-4 uppercase tracking-wider">
+                                        {t('rating.rate_user', { name: isBuyer ? transaction.seller.name : transaction.buyer.name })}
+                                    </p>
+                                    <div className="flex flex-col gap-4">
+                                        <div className="flex items-center gap-2">
+                                            {[1, 2, 3, 4, 5].map((star) => (
+                                                <button
+                                                    key={star}
+                                                    type="button"
+                                                    onClick={() => ratingForm.setData('score', star)}
+                                                    className="transition-transform active:scale-95"
+                                                >
                                                     <Star
-                                                        key={star}
-                                                        size={14}
+                                                        size={32}
                                                         className={cn(
-                                                            star <= rating.score ? "text-amber-500 fill-amber-500" : "text-slate-200"
+                                                            "transition-colors",
+                                                            star <= ratingForm.data.score ? "text-amber-500 fill-amber-500" : "text-slate-300"
                                                         )}
                                                     />
-                                                ))}
-                                            </div>
+                                                </button>
+                                            ))}
+                                            {ratingForm.errors.score && <span className="text-xs text-red-500 ml-2">{ratingForm.errors.score}</span>}
                                         </div>
-                                        {rating.comment && <p className="text-sm text-[#475569] italic">"{rating.comment}"</p>}
-                                        <p className="text-[0.65rem] text-[#94a3b8]">{new Date(rating.created_at).toLocaleDateString()}</p>
+                                        <div className="flex flex-col gap-1">
+                                            <textarea
+                                                value={ratingForm.data.comment}
+                                                onChange={e => ratingForm.setData('comment', e.target.value)}
+                                                placeholder={t('rating.comment') || "Write a comment..."}
+                                                className="rounded-xl border-[#e2e8f0] text-sm focus:ring-amber-500/20 w-full min-h-[100px]"
+                                            />
+                                            {ratingForm.errors.comment && <span className="text-xs text-red-500">{ratingForm.errors.comment}</span>}
+                                        </div>
+                                        <Button
+                                            type="submit"
+                                            disabled={ratingForm.processing || ratingForm.data.score === 0}
+                                            className="bg-[#1a263b] hover:bg-[#0b1a31] text-white rounded-xl h-12 font-bold w-fit px-8"
+                                        >
+                                            {t('rating.submit') || 'Submit Rating'}
+                                        </Button>
                                     </div>
-                                </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
+                                </form>
+                            )}
+
+                            {/* Rating List */}
+                            <div className="flex flex-col gap-4">
+                                {transaction.ratings.map((rating) => (
+                                    <div key={rating.id} className="flex gap-4 p-4 rounded-2xl border border-[#f1f5f9]">
+                                        <div className="h-10 w-10 rounded-full bg-[#f1f5f9] flex items-center justify-center font-bold text-[#64748b] shrink-0">
+                                            {rating.rater.name.charAt(0)}
+                                        </div>
+                                        <div className="flex-1 flex flex-col gap-1">
+                                            <div className="flex items-center justify-between">
+                                                <span className="font-bold text-[#1a263b] text-sm">{rating.rater.name}</span>
+                                                <div className="flex items-center gap-0.5">
+                                                    {[1, 2, 3, 4, 5].map((star) => (
+                                                        <Star
+                                                            key={star}
+                                                            size={14}
+                                                            className={cn(
+                                                                star <= rating.score ? "text-amber-500 fill-amber-500" : "text-slate-200"
+                                                            )}
+                                                        />
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            {rating.comment && <p className="text-sm text-[#475569] italic">"{rating.comment}"</p>}
+                                            <p className="text-[0.65rem] text-[#94a3b8]">{new Date(rating.created_at).toLocaleDateString()}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
 
                 <div className="flex items-center justify-between px-2">
                     <div className="flex flex-col gap-1">
@@ -423,71 +427,73 @@ export default function Show({ transaction }: { transaction: Transaction }) {
                     </Badge>
                 </div>
 
-                {/* Progress Board */}
-                <Card className="rounded-[24px] border-[#edf2f9] shadow-sm overflow-hidden">
-                    <CardHeader className="px-8 pt-8 pb-4">
-                        <h2 className="font-bold text-lg text-[#0b1b32] flex items-center gap-2">
-                            <Clock size={20} className="text-[#0d9488]" />
-                            {t('transaction.tracking.title') || 'Transaction Progress'}
-                        </h2>
-                    </CardHeader>
-                    <CardContent className="p-8">
-                        <div className="relative">
-                            {/* Vertical line for mobile, horizontal for desktop? Let's do a nice vertical one for clarity as requested "linear info board" */}
-                            <div className="flex flex-col gap-0">
-                                {steps.map((step, index) => {
-                                    const Icon = step.icon;
-                                    const isLast = index === steps.length - 1;
-                                    const isPast = step.isCompleted;
-                                    const isCurrent = index === currentStepIndex;
+                {/* Progress Board - Participant Only */}
+                {isParticipant && (
+                    <Card className="rounded-[24px] border-[#edf2f9] shadow-sm overflow-hidden">
+                        <CardHeader className="px-8 pt-8 pb-4">
+                            <h2 className="font-bold text-lg text-[#0b1b32] flex items-center gap-2">
+                                <Clock size={20} className="text-[#0d9488]" />
+                                {t('transaction.tracking.title') || 'Transaction Progress'}
+                            </h2>
+                        </CardHeader>
+                        <CardContent className="p-8">
+                            <div className="relative">
+                                {/* Vertical line for mobile, horizontal for desktop? Let's do a nice vertical one for clarity as requested "linear info board" */}
+                                <div className="flex flex-col gap-0">
+                                    {steps.map((step, index) => {
+                                        const Icon = step.icon;
+                                        const isLast = index === steps.length - 1;
+                                        const isPast = step.isCompleted;
+                                        const isCurrent = index === currentStepIndex;
 
-                                    return (
-                                        <div key={step.id} className="flex gap-6">
-                                            <div className="flex flex-col items-center">
-                                                <div className={cn(
-                                                    "w-10 h-10 rounded-full flex items-center justify-center z-10 border-2 transition-colors",
-                                                    isPast ? "bg-[#0d9488] border-[#0d9488] text-white" : "bg-white border-[#e2e8f0] text-[#94a3b8]",
-                                                    isCurrent && "ring-4 ring-[#ccfbf1]"
-                                                )}>
-                                                    {isPast && !isCurrent ? <CheckCircle size={20} /> : <Icon size={20} />}
-                                                </div>
-                                                {!isLast && (
+                                        return (
+                                            <div key={step.id} className="flex gap-6">
+                                                <div className="flex flex-col items-center">
                                                     <div className={cn(
-                                                        "w-0.5 h-16 transition-colors",
-                                                        isPast ? "bg-[#0d9488]" : "bg-[#e2e8f0]"
-                                                    )} />
-                                                )}
-                                            </div>
-                                            <div className="flex-1 pt-2 pb-8">
-                                                <div className="flex flex-col gap-1">
-                                                    <h3 className={cn(
-                                                        "font-bold text-[1.05rem]",
-                                                        isPast || isCurrent ? "text-[#0b1b32]" : "text-[#94a3b8]"
+                                                        "w-10 h-10 rounded-full flex items-center justify-center z-10 border-2 transition-colors",
+                                                        isPast ? "bg-[#0d9488] border-[#0d9488] text-white" : "bg-white border-[#e2e8f0] text-[#94a3b8]",
+                                                        isCurrent && "ring-4 ring-[#ccfbf1]"
                                                     )}>
-                                                        {step.label}
-                                                    </h3>
-                                                    {step.date && (
-                                                        <p className="text-sm text-[#5f6c84]">
-                                                            {new Date(step.date).toLocaleString()}
-                                                        </p>
-                                                    )}
-                                                    {isCurrent && (
-                                                        <Badge variant="outline" className={cn(
-                                                            "w-fit mt-1",
-                                                            isPast ? "text-[#0d9488] border-[#0d9488] bg-[#f0fdfa]" : "text-[#d97706] border-[#d97706] bg-[#fffbeb]"
-                                                        )}>
-                                                            {isPast ? (t('transaction.status.completed') || 'Completed') : (t('transaction.status.pending') || 'In Progress')}
-                                                        </Badge>
+                                                        {isPast && !isCurrent ? <CheckCircle size={20} /> : <Icon size={20} />}
+                                                    </div>
+                                                    {!isLast && (
+                                                        <div className={cn(
+                                                            "w-0.5 h-16 transition-colors",
+                                                            isPast ? "bg-[#0d9488]" : "bg-[#e2e8f0]"
+                                                        )} />
                                                     )}
                                                 </div>
+                                                <div className="flex-1 pt-2 pb-8">
+                                                    <div className="flex flex-col gap-1">
+                                                        <h3 className={cn(
+                                                            "font-bold text-[1.05rem]",
+                                                            isPast || isCurrent ? "text-[#0b1b32]" : "text-[#94a3b8]"
+                                                        )}>
+                                                            {step.label}
+                                                        </h3>
+                                                        {step.date && (
+                                                            <p className="text-sm text-[#5f6c84]">
+                                                                {new Date(step.date).toLocaleString()}
+                                                            </p>
+                                                        )}
+                                                        {isCurrent && (
+                                                            <Badge variant="outline" className={cn(
+                                                                "w-fit mt-1",
+                                                                isPast ? "text-[#0d9488] border-[#0d9488] bg-[#f0fdfa]" : "text-[#d97706] border-[#d97706] bg-[#fffbeb]"
+                                                            )}>
+                                                                {isPast ? (t('transaction.status.completed') || 'Completed') : (t('transaction.status.pending') || 'In Progress')}
+                                                            </Badge>
+                                                        )}
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    );
-                                })}
+                                        );
+                                    })}
+                                </div>
                             </div>
-                        </div>
-                    </CardContent>
-                </Card>
+                        </CardContent>
+                    </Card>
+                )}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Item Summary */}

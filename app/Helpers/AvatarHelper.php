@@ -64,7 +64,9 @@ class AvatarHelper
     {
         // If user has uploaded avatar, use it
         if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
-            return Storage::disk('public')->url($user->avatar);
+            /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+            $disk = Storage::disk('public');
+            return $disk->url($user->avatar);
         }
         
         // Otherwise, generate avatar

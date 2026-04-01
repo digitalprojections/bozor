@@ -57,13 +57,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/listings/{listing}/buy-now', [App\Http\Controllers\TransactionController::class , 'buyNow'])->name('listings.buy-now'); // Keeping buy-now as POST usually but checking previous code
         Route::post('/listings/{listing}/buy-now', [App\Http\Controllers\TransactionController::class , 'buyNow'])->name('listings.buy-now');
 
-        Route::get('/transactions/{transaction}', [App\Http\Controllers\TransactionController::class , 'show'])->name('transactions.show');
+
         Route::post('/transactions/{transaction}/mark-as-paid', [App\Http\Controllers\TransactionController::class , 'markAsPaid'])->name('transactions.mark-as-paid');
         Route::post('/transactions/{transaction}/cancel', [App\Http\Controllers\TransactionController::class , 'cancel'])->name('transactions.cancel');
         Route::post('/transactions/{transaction}/mark-as-shipped', [App\Http\Controllers\TransactionController::class , 'markAsShipped'])->name('transactions.mark-as-shipped');
         Route::post('/transactions/{transaction}/mark-as-received', [App\Http\Controllers\TransactionController::class , 'markAsReceived'])->name('transactions.mark-as-received');
         Route::post('/transactions/{transaction}/rate', [App\Http\Controllers\RatingController::class , 'store'])->name('transactions.rate');
     });
+
+Route::get('/transactions/{transaction}', [App\Http\Controllers\TransactionController::class , 'show'])->name('transactions.show');
 
 Route::get('/listings/{listing}', [App\Http\Controllers\ListingController::class , 'show'])->name('listings.show');
 Route::get('/users/{user}', [App\Http\Controllers\ProfileController::class , 'show'])->name('profile.show');

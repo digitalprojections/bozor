@@ -11,6 +11,10 @@ class TransactionController extends Controller
 {
     public function buyNow(Request $request, Listing $listing)
     {
+        if (auth()->user()->is_guest) {
+            return redirect()->route('login')->with('error', 'Please log in with your Google account to buy items.');
+        }
+
         if ($listing->status !== 'active') {
             return back()->withErrors(['error' => 'This listing is no longer active.']);
         }

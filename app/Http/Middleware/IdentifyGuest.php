@@ -32,11 +32,14 @@ class IdentifyGuest
                 ]);
             }
 
-            auth()->login($user, true);
+            \Illuminate\Support\Facades\Auth::login($user, true);
             $request->setUserResolver(fn () => $user);
 
             $response = $next($request);
-            return $response->withCookie(cookie()->forever('guest_id', $guestId));
+            if (method_exists($response, 'withCookie')) {
+                return $response->withCookie(cookie()->forever('guest_id', $guestId));
+            }
+            return $response;
         }
 
         return $next($request);

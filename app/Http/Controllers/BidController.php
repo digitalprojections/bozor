@@ -11,6 +11,10 @@ class BidController extends Controller
 {
     public function store(Request $request, Listing $listing)
     {
+        if (auth()->user()->is_guest) {
+            return redirect()->route('login')->with('error', 'Please log in with your Google account to bid on items.');
+        }
+
         $validated = $request->validate([
             'amount' => 'required|integer|min:1',
         ]);
@@ -48,7 +52,7 @@ class BidController extends Controller
         // Notify watchers (except the bidder) about the new bid
         $listing->load('watchedBy');
         $bidderId = auth()->id();
-        $listing->watchedBy->each(function ($watcher) use ($listing, $validated, $bidderId) {
+        $listing->watchedBy->each(function (\App\Models\User $watcher) use ($listing, $validated, $bidderId) {
             if ($watcher->id !== $bidderId) {
                 $watcher->notify(new \App\Notifications\WatchlistItemUpdated($listing, [
                     'new_bid' => ['amount' => $validated['amount']],
