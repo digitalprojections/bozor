@@ -58,10 +58,8 @@ Route::get('dashboard/won-items', [App\Http\Controllers\DashboardController::cla
 Route::get('dashboard/sold-items', [App\Http\Controllers\DashboardController::class , 'soldItems'])->middleware(['auth', 'verified'])->name('dashboard.sold-items');
 
 // Watchlist routes
-Route::middleware(['auth'])->group(function () {
-    Route::get('/watchlist', [App\Http\Controllers\WatchlistController::class , 'index'])->name('watchlist.index');
-    Route::post('/watchlist/{listing}/toggle', [App\Http\Controllers\WatchlistController::class , 'toggle'])->name('watchlist.toggle');
-});
+Route::get('/watchlist', [App\Http\Controllers\WatchlistController::class , 'index'])->middleware(['auth'])->name('watchlist.index');
+Route::post('/watchlist/{listing}/toggle', [App\Http\Controllers\WatchlistController::class , 'toggle'])->name('watchlist.toggle');
 
 // Verification routes
 Route::middleware(['auth'])->group(function () {

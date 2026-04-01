@@ -33,6 +33,7 @@ class IdentifyGuest
             }
 
             auth()->login($user, true);
+            $request->setUserResolver(fn () => $user);
 
             $response = $next($request);
             return $response->withCookie(cookie()->forever('guest_id', $guestId));

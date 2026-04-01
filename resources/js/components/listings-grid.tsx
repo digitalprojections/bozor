@@ -52,7 +52,7 @@ export function ListingsGrid({
     const getInitials = useInitials();
     const { auth } = usePage().props as any;
     const user = auth.user;
-
+    const [processingIds, setProcessingIds] = React.useState<number[]>([]);
 
     const handlePageChange = (page: number) => {
         router.get(
@@ -113,18 +113,26 @@ export function ListingsGrid({
                                     </div>
                                 )}
                                 <button
+                                    disabled={processingIds.includes(listing.id)}
                                     onClick={(e) => {
                                         e.preventDefault();
                                         e.stopPropagation();
-                                        router.post(`/watchlist/${listing.id}/toggle`, {}, { preserveScroll: true });
+                                        setProcessingIds(prev => [...prev, listing.id]);
+                                        router.post(`/watchlist/${listing.id}/toggle`, {}, { 
+                                            preserveScroll: true,
+                                            onFinish: () => setProcessingIds(ids => ids.filter(id => id !== listing.id))
+                                        });
                                     }}
                                     className={`absolute top-2 right-2 h-8 w-8 flex items-center justify-center rounded-full shadow transition-all ${watchedIds.includes(listing.id)
                                             ? 'bg-white text-rose-500'
                                             : 'bg-black/30 text-white hover:bg-white hover:text-rose-400'
-                                        }`}
+                                        } ${processingIds.includes(listing.id) ? 'opacity-50 scale-90' : ''}`}
                                     title={watchedIds.includes(listing.id) ? 'Remove from watchlist' : 'Add to watchlist'}
                                 >
-                                    <Heart size={15} className={watchedIds.includes(listing.id) ? 'fill-current' : ''} />
+                                    <Heart 
+                                        size={15} 
+                                        className={`${watchedIds.includes(listing.id) ? 'fill-current' : ''} ${processingIds.includes(listing.id) ? 'animate-pulse' : ''}`} 
+                                    />
                                 </button>
                             </div>
 
