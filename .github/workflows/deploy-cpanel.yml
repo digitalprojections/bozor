@@ -13,26 +13,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.4'
-          extensions: mbstring, xml, ctype, iconv, mysql, bcmath, gd
-          cache: composer
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
 
-      - name: Install Dependencies & Build
+      - name: Install Node Dependencies & Build
         run: |
-          composer install --no-dev --optimize-autoloader --no-scripts
           npm ci --prefer-offline --no-audit
           npm run build
 
-          
       - name: 📂 Sync Files via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
@@ -41,7 +32,7 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           port: 21
           # Set the destination to your subdomain root
-          server-dir: /public_html/freemarket/
+          server-dir: /bozorvoy.created.link/
           # Ensure a more secure connection if supported
           force-ssl: true
           # Upload only changed files from the current directory
@@ -50,6 +41,7 @@ jobs:
             **/.git*
             **/.git*/**
             **/node_modules/**
+            **/vendor/**
             **/tests/**
             **/storage/logs/**
             **/storage/framework/cache/**
