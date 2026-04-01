@@ -13,7 +13,7 @@ class AvatarHelper
     public static function generateAvatarUrl(User $user, ?string $style = null): string
     {
         $style = $style ?? $user->avatar_style ?? 'initials';
-        $seed = $user->avatar_seed ?? $user->email;
+        $seed = $user->avatar_seed ?? $user->email ?? $user->guest_id ?? 'guest';
         
         // Use bottts as a fallback for mascot style when using DiceBear API
         $diceBearStyle = ($style === 'mascot') ? 'bottts' : $style;
