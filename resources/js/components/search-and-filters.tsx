@@ -52,7 +52,7 @@ export function SearchAndFilters({
     return (
         <div className="space-y-4">
             {/* Search Bar */}
-            <form onSubmit={handleSearchSubmit} className="flex gap-2">
+            <form onSubmit={handleSearchSubmit} className="flex flex-col sm:flex-row gap-2">
                 <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
@@ -60,64 +60,69 @@ export function SearchAndFilters({
                         placeholder={t('marketplace.search.placeholder')}
                         value={searchValue}
                         onChange={(e) => setSearchValue(e.target.value)}
-                        className="pl-10"
+                        className="pl-10 h-10"
                     />
                 </div>
-                <Button type="submit">{t('marketplace.search.button')}</Button>
+                <Button type="submit" className="h-10 sm:w-auto w-full">
+                    {t('marketplace.search.button')}
+                </Button>
             </form>
 
             {/* Filters and View Controls */}
-            <div className="flex flex-wrap items-center gap-3">
-                {/* Category Filter */}
-                <div className="flex items-center gap-2">
-                    <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
-                    <Select
-                        value={currentCategory?.toString() || 'all'}
-                        onValueChange={(value) =>
-                            onCategoryChange(
-                                value === 'all' ? null : parseInt(value)
-                            )
-                        }
-                    >
-                        <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder={t('marketplace.filters.all_categories')} />
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                <div className="flex flex-1 flex-wrap items-center gap-2">
+                    {/* Category Filter */}
+                    <div className="flex items-center gap-2 flex-1 sm:flex-initial">
+                        <SlidersHorizontal className="h-4 w-4 text-muted-foreground hidden sm:block" />
+                        <Select
+                            value={currentCategory?.toString() || 'all'}
+                            onValueChange={(value) =>
+                                onCategoryChange(
+                                    value === 'all' ? null : parseInt(value)
+                                )
+                            }
+                        >
+                            <SelectTrigger className="w-full sm:w-[180px] h-10">
+                                <SelectValue placeholder={t('marketplace.filters.all_categories')} />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">{t('marketplace.filters.all_categories')}</SelectItem>
+                                {categories.map((category) => (
+                                    <SelectItem
+                                        key={category.id}
+                                        value={category.id.toString()}
+                                    >
+                                        {category.name} ({category.listings_count})
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    {/* Sort */}
+                    <Select value={currentSort} onValueChange={onSortChange}>
+                        <SelectTrigger className="w-full sm:w-[150px] h-10">
+                            <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="all">{t('marketplace.filters.all_categories')}</SelectItem>
-                            {categories.map((category) => (
-                                <SelectItem
-                                    key={category.id}
-                                    value={category.id.toString()}
-                                >
-                                    {category.name} ({category.listings_count})
-                                </SelectItem>
-                            ))}
+                            <SelectItem value="newest">{t('marketplace.filters.sort_newest')}</SelectItem>
+                            <SelectItem value="oldest">{t('marketplace.filters.sort_oldest')}</SelectItem>
+                            <SelectItem value="price_low">
+                                {t('marketplace.filters.price_low_high')}
+                            </SelectItem>
+                            <SelectItem value="price_high">
+                                {t('marketplace.filters.price_high_low')}
+                            </SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
 
-                {/* Sort */}
-                <Select value={currentSort} onValueChange={onSortChange}>
-                    <SelectTrigger className="w-[150px]">
-                        <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="newest">{t('marketplace.filters.sort_newest')}</SelectItem>
-                        <SelectItem value="oldest">{t('marketplace.filters.sort_oldest')}</SelectItem>
-                        <SelectItem value="price_low">
-                            {t('marketplace.filters.price_low_high')}
-                        </SelectItem>
-                        <SelectItem value="price_high">
-                            {t('marketplace.filters.price_high_low')}
-                        </SelectItem>
-                    </SelectContent>
-                </Select>
-
                 {/* View Mode Toggle */}
-                <div className="ml-auto flex gap-1 rounded-md border p-1">
+                <div className="flex items-center justify-end gap-1 rounded-md border p-1 bg-white sm:ml-auto">
                     <Button
                         variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
                         size="sm"
+                        className="h-8 w-10 p-0"
                         onClick={() => onViewModeChange('grid')}
                     >
                         <Grid className="h-4 w-4" />
@@ -125,6 +130,7 @@ export function SearchAndFilters({
                     <Button
                         variant={viewMode === 'list' ? 'secondary' : 'ghost'}
                         size="sm"
+                        className="h-8 w-10 p-0"
                         onClick={() => onViewModeChange('list')}
                     >
                         <List className="h-4 w-4" />

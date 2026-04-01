@@ -3,6 +3,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useTranslations } from '@/hooks/use-translations';
 import { Link, usePage } from '@inertiajs/react';
+import { cn } from '@/lib/utils';
 
 
 interface Stats {
@@ -51,18 +52,18 @@ export function MarketplaceHeader({ stats }: { stats: Stats | null }) {
 
     return (
         <div className="space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">
+                    <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
                         {t('marketplace.title')}
                     </h1>
-                    <p className="text-muted-foreground">
+                    <p className="text-sm text-muted-foreground">
                         {t('marketplace.description')}
                     </p>
                 </div>
                 {user && (
-                    <Link href="/listings/create">
-                        <Button size="lg">
+                    <Link href="/listings/create" className="w-full sm:w-auto">
+                        <Button size="default" className="w-full sm:w-auto">
                             <Package className="mr-2 h-4 w-4" />
                             {t('marketplace.create_listing')}
                         </Button>
@@ -71,24 +72,27 @@ export function MarketplaceHeader({ stats }: { stats: Stats | null }) {
             </div>
 
             {stats && (
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
                     {statCards.map((stat) => {
                         const Icon = stat.icon;
                         return (
-                            <Card key={stat.label} className="p-6">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-sm font-medium text-muted-foreground">
+                            <Card key={stat.label} className="p-3 sm:p-6">
+                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                                    <div className="min-w-0">
+                                        <p className="text-[10px] sm:text-sm font-medium text-muted-foreground truncate">
                                             {stat.label}
                                         </p>
-                                        <p className="text-2xl font-bold">
+                                        <p className="text-lg sm:text-2xl font-bold truncate">
                                             {stat.value}
                                         </p>
                                     </div>
                                     <div
-                                        className={`rounded-full p-3 ${stat.bgColor}`}
+                                        className={cn(
+                                            "rounded-full p-2 sm:p-3 w-fit",
+                                            stat.bgColor
+                                        )}
                                     >
-                                        <Icon className={`h-5 w-5 ${stat.color}`} />
+                                        <Icon className={cn("h-4 w-4 sm:h-5 sm:w-5", stat.color)} />
                                     </div>
                                 </div>
                             </Card>

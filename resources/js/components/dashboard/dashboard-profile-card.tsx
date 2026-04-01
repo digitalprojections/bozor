@@ -34,10 +34,10 @@ export function DashboardProfileCard({ user, isVerified, rating = '5.0', reviewC
                     </Avatar>
 
                     {/* Identity Info */}
-                    <div className="flex-1 space-y-1">
-                        <div className="flex items-center gap-3">
-                            <h2 className="text-xl font-bold tracking-tight text-[#0b1a31]">{user.name}</h2>
-                            <Button variant="outline" size="sm" className="h-7 rounded-sm border-[#cfddee] px-2 text-[0.75rem] font-medium text-[#1f2a3f] hover:bg-[#f8fafd]" asChild>
+                    <div className="flex-1 min-w-0 space-y-2">
+                        <div className="flex flex-col xs:flex-row xs:items-center gap-2 xs:gap-3">
+                            <h2 className="text-xl font-bold tracking-tight text-[#0b1a31] truncate">{user.name}</h2>
+                            <Button variant="outline" size="sm" className="h-7 w-fit rounded-sm border-[#cfddee] px-2 text-[0.75rem] font-medium text-[#1f2a3f] hover:bg-[#f8fafd]" asChild>
                                 <Link href={edit().url}>
                                     {t('common.edit')}
                                     <ChevronRight size={12} className="ml-1" />
@@ -45,9 +45,9 @@ export function DashboardProfileCard({ user, isVerified, rating = '5.0', reviewC
                             </Button>
                         </div>
 
-                        <div className="flex items-center gap-4 text-[0.85rem]">
+                        <div className="flex flex-col xs:flex-row xs:items-center gap-2 xs:gap-4 text-[0.85rem]">
                             <div className="flex items-center gap-1.5 font-medium text-[#0066cc]">
-                                <div className="flex items-center">
+                                <div className="flex items-center shrink-0">
                                     {[1, 2, 3, 4, 5].map((star) => (
                                         <Star
                                             key={star}
@@ -60,14 +60,14 @@ export function DashboardProfileCard({ user, isVerified, rating = '5.0', reviewC
                                         />
                                     ))}
                                 </div>
-                                <span className="ml-1">{t('listing.sidebar.rating')} {(user.average_rating || 0).toFixed(1)}</span>
+                                <span className="ml-1 whitespace-nowrap">{(user.average_rating || 0).toFixed(1)}</span>
                                 <span className="ml-1 text-[#7f8fa4] font-normal">({user.ratings_count || 0})</span>
                             </div>
 
                             {isVerified && (
                                 <div className="flex items-center gap-1 text-[#0066cc] font-medium">
-                                    <CheckCircle2 size={14} className="text-[#0066cc]" />
-                                    <span>{t('verification.status.approved')}</span>
+                                    <CheckCircle2 size={14} className="text-[#0066cc] shrink-0" />
+                                    <span className="truncate">{t('verification.status.approved')}</span>
                                 </div>
                             )}
                         </div>

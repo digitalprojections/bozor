@@ -26,6 +26,8 @@ class User extends Authenticatable
         'avatar_style',
         'avatar_seed',
         'gender',
+        'is_guest',
+        'guest_id',
     ];
 
     /**

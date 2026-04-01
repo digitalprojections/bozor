@@ -1,11 +1,12 @@
 import { Head, Link, usePage, router } from '@inertiajs/react';
-import { Search, Star, Gavel, CheckCircle, Package, Clock, Heart, CreditCard, Receipt, Wallet, ShieldCheck, Bell, MessageCircle, Settings, ChevronRight, LayoutDashboard, ShoppingCart, Lock, Palette, Truck, LogOut } from 'lucide-react';
+import { Search, Star, Gavel, CheckCircle, Package, Clock, Heart, CreditCard, Receipt, Wallet, ShieldCheck, Bell, MessageCircle, Settings, ChevronRight, LayoutDashboard, ShoppingCart, Lock, Palette, Truck, LogOut, Menu } from 'lucide-react';
 import React, { ReactNode } from 'react';
 import { useTranslations } from '@/hooks/use-translations';
 import { useInitials } from '@/hooks/use-initials';
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { LocaleSwitcher } from '@/components/locale-switcher';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import type { BreadcrumbItem } from '@/types';
 import AppLogo from '@/components/app-logo';
@@ -30,7 +31,27 @@ export default function BazaarLayout({ children, title, breadcrumbs = [], sideba
             {/* Header */}
             <header className="sticky top-0 z-50 border-b border-[#e8e7e5] bg-white shadow-sm">
                 <div className="mx-auto flex h-16 w-full items-center justify-between px-4 md:px-8">
-                    <div className="flex items-center gap-8 flex-1">
+                    <div className="flex items-center gap-4 md:gap-8 flex-1">
+                        <div className="flex items-center gap-2 lg:hidden">
+                            <Sheet>
+                                <SheetTrigger asChild>
+                                    <button className="p-2 text-[#1a263b] hover:bg-gray-100 rounded-md" aria-label="Open menu">
+                                        <Menu size={24} />
+                                    </button>
+                                </SheetTrigger>
+                                <SheetContent side="left" className="w-[280px] p-0 bg-white">
+                                    <SheetHeader className="border-b p-4 text-left">
+                                        <SheetTitle className="flex items-center gap-2">
+                                            <AppLogo />
+                                        </SheetTitle>
+                                    </SheetHeader>
+                                    <div className="py-4 px-2 overflow-y-auto max-h-[calc(100vh-80px)]">
+                                        <DefaultSidebar />
+                                    </div>
+                                </SheetContent>
+                            </Sheet>
+                        </div>
+
                         <Link href="/" className="flex items-center gap-2">
                             <AppLogo />
                         </Link>
@@ -48,8 +69,8 @@ export default function BazaarLayout({ children, title, breadcrumbs = [], sideba
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-6">
-                        <LocaleSwitcher variant="ghost" size="sm" className="hidden sm:flex text-[#5f6b7a] hover:text-[#0d9488]" />
+                    <div className="flex items-center gap-3 sm:gap-6">
+                        <LocaleSwitcher variant="ghost" size="sm" className="text-[#5f6b7a] hover:text-[#0d9488]" />
                         {user ? (
                             <>
                                 <Link
@@ -59,7 +80,7 @@ export default function BazaarLayout({ children, title, breadcrumbs = [], sideba
                                     {t('layout.header.my_listings')}
                                 </Link>
 
-                                <div className="flex items-center gap-3 text-sm font-medium">
+                                <div className="flex items-center gap-2 sm:gap-3 text-sm font-medium">
                                     <div className="flex flex-col items-end mr-0.5">
                                         <div className="flex items-center gap-1 text-[10px] font-bold text-amber-500">
                                             <Star size={10} className="fill-amber-500" />
@@ -86,7 +107,7 @@ export default function BazaarLayout({ children, title, breadcrumbs = [], sideba
                                 </div>
                             </>
                         ) : (
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-2 sm:gap-3">
                                 <Link
                                     href="/login"
                                     className="text-sm font-semibold text-[#1a263b] hover:text-[#0d9488] transition-colors"
@@ -95,7 +116,7 @@ export default function BazaarLayout({ children, title, breadcrumbs = [], sideba
                                 </Link>
                                 <Link
                                     href="/register"
-                                    className="inline-flex h-9 items-center justify-center rounded-sm bg-[#0d9488] px-4 text-sm font-bold text-white shadow-sm transition hover:bg-[#0f766e]"
+                                    className="inline-flex h-8 sm:h-9 items-center justify-center rounded-sm bg-[#0d9488] px-3 sm:px-4 text-xs sm:text-sm font-bold text-white shadow-sm transition hover:bg-[#0f766e]"
                                 >
                                     {t('common.register')}
                                 </Link>
@@ -113,9 +134,9 @@ export default function BazaarLayout({ children, title, breadcrumbs = [], sideba
                 </div>
             </div>
 
-            <main className="mx-auto w-full px-4 py-8 md:px-8">
-                <div className="mb-6 flex items-center justify-between">
-                    <h1 className="text-[2rem] font-semibold tracking-tight text-[#0b1b32]">{title}</h1>
+            <main className="mx-auto w-full px-4 py-6 md:py-8 md:px-8">
+                <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <h1 className="text-2xl md:text-[2rem] font-semibold tracking-tight text-[#0b1b32]">{title}</h1>
                 </div>
 
                 <div className={cn(
@@ -123,7 +144,7 @@ export default function BazaarLayout({ children, title, breadcrumbs = [], sideba
                     sidebar ? "lg:grid-cols-[240px_1fr_320px]" : "lg:grid-cols-[240px_1fr]"
                 )}>
                     {/* Main Navigation Sidebar (Left) */}
-                    <aside className="flex flex-col gap-6 order-last lg:order-first">
+                    <aside className="hidden lg:flex flex-col gap-6">
                         <DefaultSidebar />
                     </aside>
 
@@ -189,6 +210,10 @@ function DefaultSidebar() {
 
     return (
         <div className="flex flex-col gap-8">
+            <div className="lg:hidden px-4">
+                <LocaleSwitcher variant="outline" className="w-full justify-between" />
+            </div>
+
             <SidebarSection title={t('layout.sidebar.activity')}>
                 <SidebarLink icon={LayoutDashboard} label={t('common.dashboard')} href="/dashboard" />
                 <SidebarLink icon={ShoppingCart} label={t('marketplace.title')} href="/marketplace" />
@@ -200,6 +225,7 @@ function DefaultSidebar() {
                 )}
                 <SidebarLink icon={Star} label={t('layout.sidebar.watchlist')} href="/watchlist" />
             </SidebarSection>
+
 
             {user && (
                 <>

@@ -40,11 +40,11 @@ export default function Dashboard({
 
             {/* Your Listings Section */}
             <div className="flex flex-col gap-4">
-                <div className="flex items-center justify-between px-2">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between px-2 gap-3">
                     <h2 className="text-xl font-bold tracking-tight text-[#0b1a31]">
                         {t('dashboard.listings.title')}
                     </h2>
-                    <div className="flex items-center gap-4">
+                    <div className="flex flex-wrap items-center gap-3 sm:gap-4">
                         <Link href="/dashboard/won-items" className="text-sm font-semibold text-[#2b4b8f] hover:underline flex items-center gap-1">
                             <ShoppingBag size={14} /> {t('dashboard.won_items.title')}
                         </Link>
@@ -58,7 +58,7 @@ export default function Dashboard({
                     {listings.length > 0 ? (
                         listings.map((listing) => (
                             <Card key={listing.id} className="rounded-[4px] border-[#f0f2f5] shadow-sm overflow-hidden hover:border-[#ced9e5] transition-colors">
-                                <CardContent className="p-4 flex items-center gap-4">
+                                <CardContent className="p-4 flex flex-col xs:flex-row items-start xs:items-center gap-4">
                                     <div className="h-16 w-16 rounded bg-[#f0f5fd] flex items-center justify-center shrink-0 border border-[#e1e9f2]">
                                         {listing.images && listing.images.length > 0 ? (
                                             <img src={`/storage/${listing.images[0]}`} alt="" className="h-full w-full object-cover rounded" />
@@ -68,22 +68,22 @@ export default function Dashboard({
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <h3 className="font-semibold text-[#1a263b] truncate">{listing.title}</h3>
-                                        <div className="flex items-center gap-3 mt-1 text-sm text-[#5f6c84]">
+                                        <div className="flex flex-wrap items-center gap-2 mt-1 text-sm text-[#5f6c84]">
                                             <span className="font-bold text-[#0e1d38]">¥{listing.price.toLocaleString()}</span>
-                                            <span>•</span>
+                                            <span className="hidden xs:inline">•</span>
                                             <span className="capitalize">{t('dashboard.status.' + listing.status)}</span>
                                         </div>
                                     </div>
-                                    <div className="flex gap-2">
+                                    <div className="flex gap-2 w-full xs:w-auto justify-end mt-2 xs:mt-0">
                                         <Link
                                             href={`/listings/${listing.id}/edit`}
-                                            className="px-4 py-2 text-sm font-semibold bg-[#f3f9ff] text-[#2b4b8f] rounded-full hover:bg-[#e1f0ff]"
+                                            className="px-4 py-2 text-sm font-semibold bg-[#f3f9ff] text-[#2b4b8f] rounded-full hover:bg-[#e1f0ff] flex-1 xs:flex-none text-center"
                                         >
                                             {t('common.edit')}
                                         </Link>
                                         <Link
                                             href={`/listings/${listing.id}`}
-                                            className="px-4 py-2 text-sm font-semibold bg-[#f0f5fd] text-[#2b4b8f] rounded-full hover:bg-[#e1ecfb]"
+                                            className="px-4 py-2 text-sm font-semibold bg-[#f0f5fd] text-[#2b4b8f] rounded-full hover:bg-[#e1ecfb] flex-1 xs:flex-none text-center"
                                         >
                                             {t('common.view')}
                                         </Link>

@@ -1,54 +1,71 @@
-name: Deploy via SSH/SCP
+name: Deploy to cPanel via FTP
 
 on:
   push:
     branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
           extensions: mbstring, xml, ctype, iconv, mysql, bcmath, gd
+          cache: composer
 
-      - name: Install Dependencies
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Dependencies & Build
         run: |
-          composer install --no-dev --optimize-autoloader
-          npm ci
+          composer install --no-dev --optimize-autoloader --no-scripts
+          npm ci --prefer-offline --no-audit
           npm run build
 
-        
-      - name: Create Deployment Archive
-        run: |
-          zip -r deploy.zip . -x "*.git*" "node_modules/*" "tests/*" "storage/*.php" "bozor_rsa" "bozor_database" ".env" "deploy.zip"
-
-      - name: Copy Archive via SCP
-        uses: appleboy/scp-action@v0.1.7
+      - name: 📂 Sync Files via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-          port: 21098
-          source: "deploy.zip"
-          target: "/home/creaphxv/freemarket.created.link/"
-          
-
-      - name: Extract and Post-Deployment
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 21098
-          script: |
-            cd /home/creaphxv/freemarket.created.link/
-            unzip -o deploy.zip
-            rm deploy.zip
-            php artisan optimize:clear
-            php artisan optimize
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: 21
+          # Set the destination to your subdomain root
+          server-dir: /bozorvoy.created.link/
+          # Ensure a more secure connection if supported
+          force-ssl: true
+          # Upload only changed files from the current directory
+          local-dir: ./
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/tests/**
+            **/storage/logs/**
+            **/storage/framework/cache/**
+            **/storage/framework/sessions/**
+            **/storage/framework/views/**
+            .env*
+            bozor_database
+            git_grep_output.txt
+            yahoo.html
+            README.md
+            DEPLOYMENT.md
+            composer.lock
+            package-lock.json
+            tsconfig.json
+            vite.config.ts
+            eslint.config.js
+            pint.json
+            phpunit.xml
+            components.json
+            boost.json

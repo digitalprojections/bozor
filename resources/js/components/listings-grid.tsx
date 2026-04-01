@@ -1,3 +1,4 @@
+import React from 'react';
 import { Link, router, usePage } from '@inertiajs/react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -111,22 +112,20 @@ export function ListingsGrid({
                                         <Package className="h-12 w-12 text-muted-foreground" />
                                     </div>
                                 )}
-                                {user && (
-                                    <button
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            e.stopPropagation();
-                                            router.post(`/watchlist/${listing.id}/toggle`, {}, { preserveScroll: true });
-                                        }}
-                                        className={`absolute top-2 right-2 h-8 w-8 flex items-center justify-center rounded-full shadow transition-all ${watchedIds.includes(listing.id)
-                                                ? 'bg-white text-rose-500'
-                                                : 'bg-black/30 text-white hover:bg-white hover:text-rose-400'
-                                            }`}
-                                        title={watchedIds.includes(listing.id) ? 'Remove from watchlist' : 'Add to watchlist'}
-                                    >
-                                        <Heart size={15} className={watchedIds.includes(listing.id) ? 'fill-current' : ''} />
-                                    </button>
-                                )}
+                                <button
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        router.post(`/watchlist/${listing.id}/toggle`, {}, { preserveScroll: true });
+                                    }}
+                                    className={`absolute top-2 right-2 h-8 w-8 flex items-center justify-center rounded-full shadow transition-all ${watchedIds.includes(listing.id)
+                                            ? 'bg-white text-rose-500'
+                                            : 'bg-black/30 text-white hover:bg-white hover:text-rose-400'
+                                        }`}
+                                    title={watchedIds.includes(listing.id) ? 'Remove from watchlist' : 'Add to watchlist'}
+                                >
+                                    <Heart size={15} className={watchedIds.includes(listing.id) ? 'fill-current' : ''} />
+                                </button>
                             </div>
 
                             {/* Listing Details */}
@@ -174,12 +173,12 @@ export function ListingsGrid({
 
             {/* Pagination */}
             {pagination.lastPage > 1 && (
-                <div className="flex items-center justify-between">
-                    <p className="text-sm text-muted-foreground">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <p className="text-sm text-muted-foreground order-2 sm:order-1">
                         {t('listings.grid.showing_count', { count: listings.length, total: pagination.total })}
                     </p>
 
-                    <div className="flex gap-2">
+                    <div className="flex items-center gap-2 order-1 sm:order-2 w-full sm:w-auto justify-center">
                         <Button
                             variant="outline"
                             size="sm"
@@ -187,9 +186,10 @@ export function ListingsGrid({
                                 handlePageChange(pagination.currentPage - 1)
                             }
                             disabled={pagination.currentPage === 1}
+                            className="px-2 sm:px-3"
                         >
-                            <ChevronLeft className="h-4 w-4" />
-                            {t('listings.grid.previous')}
+                            <ChevronLeft className="h-4 w-4 sm:mr-1" />
+                            <span className="hidden sm:inline">{t('listings.grid.previous')}</span>
                         </Button>
 
                         <div className="flex items-center gap-1">
@@ -202,32 +202,29 @@ export function ListingsGrid({
                                         page === 1 ||
                                         page === pagination.lastPage ||
                                         Math.abs(page - pagination.currentPage) <=
-                                        1
+                                        (window.innerWidth < 640 ? 0 : 1)
                                 )
                                 .map((page, index, array) => (
-                                    <>
+                                    <React.Fragment key={page}>
                                         {index > 0 &&
                                             array[index - 1] !== page - 1 && (
-                                                <span
-                                                    key={`ellipsis-${page}`}
-                                                    className="px-2"
-                                                >
+                                                <span className="px-1 sm:px-2 text-muted-foreground">
                                                     ...
                                                 </span>
                                             )}
                                         <Button
-                                            key={page}
                                             variant={
                                                 page === pagination.currentPage
                                                     ? 'default'
                                                     : 'outline'
                                             }
                                             size="sm"
+                                            className="h-8 w-8 p-0"
                                             onClick={() => handlePageChange(page)}
                                         >
                                             {page}
                                         </Button>
-                                    </>
+                                    </React.Fragment>
                                 ))}
                         </div>
 
@@ -240,9 +237,10 @@ export function ListingsGrid({
                             disabled={
                                 pagination.currentPage === pagination.lastPage
                             }
+                            className="px-2 sm:px-3"
                         >
-                            {t('listings.grid.next')}
-                            <ChevronRight className="h-4 w-4" />
+                            <span className="hidden sm:inline">{t('listings.grid.next')}</span>
+                            <ChevronRight className="h-4 w-4 sm:ml-1" />
                         </Button>
                     </div>
                 </div>
