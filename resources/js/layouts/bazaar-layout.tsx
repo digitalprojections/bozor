@@ -96,7 +96,7 @@ export default function BazaarLayout({ children, title, breadcrumbs = [], sideba
                                             {user?.name ? getInitials(user.name) : <Star size={14} />}
                                         </AvatarFallback>
                                     </Avatar>
-                                    <span className="hidden lg:inline text-[#0b1b32] font-bold">{user?.name}</span>
+                                    <span className="hidden lg:inline text-[#0b1b32] font-bold">{user?.masked_name || user?.name}</span>
                                     <button
                                         onClick={() => router.post('/logout')}
                                         className="ml-1 flex items-center gap-1 text-xs text-[#5f6c84] hover:text-red-500 transition-colors"

@@ -21,6 +21,7 @@ interface Listing {
     user: {
         id: number;
         name: string;
+        masked_name: string;
         avatar_url: string;
     };
     categories: Array<{
@@ -169,7 +170,7 @@ export function ListingsGrid({
                                             </AvatarFallback>
                                         </Avatar>
                                         <span className="text-xs text-muted-foreground">
-                                            {listing.user.name}
+                                            {listing.user.masked_name || listing.user.name}
                                         </span>
                                     </div>
                                 </div>

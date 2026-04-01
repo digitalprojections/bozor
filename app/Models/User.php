@@ -49,6 +49,7 @@ class User extends Authenticatable
      */
     protected $appends = [
         'avatar_url',
+        'masked_name',
     ];
 
     /**
@@ -121,5 +122,23 @@ class User extends Authenticatable
     public function watchedListings()
     {
         return $this->belongsToMany(Listing::class , 'watchlists')->withTimestamps();
+    }
+
+    /**
+     * Get the masked name (e.g., "John Doe" -> "J**** D****")
+     */
+    public function getMaskedNameAttribute(): string
+    {
+        if ($this->is_guest) {
+            return $this->name;
+        }
+
+        $parts = explode(' ', $this->name);
+        $maskedParts = array_map(function ($part) {
+            if (empty($part)) return '';
+            return mb_substr($part, 0, 1) . '****';
+        }, $parts);
+
+        return implode(' ', $maskedParts);
     }
 }
