@@ -13,14 +13,22 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, xml, ctype, iconv, mysql, bcmath, gd
+          cache: composer
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
 
-      - name: Install Node Dependencies & Build
+      - name: Install Dependencies & Build
         run: |
+          composer install --no-dev --optimize-autoloader --no-scripts
           npm ci --prefer-offline --no-audit
           npm run build
 
