@@ -1,5 +1,7 @@
-import { usePage } from '@inertiajs/react';
-import { ChevronsUpDown } from 'lucide-react';
+import { usePage, Link } from '@inertiajs/react';
+import { ChevronsUpDown, LogIn, UserPlus } from 'lucide-react';
+import { useTranslations } from '@/hooks/use-translations';
+import { login, register } from '@/routes';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -19,6 +21,28 @@ export function NavUser() {
     const { auth } = usePage().props;
     const { state } = useSidebar();
     const isMobile = useIsMobile();
+    const { t } = useTranslations();
+
+    if (!auth.user) {
+        return (
+            <SidebarMenu>
+                <SidebarMenuItem className="flex flex-col gap-2 p-2">
+                    <Link href={login().url} className="w-full">
+                        <SidebarMenuButton className="w-full justify-start">
+                            <LogIn className="mr-2 size-4" />
+                            {t('common.login') as string}
+                        </SidebarMenuButton>
+                    </Link>
+                    <Link href={register().url} className="w-full">
+                        <SidebarMenuButton className="w-full justify-start transition-colors bg-primary text-primary-foreground hover:bg-primary/90">
+                            <UserPlus className="mr-2 size-4" />
+                            {t('common.register') as string}
+                        </SidebarMenuButton>
+                    </Link>
+                </SidebarMenuItem>
+            </SidebarMenu>
+        );
+    }
 
     return (
         <SidebarMenu>

@@ -1,5 +1,5 @@
 import { Link, router } from '@inertiajs/react';
-import { LogOut, Settings, Star } from 'lucide-react';
+import { LogIn, LogOut, Settings, Star, UserPlus } from 'lucide-react';
 import { useTranslations } from '@/hooks/use-translations';
 import {
     DropdownMenuGroup,
@@ -10,7 +10,7 @@ import {
 import { UserInfo } from '@/components/user-info';
 import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
 import type { User } from '@/types';
-import { logout } from '@/routes';
+import { login, logout, register } from '@/routes';
 import { edit } from '@/routes/profile';
 
 type Props = {
@@ -47,20 +47,54 @@ export function UserMenuContent({ user }: Props) {
                     </Link>
                 </DropdownMenuItem>
             </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-                <DropdownMenuItem asChild>
-                    <Link
-                        className="block w-full cursor-pointer"
-                        href={edit().url}
-                        prefetch
-                        onClick={cleanup}
-                    >
-                        <Settings className="mr-2" />
-                        Settings
-                    </Link>
-                </DropdownMenuItem>
-            </DropdownMenuGroup>
+            {!user.is_guest && (
+                <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuGroup>
+                        <DropdownMenuItem asChild>
+                            <Link
+                                className="block w-full cursor-pointer"
+                                href={edit().url}
+                                prefetch
+                                onClick={cleanup}
+                            >
+                                <Settings className="mr-2" />
+                                {t('layout.sidebar.settings') || 'Settings'}
+                            </Link>
+                        </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                </>
+            )}
+
+            {user.is_guest && (
+                <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuGroup>
+                        <DropdownMenuItem asChild>
+                            <Link
+                                className="block w-full cursor-pointer font-bold text-primary"
+                                href={login().url}
+                                prefetch
+                                onClick={cleanup}
+                            >
+                                <LogIn className="mr-2" />
+                                {t('common.login')}
+                            </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            <Link
+                                className="block w-full cursor-pointer"
+                                href={register().url}
+                                prefetch
+                                onClick={cleanup}
+                            >
+                                <UserPlus className="mr-2" />
+                                {t('common.register')}
+                            </Link>
+                        </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                </>
+            )}
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
                 <Link
@@ -71,7 +105,7 @@ export function UserMenuContent({ user }: Props) {
                     data-test="logout-button"
                 >
                     <LogOut className="mr-2" />
-                    Log out
+                    {t('common.logout') || 'Log out'}
                 </Link>
             </DropdownMenuItem>
         </>

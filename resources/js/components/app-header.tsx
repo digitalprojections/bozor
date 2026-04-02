@@ -1,5 +1,6 @@
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, Menu, Search, Star } from 'lucide-react';
+import { useTranslations } from '@/hooks/use-translations';
+import { BookOpen, Folder, LayoutGrid, LogIn, Menu, Search, Star, UserPlus } from 'lucide-react';
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -33,7 +34,7 @@ import { useInitials } from '@/hooks/use-initials';
 import { cn, toUrl } from '@/lib/utils';
 import type { BreadcrumbItem, NavItem } from '@/types';
 import AppLogo from './app-logo';
-import { dashboard, home } from '@/routes';
+import { dashboard, home, login, register } from '@/routes';
 
 type Props = {
     breadcrumbs?: BreadcrumbItem[];
@@ -66,6 +67,7 @@ const activeItemStyles =
 export function AppHeader({ breadcrumbs = [] }: Props) {
     const page = usePage();
     const { auth } = page.props;
+    const { t } = useTranslations();
     const getInitials = useInitials();
     const { isCurrentUrl, whenCurrentUrl } = useCurrentUrl();
     return (
@@ -131,6 +133,25 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                                                 </a>
                                             ))}
                                         </div>
+
+                                        {(!auth.user || auth.user.is_guest) && (
+                                            <div className="flex flex-col space-y-4 pt-4 border-t border-sidebar-border/50">
+                                                <Link
+                                                    href={login().url}
+                                                    className="flex items-center space-x-2 font-bold text-primary"
+                                                >
+                                                    <LogIn className="h-5 w-5" />
+                                                    <span>{t('common.login') as string}</span>
+                                                </Link>
+                                                <Link
+                                                    href={register().url}
+                                                    className="flex items-center space-x-2 font-medium"
+                                                >
+                                                    <UserPlus className="h-5 w-5" />
+                                                    <span>{t('common.register') as string}</span>
+                                                </Link>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </SheetContent>
@@ -218,36 +239,52 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                                 ))}
                             </div>
                         </div>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button
-                                    variant="ghost"
-                                    className="flex items-center gap-2 rounded-full p-1 pl-3 h-10 hover:bg-neutral-100 transition-colors"
-                                >
-                                    <div className="flex flex-col items-end mr-1">
-                                        <div className="flex items-center gap-1 text-[10px] font-bold text-amber-500">
-                                            <Star size={10} className="fill-amber-500" />
-                                            {(auth.user.average_rating || 0).toFixed(1)}
+                        {(!auth.user || auth.user.is_guest) && (
+                            <div className="flex items-center gap-2 mr-2">
+                                <Link href={login().url}>
+                                    <Button variant="ghost" size="sm" className="hidden sm:inline-flex">
+                                        {t('common.login') as string}
+                                    </Button>
+                                </Link>
+                                <Link href={register().url}>
+                                    <Button size="sm" className="hidden sm:inline-flex">
+                                        {t('common.register') as string}
+                                    </Button>
+                                </Link>
+                            </div>
+                        )}
+                        {auth.user && (
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button
+                                        variant="ghost"
+                                        className="flex items-center gap-2 rounded-full p-1 pl-3 h-10 hover:bg-neutral-100 transition-colors"
+                                    >
+                                        <div className="flex flex-col items-end mr-1">
+                                            <div className="flex items-center gap-1 text-[10px] font-bold text-amber-500">
+                                                <Star size={10} className="fill-amber-500" />
+                                                {(auth.user.average_rating || 0).toFixed(1)}
+                                            </div>
+                                            <div className="text-[9px] text-muted-foreground leading-none">
+                                                ({auth.user.ratings_count || 0})
+                                            </div>
                                         </div>
-                                        <div className="text-[9px] text-muted-foreground leading-none">
-                                            ({auth.user.ratings_count || 0})
-                                        </div>
-                                    </div>
-                                    <Avatar className="size-8 overflow-hidden rounded-full border border-neutral-200">
-                                        <AvatarImage
-                                            src={auth.user.avatar_url}
-                                            alt={auth.user.name}
-                                        />
-                                        <AvatarFallback className="rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
-                                            {getInitials(auth.user.name)}
-                                        </AvatarFallback>
-                                    </Avatar>
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent className="w-56" align="end">
-                                <UserMenuContent user={auth.user} />
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                                        <Avatar className="size-8 overflow-hidden rounded-full border border-neutral-200">
+                                            <AvatarImage
+                                                src={auth.user.avatar_url}
+                                                alt={auth.user.name}
+                                            />
+                                            <AvatarFallback className="rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
+                                                {getInitials(auth.user.name)}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="w-56" align="end">
+                                    <UserMenuContent user={auth.user} />
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        )}
                     </div>
                 </div>
             </div>

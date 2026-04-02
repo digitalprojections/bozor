@@ -15,8 +15,8 @@ class IdentifyGuest
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Don't auto-login guests on auth, registration, or verification routes
-        if ($request->is('login', 'register', 'forgot-password', 'reset-password*', 'two-factor-challenge', 'verification*', 'user/accept-terms')) {
+        // Don't auto-login guests on landng page, auth, registration, or verification routes
+        if ($request->is('/', 'login', 'register', 'forgot-password', 'reset-password*', 'two-factor-challenge', 'verification*', 'user/accept-terms')) {
             return $next($request);
         }
 
