@@ -1,5 +1,5 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../wayfinder'
-import auth from './auth/index'
+
 
 /**
 * @see \Laravel\Fortify\Http\Controllers\AuthenticatedSessionController::login
@@ -324,4 +324,4 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     method: 'head',
 })
 
-export { auth }
+export { default as auth } from './auth/index';
