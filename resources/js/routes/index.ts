@@ -1,5 +1,5 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../wayfinder'
-import auth from './auth'
+import auth from './auth/index'
 
 /**
 * @see \Laravel\Fortify\Http\Controllers\AuthenticatedSessionController::login
