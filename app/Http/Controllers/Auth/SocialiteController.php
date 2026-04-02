@@ -28,11 +28,11 @@ class SocialiteController extends Controller
         $user = User::where('email', $googleUser->getEmail())->first();
 
         if ($user) {
-            // Update user if they were a guest or just to ensure we have their latest info
+            // Always update user name and avatar from Google to ensure sync
             $user->update([
-                'name' => $user->name ?: $googleUser->getName(),
-                'avatar' => $user->avatar ?: $googleUser->getAvatar(),
-                'is_guest' => false, // Ensure they are no longer a guest
+                'name' => $googleUser->getName(),
+                'avatar' => $googleUser->getAvatar(),
+                'is_guest' => false,
             ]);
         } else {
             // Create a new user

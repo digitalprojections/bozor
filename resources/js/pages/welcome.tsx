@@ -17,6 +17,13 @@ export default function Welcome({
 
             <Card className="rounded-[4px] border-[#f0f2f5] bg-[#fafcff] shadow-sm overflow-hidden">
                 <CardContent className="p-6 sm:p-12 text-center">
+                    <div className="flex justify-center mb-6">
+                        <img 
+                            src="/images/logo.png" 
+                            alt="Bozor" 
+                            className="h-20 w-20 sm:h-32 sm:w-32 rounded-2xl shadow-lg border-4 border-white transform hover:scale-110 transition-transform duration-300" 
+                        />
+                    </div>
                     <h1 className="text-3xl font-bold tracking-tight text-[#0b1a31] sm:text-5xl">
                         {t('welcome.title')} <br />
                         <span className="text-[#0d9488]">{t('welcome.title_highlight')}</span>

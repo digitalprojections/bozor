@@ -62,6 +62,11 @@ class AvatarHelper
      */
     public static function getAvatarUrl(User $user): string
     {
+        // If the avatar is already a full URL (e.g. from Google), return it directly
+        if ($user->avatar && (str_starts_with($user->avatar, 'http://') || str_starts_with($user->avatar, 'https://'))) {
+            return $user->avatar;
+        }
+
         // If user has uploaded avatar, use it
         if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
             /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
