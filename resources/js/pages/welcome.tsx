@@ -21,7 +21,7 @@ export default function Welcome({
                         <img 
                             src="/images/logo.png" 
                             alt="Bozor" 
-                            className="h-20 w-20 sm:h-32 sm:w-32 rounded-2xl shadow-lg border-4 border-white transform hover:scale-110 transition-transform duration-300" 
+                            className="h-40 w-40 sm:h-64 sm:w-64 rounded-3xl shadow-xl border-8 border-white transform hover:scale-110 transition-transform duration-300" 
                         />
                     </div>
                     <h1 className="text-3xl font-bold tracking-tight text-[#0b1a31] sm:text-5xl">
