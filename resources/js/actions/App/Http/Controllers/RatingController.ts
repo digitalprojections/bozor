@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\RatingController::store
  * @see app/Http/Controllers/RatingController.php:11
@@ -56,28 +56,6 @@ store.post = (args: { transaction: number | { id: number } } | [transaction: num
     url: store.url(args, options),
     method: 'post',
 })
-
-    /**
-* @see \App\Http\Controllers\RatingController::store
- * @see app/Http/Controllers/RatingController.php:11
- * @route '/transactions/{transaction}/rate'
- */
-    const storeForm = (args: { transaction: number | { id: number } } | [transaction: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-        action: store.url(args, options),
-        method: 'post',
-    })
-
-            /**
-* @see \App\Http\Controllers\RatingController::store
- * @see app/Http/Controllers/RatingController.php:11
- * @route '/transactions/{transaction}/rate'
- */
-        storeForm.post = (args: { transaction: number | { id: number } } | [transaction: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: store.url(args, options),
-            method: 'post',
-        })
-    
-    store.form = storeForm
 const RatingController = { store }
 
 export default RatingController

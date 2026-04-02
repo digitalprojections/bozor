@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\WatchlistController::index
  * @see app/Http/Controllers/WatchlistController.php:14
@@ -42,41 +42,6 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     method: 'head',
 })
 
-    /**
-* @see \App\Http\Controllers\WatchlistController::index
- * @see app/Http/Controllers/WatchlistController.php:14
- * @route '/watchlist'
- */
-    const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: index.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Http\Controllers\WatchlistController::index
- * @see app/Http/Controllers/WatchlistController.php:14
- * @route '/watchlist'
- */
-        indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: index.url(options),
-            method: 'get',
-        })
-            /**
-* @see \App\Http\Controllers\WatchlistController::index
- * @see app/Http/Controllers/WatchlistController.php:14
- * @route '/watchlist'
- */
-        indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: index.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    index.form = indexForm
 /**
 * @see \App\Http\Controllers\WatchlistController::toggle
  * @see app/Http/Controllers/WatchlistController.php:29
@@ -134,28 +99,6 @@ toggle.post = (args: { listing: number | { id: number } } | [listing: number | {
     url: toggle.url(args, options),
     method: 'post',
 })
-
-    /**
-* @see \App\Http\Controllers\WatchlistController::toggle
- * @see app/Http/Controllers/WatchlistController.php:29
- * @route '/watchlist/{listing}/toggle'
- */
-    const toggleForm = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-        action: toggle.url(args, options),
-        method: 'post',
-    })
-
-            /**
-* @see \App\Http\Controllers\WatchlistController::toggle
- * @see app/Http/Controllers/WatchlistController.php:29
- * @route '/watchlist/{listing}/toggle'
- */
-        toggleForm.post = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: toggle.url(args, options),
-            method: 'post',
-        })
-    
-    toggle.form = toggleForm
 const WatchlistController = { index, toggle }
 
 export default WatchlistController

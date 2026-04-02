@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\BidController::store
  * @see app/Http/Controllers/BidController.php:12
@@ -56,28 +56,6 @@ store.post = (args: { listing: number | { id: number } } | [listing: number | { 
     url: store.url(args, options),
     method: 'post',
 })
-
-    /**
-* @see \App\Http\Controllers\BidController::store
- * @see app/Http/Controllers/BidController.php:12
- * @route '/listings/{listing}/bid'
- */
-    const storeForm = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-        action: store.url(args, options),
-        method: 'post',
-    })
-
-            /**
-* @see \App\Http\Controllers\BidController::store
- * @see app/Http/Controllers/BidController.php:12
- * @route '/listings/{listing}/bid'
- */
-        storeForm.post = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: store.url(args, options),
-            method: 'post',
-        })
-    
-    store.form = storeForm
 const BidController = { store }
 
 export default BidController

@@ -1,3 +1,4 @@
+import Auth from './Auth'
 import MarketplaceController from './MarketplaceController'
 import ListingController from './ListingController'
 import BidController from './BidController'
@@ -9,7 +10,8 @@ import WatchlistController from './WatchlistController'
 import VerificationRequestController from './VerificationRequestController'
 import Settings from './Settings'
 const Controllers = {
-    MarketplaceController: Object.assign(MarketplaceController, MarketplaceController),
+    Auth: Object.assign(Auth, Auth),
+MarketplaceController: Object.assign(MarketplaceController, MarketplaceController),
 ListingController: Object.assign(ListingController, ListingController),
 BidController: Object.assign(BidController, BidController),
 TransactionController: Object.assign(TransactionController, TransactionController),

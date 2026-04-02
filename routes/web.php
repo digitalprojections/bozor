@@ -11,6 +11,9 @@ Route::post('locale', function (Request $request) {
     return redirect()->back();
 })->name('locale.update');
 
+Route::get('auth/google', [App\Http\Controllers\Auth\SocialiteController::class, 'redirectToGoogle'])->name('auth.google');
+Route::get('auth/google/callback', [App\Http\Controllers\Auth\SocialiteController::class, 'handleGoogleCallback']);
+
 Route::get('/privacy', function () {
     return Inertia::render('privacy');
 })->name('privacy');

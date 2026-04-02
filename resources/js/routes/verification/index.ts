@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../wayfinder'
 /**
 * @see \Laravel\Fortify\Http\Controllers\EmailVerificationPromptController::notice
  * @see vendor/laravel/fortify/src/Http/Controllers/EmailVerificationPromptController.php:18
@@ -42,41 +42,6 @@ notice.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     method: 'head',
 })
 
-    /**
-* @see \Laravel\Fortify\Http\Controllers\EmailVerificationPromptController::notice
- * @see vendor/laravel/fortify/src/Http/Controllers/EmailVerificationPromptController.php:18
- * @route '/email/verify'
- */
-    const noticeForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: notice.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \Laravel\Fortify\Http\Controllers\EmailVerificationPromptController::notice
- * @see vendor/laravel/fortify/src/Http/Controllers/EmailVerificationPromptController.php:18
- * @route '/email/verify'
- */
-        noticeForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: notice.url(options),
-            method: 'get',
-        })
-            /**
-* @see \Laravel\Fortify\Http\Controllers\EmailVerificationPromptController::notice
- * @see vendor/laravel/fortify/src/Http/Controllers/EmailVerificationPromptController.php:18
- * @route '/email/verify'
- */
-        noticeForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: notice.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    notice.form = noticeForm
 /**
 * @see \Laravel\Fortify\Http\Controllers\VerifyEmailController::verify
  * @see vendor/laravel/fortify/src/Http/Controllers/VerifyEmailController.php:18
@@ -137,41 +102,6 @@ verify.head = (args: { id: string | number, hash: string | number } | [id: strin
     method: 'head',
 })
 
-    /**
-* @see \Laravel\Fortify\Http\Controllers\VerifyEmailController::verify
- * @see vendor/laravel/fortify/src/Http/Controllers/VerifyEmailController.php:18
- * @route '/email/verify/{id}/{hash}'
- */
-    const verifyForm = (args: { id: string | number, hash: string | number } | [id: string | number, hash: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: verify.url(args, options),
-        method: 'get',
-    })
-
-            /**
-* @see \Laravel\Fortify\Http\Controllers\VerifyEmailController::verify
- * @see vendor/laravel/fortify/src/Http/Controllers/VerifyEmailController.php:18
- * @route '/email/verify/{id}/{hash}'
- */
-        verifyForm.get = (args: { id: string | number, hash: string | number } | [id: string | number, hash: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: verify.url(args, options),
-            method: 'get',
-        })
-            /**
-* @see \Laravel\Fortify\Http\Controllers\VerifyEmailController::verify
- * @see vendor/laravel/fortify/src/Http/Controllers/VerifyEmailController.php:18
- * @route '/email/verify/{id}/{hash}'
- */
-        verifyForm.head = (args: { id: string | number, hash: string | number } | [id: string | number, hash: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: verify.url(args, {
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    verify.form = verifyForm
 /**
 * @see \Laravel\Fortify\Http\Controllers\EmailVerificationNotificationController::send
  * @see vendor/laravel/fortify/src/Http/Controllers/EmailVerificationNotificationController.php:19
@@ -206,27 +136,6 @@ send.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     method: 'post',
 })
 
-    /**
-* @see \Laravel\Fortify\Http\Controllers\EmailVerificationNotificationController::send
- * @see vendor/laravel/fortify/src/Http/Controllers/EmailVerificationNotificationController.php:19
- * @route '/email/verification-notification'
- */
-    const sendForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-        action: send.url(options),
-        method: 'post',
-    })
-
-            /**
-* @see \Laravel\Fortify\Http\Controllers\EmailVerificationNotificationController::send
- * @see vendor/laravel/fortify/src/Http/Controllers/EmailVerificationNotificationController.php:19
- * @route '/email/verification-notification'
- */
-        sendForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: send.url(options),
-            method: 'post',
-        })
-    
-    send.form = sendForm
 /**
 * @see \App\Http\Controllers\VerificationRequestController::store
  * @see app/Http/Controllers/VerificationRequestController.php:13
@@ -261,27 +170,6 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     method: 'post',
 })
 
-    /**
-* @see \App\Http\Controllers\VerificationRequestController::store
- * @see app/Http/Controllers/VerificationRequestController.php:13
- * @route '/verification/request'
- */
-    const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-        action: store.url(options),
-        method: 'post',
-    })
-
-            /**
-* @see \App\Http\Controllers\VerificationRequestController::store
- * @see app/Http/Controllers/VerificationRequestController.php:13
- * @route '/verification/request'
- */
-        storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: store.url(options),
-            method: 'post',
-        })
-    
-    store.form = storeForm
 /**
 * @see \App\Http\Controllers\VerificationRequestController::index
  * @see app/Http/Controllers/VerificationRequestController.php:56
@@ -325,41 +213,6 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     method: 'head',
 })
 
-    /**
-* @see \App\Http\Controllers\VerificationRequestController::index
- * @see app/Http/Controllers/VerificationRequestController.php:56
- * @route '/verification/status'
- */
-    const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: index.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Http\Controllers\VerificationRequestController::index
- * @see app/Http/Controllers/VerificationRequestController.php:56
- * @route '/verification/status'
- */
-        indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: index.url(options),
-            method: 'get',
-        })
-            /**
-* @see \App\Http\Controllers\VerificationRequestController::index
- * @see app/Http/Controllers/VerificationRequestController.php:56
- * @route '/verification/status'
- */
-        indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: index.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    index.form = indexForm
 /**
 * @see \App\Http\Controllers\VerificationRequestController::destroy
  * @see app/Http/Controllers/VerificationRequestController.php:70
@@ -412,38 +265,6 @@ destroy.delete = (args: { id: string | number } | [id: string | number ] | strin
     url: destroy.url(args, options),
     method: 'delete',
 })
-
-    /**
-* @see \App\Http\Controllers\VerificationRequestController::destroy
- * @see app/Http/Controllers/VerificationRequestController.php:70
- * @route '/verification/request/{id}'
- */
-    const destroyForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-        action: destroy.url(args, {
-                    [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                        _method: 'DELETE',
-                        ...(options?.query ?? options?.mergeQuery ?? {}),
-                    }
-                }),
-        method: 'post',
-    })
-
-            /**
-* @see \App\Http\Controllers\VerificationRequestController::destroy
- * @see app/Http/Controllers/VerificationRequestController.php:70
- * @route '/verification/request/{id}'
- */
-        destroyForm.delete = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: destroy.url(args, {
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'DELETE',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'post',
-        })
-    
-    destroy.form = destroyForm
 const verification = {
     notice: Object.assign(notice, notice),
 verify: Object.assign(verify, verify),

@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../wayfinder'
 /**
 * @see \App\Http\Controllers\ListingController::create
  * @see app/Http/Controllers/ListingController.php:25
@@ -42,41 +42,6 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     method: 'head',
 })
 
-    /**
-* @see \App\Http\Controllers\ListingController::create
- * @see app/Http/Controllers/ListingController.php:25
- * @route '/listings/create'
- */
-    const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: create.url(options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Http\Controllers\ListingController::create
- * @see app/Http/Controllers/ListingController.php:25
- * @route '/listings/create'
- */
-        createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: create.url(options),
-            method: 'get',
-        })
-            /**
-* @see \App\Http\Controllers\ListingController::create
- * @see app/Http/Controllers/ListingController.php:25
- * @route '/listings/create'
- */
-        createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: create.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    create.form = createForm
 /**
 * @see \App\Http\Controllers\ListingController::store
  * @see app/Http/Controllers/ListingController.php:37
@@ -111,29 +76,8 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     method: 'post',
 })
 
-    /**
-* @see \App\Http\Controllers\ListingController::store
- * @see app/Http/Controllers/ListingController.php:37
- * @route '/listings'
- */
-    const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-        action: store.url(options),
-        method: 'post',
-    })
-
-            /**
-* @see \App\Http\Controllers\ListingController::store
- * @see app/Http/Controllers/ListingController.php:37
- * @route '/listings'
- */
-        storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: store.url(options),
-            method: 'post',
-        })
-    
-    store.form = storeForm
 /**
- * @see routes/web.php:47
+ * @see routes/web.php:50
  * @route '/listings'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -147,7 +91,7 @@ index.definition = {
 } satisfies RouteDefinition<["get","head"]>
 
 /**
- * @see routes/web.php:47
+ * @see routes/web.php:50
  * @route '/listings'
  */
 index.url = (options?: RouteQueryOptions) => {
@@ -155,7 +99,7 @@ index.url = (options?: RouteQueryOptions) => {
 }
 
 /**
- * @see routes/web.php:47
+ * @see routes/web.php:50
  * @route '/listings'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -163,7 +107,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     method: 'get',
 })
 /**
- * @see routes/web.php:47
+ * @see routes/web.php:50
  * @route '/listings'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -171,38 +115,6 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     method: 'head',
 })
 
-    /**
- * @see routes/web.php:47
- * @route '/listings'
- */
-    const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: index.url(options),
-        method: 'get',
-    })
-
-            /**
- * @see routes/web.php:47
- * @route '/listings'
- */
-        indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: index.url(options),
-            method: 'get',
-        })
-            /**
- * @see routes/web.php:47
- * @route '/listings'
- */
-        indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: index.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    index.form = indexForm
 /**
 * @see \App\Http\Controllers\ListingController::edit
  * @see app/Http/Controllers/ListingController.php:111
@@ -270,41 +182,6 @@ edit.head = (args: { listing: number | { id: number } } | [listing: number | { i
     method: 'head',
 })
 
-    /**
-* @see \App\Http\Controllers\ListingController::edit
- * @see app/Http/Controllers/ListingController.php:111
- * @route '/listings/{listing}/edit'
- */
-    const editForm = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: edit.url(args, options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Http\Controllers\ListingController::edit
- * @see app/Http/Controllers/ListingController.php:111
- * @route '/listings/{listing}/edit'
- */
-        editForm.get = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: edit.url(args, options),
-            method: 'get',
-        })
-            /**
-* @see \App\Http\Controllers\ListingController::edit
- * @see app/Http/Controllers/ListingController.php:111
- * @route '/listings/{listing}/edit'
- */
-        editForm.head = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: edit.url(args, {
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    edit.form = editForm
 /**
 * @see \App\Http\Controllers\ListingController::update
  * @see app/Http/Controllers/ListingController.php:129
@@ -363,37 +240,6 @@ update.patch = (args: { listing: number | { id: number } } | [listing: number | 
     method: 'patch',
 })
 
-    /**
-* @see \App\Http\Controllers\ListingController::update
- * @see app/Http/Controllers/ListingController.php:129
- * @route '/listings/{listing}'
- */
-    const updateForm = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-        action: update.url(args, {
-                    [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                        _method: 'PATCH',
-                        ...(options?.query ?? options?.mergeQuery ?? {}),
-                    }
-                }),
-        method: 'post',
-    })
-
-            /**
-* @see \App\Http\Controllers\ListingController::update
- * @see app/Http/Controllers/ListingController.php:129
- * @route '/listings/{listing}'
- */
-        updateForm.patch = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: update.url(args, {
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'PATCH',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'post',
-        })
-    
-    update.form = updateForm
 /**
 * @see \App\Http\Controllers\ListingController::destroy
  * @see app/Http/Controllers/ListingController.php:186
@@ -452,37 +298,6 @@ destroy.delete = (args: { listing: number | { id: number } } | [listing: number 
     method: 'delete',
 })
 
-    /**
-* @see \App\Http\Controllers\ListingController::destroy
- * @see app/Http/Controllers/ListingController.php:186
- * @route '/listings/{listing}'
- */
-    const destroyForm = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-        action: destroy.url(args, {
-                    [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                        _method: 'DELETE',
-                        ...(options?.query ?? options?.mergeQuery ?? {}),
-                    }
-                }),
-        method: 'post',
-    })
-
-            /**
-* @see \App\Http\Controllers\ListingController::destroy
- * @see app/Http/Controllers/ListingController.php:186
- * @route '/listings/{listing}'
- */
-        destroyForm.delete = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: destroy.url(args, {
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'DELETE',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'post',
-        })
-    
-    destroy.form = destroyForm
 /**
 * @see \App\Http\Controllers\BidController::bid
  * @see app/Http/Controllers/BidController.php:12
@@ -541,27 +356,6 @@ bid.post = (args: { listing: number | { id: number } } | [listing: number | { id
     method: 'post',
 })
 
-    /**
-* @see \App\Http\Controllers\BidController::bid
- * @see app/Http/Controllers/BidController.php:12
- * @route '/listings/{listing}/bid'
- */
-    const bidForm = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-        action: bid.url(args, options),
-        method: 'post',
-    })
-
-            /**
-* @see \App\Http\Controllers\BidController::bid
- * @see app/Http/Controllers/BidController.php:12
- * @route '/listings/{listing}/bid'
- */
-        bidForm.post = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: bid.url(args, options),
-            method: 'post',
-        })
-    
-    bid.form = bidForm
 /**
 * @see \App\Http\Controllers\TransactionController::buyNow
  * @see app/Http/Controllers/TransactionController.php:12
@@ -629,41 +423,6 @@ buyNow.head = (args: { listing: number | { id: number } } | [listing: number | {
     method: 'head',
 })
 
-    /**
-* @see \App\Http\Controllers\TransactionController::buyNow
- * @see app/Http/Controllers/TransactionController.php:12
- * @route '/listings/{listing}/buy-now'
- */
-    const buyNowForm = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: buyNow.url(args, options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Http\Controllers\TransactionController::buyNow
- * @see app/Http/Controllers/TransactionController.php:12
- * @route '/listings/{listing}/buy-now'
- */
-        buyNowForm.get = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: buyNow.url(args, options),
-            method: 'get',
-        })
-            /**
-* @see \App\Http\Controllers\TransactionController::buyNow
- * @see app/Http/Controllers/TransactionController.php:12
- * @route '/listings/{listing}/buy-now'
- */
-        buyNowForm.head = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: buyNow.url(args, {
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    buyNow.form = buyNowForm
 /**
 * @see \App\Http\Controllers\TransactionController::buyNow
  * @see app/Http/Controllers/TransactionController.php:12
@@ -722,27 +481,6 @@ buyNow.post = (args: { listing: number | { id: number } } | [listing: number | {
     method: 'post',
 })
 
-    /**
-* @see \App\Http\Controllers\TransactionController::buyNow
- * @see app/Http/Controllers/TransactionController.php:12
- * @route '/listings/{listing}/buy-now'
- */
-    const buyNowForm = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-        action: buyNow.url(args, options),
-        method: 'post',
-    })
-
-            /**
-* @see \App\Http\Controllers\TransactionController::buyNow
- * @see app/Http/Controllers/TransactionController.php:12
- * @route '/listings/{listing}/buy-now'
- */
-        buyNowForm.post = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: buyNow.url(args, options),
-            method: 'post',
-        })
-    
-    buyNow.form = buyNowForm
 /**
 * @see \App\Http\Controllers\ListingController::show
  * @see app/Http/Controllers/ListingController.php:90
@@ -809,42 +547,6 @@ show.head = (args: { listing: number | { id: number } } | [listing: number | { i
     url: show.url(args, options),
     method: 'head',
 })
-
-    /**
-* @see \App\Http\Controllers\ListingController::show
- * @see app/Http/Controllers/ListingController.php:90
- * @route '/listings/{listing}'
- */
-    const showForm = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: show.url(args, options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Http\Controllers\ListingController::show
- * @see app/Http/Controllers/ListingController.php:90
- * @route '/listings/{listing}'
- */
-        showForm.get = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: show.url(args, options),
-            method: 'get',
-        })
-            /**
-* @see \App\Http\Controllers\ListingController::show
- * @see app/Http/Controllers/ListingController.php:90
- * @route '/listings/{listing}'
- */
-        showForm.head = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: show.url(args, {
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    show.form = showForm
 const listings = {
     create: Object.assign(create, create),
 store: Object.assign(store, store),
