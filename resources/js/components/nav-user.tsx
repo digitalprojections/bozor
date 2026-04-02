@@ -23,7 +23,7 @@ export function NavUser() {
     const isMobile = useIsMobile();
     const { t } = useTranslations();
 
-    if (!auth.user) {
+    if (!auth.user || auth.user.is_guest) {
         return (
             <SidebarMenu>
                 <SidebarMenuItem className="flex flex-col gap-2 p-2">

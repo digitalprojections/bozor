@@ -239,7 +239,7 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                                 ))}
                             </div>
                         </div>
-                        {(!auth.user || auth.user.is_guest) && (
+                        {(!auth.user || auth.user.is_guest) ? (
                             <div className="flex items-center gap-2 mr-2">
                                 <Link href={login().url}>
                                     <Button variant="ghost" size="sm" className="hidden sm:inline-flex">
@@ -252,8 +252,7 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                                     </Button>
                                 </Link>
                             </div>
-                        )}
-                        {auth.user && (
+                        ) : (
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <Button
