@@ -63,7 +63,8 @@ export function SearchAndFilters({
                         className="pl-10 h-10"
                     />
                 </div>
-                <Button type="submit" className="h-10 sm:w-auto w-full">
+                <Button type="submit" className="h-10 sm:w-auto w-full bg-[#1a263b] hover:bg-[#0b1a31] text-white">
+                    <Search className="mr-2 h-4 w-4" />
                     {t('marketplace.search.button')}
                 </Button>
             </form>
