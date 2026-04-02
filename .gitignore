@@ -53,3 +53,4 @@ composer.phar
 node_modules/
 /vendor/
 
+/resources

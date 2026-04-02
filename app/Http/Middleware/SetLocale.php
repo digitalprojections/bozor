@@ -28,6 +28,14 @@ class SetLocale
             return $next($request);
         }
 
+        // 2. Cookie (persists after logout)
+        $locale = $request->cookie('locale');
+        if ($locale && in_array($locale, $supported, true)) {
+            App::setLocale($locale);
+            Session::put('locale', $locale);
+            return $next($request);
+        }
+
         // 2. Accept-Language header (first match in supported)
         $preferred = $this->preferredLocaleFromHeader($request->header('Accept-Language'), $supported);
         if ($preferred) {

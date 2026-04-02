@@ -16,7 +16,9 @@ class LocaleController extends Controller
             'locale' => ['required', 'string', 'in:' . implode(',', array_keys(config('locales.supported', ['en' => []])))],
         ]);
 
-        Session::put('locale', $request->locale);
+        $locale = $request->input('locale');
+        Session::put('locale', $locale);
+        cookie()->queue('locale', $locale, 43200 * 6); // 6 months
 
         return back();
     }
