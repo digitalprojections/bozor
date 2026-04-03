@@ -142,11 +142,11 @@ export function ListingSidebar({ listing }: ListingSidebarProps) {
                                 </Button>
                             )}
                         </div>
-                    ) : auth?.user && !auth.user.is_guest && Number(auth.user.id) === Number(listing.user.id) && listing.status !== 'sold' ? (
+                    ) : auth?.user && !auth.user.is_guest && Number(auth.user.id) === Number(listing.user.id) ? (
                         <div className="text-center text-xs sm:text-sm text-amber-600 bg-amber-50 p-3 sm:p-4 rounded-[16px] sm:rounded-2xl border border-dashed border-amber-200">
                             {t('listing.owner_actions_restricted') || 'You cannot bid on or buy your own listing.'}
                         </div>
-                    ) : (
+                    ) : listing.status === 'active' ? (
                         <div className="text-center text-xs sm:text-sm text-[#5f6c84] bg-muted/50 p-3 sm:p-4 rounded-[16px] sm:rounded-2xl border border-dashed">
                             {t('listing.sidebar.login_prefix')}{' '}
                             <Link href="/login" className="text-[#0d9488] font-semibold underline underline-offset-4">
@@ -154,7 +154,7 @@ export function ListingSidebar({ listing }: ListingSidebarProps) {
                             </Link>{' '}
                             {t('listing.sidebar.login_suffix')}
                         </div>
-                    )}
+                    ) : null}
 
                     <WatchButton
                         listingId={listing.id}
