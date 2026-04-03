@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Listing;
+use App\Notifications\Seller\NewWatcher;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -39,6 +40,11 @@ class WatchlistController extends Controller
             $user->watchedListings()->attach($listing->id);
             $message = 'Added to watchlist';
             $status = 'added';
+
+            // Notify the seller
+            if ($listing->user_id !== $user->id) {
+                $listing->user->notify(new NewWatcher($listing, $user));
+            }
         }
 
         if ($request->wantsJson()) {

@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../wayfinder'
 /**
 * @see \App\Http\Controllers\WatchlistController::index
- * @see app/Http/Controllers/WatchlistController.php:14
+ * @see app/Http/Controllers/WatchlistController.php:15
  * @route '/watchlist'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\WatchlistController::index
- * @see app/Http/Controllers/WatchlistController.php:14
+ * @see app/Http/Controllers/WatchlistController.php:15
  * @route '/watchlist'
  */
 index.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\WatchlistController::index
- * @see app/Http/Controllers/WatchlistController.php:14
+ * @see app/Http/Controllers/WatchlistController.php:15
  * @route '/watchlist'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -34,7 +34,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\WatchlistController::index
- * @see app/Http/Controllers/WatchlistController.php:14
+ * @see app/Http/Controllers/WatchlistController.php:15
  * @route '/watchlist'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -44,7 +44,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\WatchlistController::index
- * @see app/Http/Controllers/WatchlistController.php:14
+ * @see app/Http/Controllers/WatchlistController.php:15
  * @route '/watchlist'
  */
     const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -54,7 +54,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\WatchlistController::index
- * @see app/Http/Controllers/WatchlistController.php:14
+ * @see app/Http/Controllers/WatchlistController.php:15
  * @route '/watchlist'
  */
         indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -63,7 +63,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\WatchlistController::index
- * @see app/Http/Controllers/WatchlistController.php:14
+ * @see app/Http/Controllers/WatchlistController.php:15
  * @route '/watchlist'
  */
         indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -79,7 +79,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     index.form = indexForm
 /**
 * @see \App\Http\Controllers\WatchlistController::toggle
- * @see app/Http/Controllers/WatchlistController.php:29
+ * @see app/Http/Controllers/WatchlistController.php:30
  * @route '/watchlist/{listing}/toggle'
  */
 export const toggle = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -94,7 +94,7 @@ toggle.definition = {
 
 /**
 * @see \App\Http\Controllers\WatchlistController::toggle
- * @see app/Http/Controllers/WatchlistController.php:29
+ * @see app/Http/Controllers/WatchlistController.php:30
  * @route '/watchlist/{listing}/toggle'
  */
 toggle.url = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -127,7 +127,7 @@ toggle.url = (args: { listing: number | { id: number } } | [listing: number | { 
 
 /**
 * @see \App\Http\Controllers\WatchlistController::toggle
- * @see app/Http/Controllers/WatchlistController.php:29
+ * @see app/Http/Controllers/WatchlistController.php:30
  * @route '/watchlist/{listing}/toggle'
  */
 toggle.post = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -137,7 +137,7 @@ toggle.post = (args: { listing: number | { id: number } } | [listing: number | {
 
     /**
 * @see \App\Http\Controllers\WatchlistController::toggle
- * @see app/Http/Controllers/WatchlistController.php:29
+ * @see app/Http/Controllers/WatchlistController.php:30
  * @route '/watchlist/{listing}/toggle'
  */
     const toggleForm = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -147,7 +147,7 @@ toggle.post = (args: { listing: number | { id: number } } | [listing: number | {
 
             /**
 * @see \App\Http\Controllers\WatchlistController::toggle
- * @see app/Http/Controllers/WatchlistController.php:29
+ * @see app/Http/Controllers/WatchlistController.php:30
  * @route '/watchlist/{listing}/toggle'
  */
         toggleForm.post = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

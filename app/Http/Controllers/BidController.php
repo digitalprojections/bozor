@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Bid;
 use App\Models\Listing;
+use App\Notifications\Seller\BidReceived;
+use App\Notifications\Buyer\Outbid;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -37,8 +39,11 @@ class BidController extends Controller
             return back()->withErrors(['amount' => "The bid must be at least ¥{$minBid}."]);
         }
 
-        DB::transaction(function () use ($listing, $validated) {
-            Bid::create([
+        $previousBid = $listing->bids()->orderBy('amount', 'desc')->first();
+
+        $newBid = null;
+        DB::transaction(function () use ($listing, $validated, &$newBid) {
+            $newBid = Bid::create([
                 'user_id' => auth()->id(),
                 'listing_id' => $listing->id,
                 'amount' => $validated['amount'],
@@ -48,6 +53,14 @@ class BidController extends Controller
                 'current_high_bid' => $validated['amount'],
             ]);
         });
+
+        // Notify the seller
+        $listing->user->notify(new BidReceived($listing, $newBid));
+
+        // Notify the previous high bidder that they've been outbid
+        if ($previousBid && $previousBid->user_id !== auth()->id()) {
+            $previousBid->user->notify(new Outbid($listing, $newBid));
+        }
 
         // Notify watchers (except the bidder) about the new bid
         $listing->load('watchedBy');

@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\BidController::store
- * @see app/Http/Controllers/BidController.php:12
+ * @see app/Http/Controllers/BidController.php:14
  * @route '/listings/{listing}/bid'
  */
 export const store = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\BidController::store
- * @see app/Http/Controllers/BidController.php:12
+ * @see app/Http/Controllers/BidController.php:14
  * @route '/listings/{listing}/bid'
  */
 store.url = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -49,7 +49,7 @@ store.url = (args: { listing: number | { id: number } } | [listing: number | { i
 
 /**
 * @see \App\Http\Controllers\BidController::store
- * @see app/Http/Controllers/BidController.php:12
+ * @see app/Http/Controllers/BidController.php:14
  * @route '/listings/{listing}/bid'
  */
 store.post = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -59,7 +59,7 @@ store.post = (args: { listing: number | { id: number } } | [listing: number | { 
 
     /**
 * @see \App\Http\Controllers\BidController::store
- * @see app/Http/Controllers/BidController.php:12
+ * @see app/Http/Controllers/BidController.php:14
  * @route '/listings/{listing}/bid'
  */
     const storeForm = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -69,7 +69,7 @@ store.post = (args: { listing: number | { id: number } } | [listing: number | { 
 
             /**
 * @see \App\Http\Controllers\BidController::store
- * @see app/Http/Controllers/BidController.php:12
+ * @see app/Http/Controllers/BidController.php:14
  * @route '/listings/{listing}/bid'
  */
         storeForm.post = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

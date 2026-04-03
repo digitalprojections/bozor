@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Listing;
 use App\Models\Transaction;
+use App\Notifications\Seller\ListingSold;
+use App\Notifications\TransactionUpdated;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -29,7 +31,8 @@ class TransactionController extends Controller
 
         // Potential balance check logic here if a wallet system exists
 
-        DB::transaction(function () use ($listing) {
+        $transaction = null;
+        DB::transaction(function () use ($listing, &$transaction) {
             $transaction = Transaction::create([
                 'listing_id' => $listing->id,
                 'buyer_id' => auth()->id(),
@@ -40,6 +43,9 @@ class TransactionController extends Controller
 
             $listing->update(['status' => 'sold']);
         });
+
+        // Notify the seller
+        $listing->user->notify(new ListingSold($listing, $transaction));
 
         return redirect()->route('dashboard')->with('success', 'Purchase completed successfully!');
     }
@@ -66,6 +72,9 @@ class TransactionController extends Controller
             'status' => Transaction::STATUS_PAID,
             'paid_at' => now(),
         ]);
+
+        // Notify the seller
+        $transaction->seller->notify(new TransactionUpdated($transaction, Transaction::STATUS_PAID, 'seller'));
 
         return back()->with('success', 'Payment confirmed successfully!');
     }
@@ -97,6 +106,13 @@ class TransactionController extends Controller
             ]);
         });
 
+        // Notify the other party
+        $isCancelledByBuyer = auth()->id() === $transaction->buyer_id;
+        $recipient = $isCancelledByBuyer ? $transaction->seller : $transaction->buyer;
+        $recipientRole = $isCancelledByBuyer ? 'seller' : 'buyer';
+        
+        $recipient->notify(new TransactionUpdated($transaction, Transaction::STATUS_CANCELLED, $recipientRole));
+
         return back()->with('success', 'Transaction cancelled successfully.');
     }
 
@@ -122,6 +138,9 @@ class TransactionController extends Controller
             'shipped_at' => now(),
         ]);
 
+        // Notify the buyer
+        $transaction->buyer->notify(new TransactionUpdated($transaction, Transaction::STATUS_SHIPPED, 'buyer'));
+
         return back()->with('success', 'Item marked as shipped!');
     }
 
@@ -140,6 +159,9 @@ class TransactionController extends Controller
             'received_at' => now(),
             'completed_at' => now(),
         ]);
+
+        // Notify the seller
+        $transaction->seller->notify(new TransactionUpdated($transaction, Transaction::STATUS_RECEIVED, 'seller'));
 
         return back()->with('success', 'Item received! Transaction completed.');
     }

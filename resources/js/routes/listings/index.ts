@@ -485,7 +485,7 @@ destroy.delete = (args: { listing: number | { id: number } } | [listing: number 
     destroy.form = destroyForm
 /**
 * @see \App\Http\Controllers\BidController::bid
- * @see app/Http/Controllers/BidController.php:12
+ * @see app/Http/Controllers/BidController.php:14
  * @route '/listings/{listing}/bid'
  */
 export const bid = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -500,7 +500,7 @@ bid.definition = {
 
 /**
 * @see \App\Http\Controllers\BidController::bid
- * @see app/Http/Controllers/BidController.php:12
+ * @see app/Http/Controllers/BidController.php:14
  * @route '/listings/{listing}/bid'
  */
 bid.url = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -533,7 +533,7 @@ bid.url = (args: { listing: number | { id: number } } | [listing: number | { id:
 
 /**
 * @see \App\Http\Controllers\BidController::bid
- * @see app/Http/Controllers/BidController.php:12
+ * @see app/Http/Controllers/BidController.php:14
  * @route '/listings/{listing}/bid'
  */
 bid.post = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -543,7 +543,7 @@ bid.post = (args: { listing: number | { id: number } } | [listing: number | { id
 
     /**
 * @see \App\Http\Controllers\BidController::bid
- * @see app/Http/Controllers/BidController.php:12
+ * @see app/Http/Controllers/BidController.php:14
  * @route '/listings/{listing}/bid'
  */
     const bidForm = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -553,7 +553,7 @@ bid.post = (args: { listing: number | { id: number } } | [listing: number | { id
 
             /**
 * @see \App\Http\Controllers\BidController::bid
- * @see app/Http/Controllers/BidController.php:12
+ * @see app/Http/Controllers/BidController.php:14
  * @route '/listings/{listing}/bid'
  */
         bidForm.post = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -564,7 +564,7 @@ bid.post = (args: { listing: number | { id: number } } | [listing: number | { id
     bid.form = bidForm
 /**
 * @see \App\Http\Controllers\TransactionController::buyNow
- * @see app/Http/Controllers/TransactionController.php:12
+ * @see app/Http/Controllers/TransactionController.php:14
  * @route '/listings/{listing}/buy-now'
  */
 export const buyNow = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -579,7 +579,7 @@ buyNow.definition = {
 
 /**
 * @see \App\Http\Controllers\TransactionController::buyNow
- * @see app/Http/Controllers/TransactionController.php:12
+ * @see app/Http/Controllers/TransactionController.php:14
  * @route '/listings/{listing}/buy-now'
  */
 buyNow.url = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -612,7 +612,7 @@ buyNow.url = (args: { listing: number | { id: number } } | [listing: number | { 
 
 /**
 * @see \App\Http\Controllers\TransactionController::buyNow
- * @see app/Http/Controllers/TransactionController.php:12
+ * @see app/Http/Controllers/TransactionController.php:14
  * @route '/listings/{listing}/buy-now'
  */
 buyNow.get = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -621,7 +621,7 @@ buyNow.get = (args: { listing: number | { id: number } } | [listing: number | { 
 })
 /**
 * @see \App\Http\Controllers\TransactionController::buyNow
- * @see app/Http/Controllers/TransactionController.php:12
+ * @see app/Http/Controllers/TransactionController.php:14
  * @route '/listings/{listing}/buy-now'
  */
 buyNow.head = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -631,7 +631,7 @@ buyNow.head = (args: { listing: number | { id: number } } | [listing: number | {
 
     /**
 * @see \App\Http\Controllers\TransactionController::buyNow
- * @see app/Http/Controllers/TransactionController.php:12
+ * @see app/Http/Controllers/TransactionController.php:14
  * @route '/listings/{listing}/buy-now'
  */
     const buyNowForm = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -641,7 +641,7 @@ buyNow.head = (args: { listing: number | { id: number } } | [listing: number | {
 
             /**
 * @see \App\Http\Controllers\TransactionController::buyNow
- * @see app/Http/Controllers/TransactionController.php:12
+ * @see app/Http/Controllers/TransactionController.php:14
  * @route '/listings/{listing}/buy-now'
  */
         buyNowForm.get = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -650,7 +650,7 @@ buyNow.head = (args: { listing: number | { id: number } } | [listing: number | {
         })
             /**
 * @see \App\Http\Controllers\TransactionController::buyNow
- * @see app/Http/Controllers/TransactionController.php:12
+ * @see app/Http/Controllers/TransactionController.php:14
  * @route '/listings/{listing}/buy-now'
  */
         buyNowForm.head = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -666,7 +666,7 @@ buyNow.head = (args: { listing: number | { id: number } } | [listing: number | {
     buyNow.form = buyNowForm
 /**
 * @see \App\Http\Controllers\TransactionController::buyNow
- * @see app/Http/Controllers/TransactionController.php:12
+ * @see app/Http/Controllers/TransactionController.php:14
  * @route '/listings/{listing}/buy-now'
  */
 export const buyNow = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -681,7 +681,7 @@ buyNow.definition = {
 
 /**
 * @see \App\Http\Controllers\TransactionController::buyNow
- * @see app/Http/Controllers/TransactionController.php:12
+ * @see app/Http/Controllers/TransactionController.php:14
  * @route '/listings/{listing}/buy-now'
  */
 buyNow.url = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -714,7 +714,7 @@ buyNow.url = (args: { listing: number | { id: number } } | [listing: number | { 
 
 /**
 * @see \App\Http\Controllers\TransactionController::buyNow
- * @see app/Http/Controllers/TransactionController.php:12
+ * @see app/Http/Controllers/TransactionController.php:14
  * @route '/listings/{listing}/buy-now'
  */
 buyNow.post = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -724,7 +724,7 @@ buyNow.post = (args: { listing: number | { id: number } } | [listing: number | {
 
     /**
 * @see \App\Http\Controllers\TransactionController::buyNow
- * @see app/Http/Controllers/TransactionController.php:12
+ * @see app/Http/Controllers/TransactionController.php:14
  * @route '/listings/{listing}/buy-now'
  */
     const buyNowForm = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -734,7 +734,7 @@ buyNow.post = (args: { listing: number | { id: number } } | [listing: number | {
 
             /**
 * @see \App\Http\Controllers\TransactionController::buyNow
- * @see app/Http/Controllers/TransactionController.php:12
+ * @see app/Http/Controllers/TransactionController.php:14
  * @route '/listings/{listing}/buy-now'
  */
         buyNowForm.post = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
