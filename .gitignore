@@ -52,3 +52,4 @@ composer.phar
 /public/storage
 node_modules/
 /vendor/
+bozor_database
