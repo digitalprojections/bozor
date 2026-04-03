@@ -169,9 +169,16 @@ export default function Show({ listing, recommendations = [], is_watched = false
                     <CardContent className="p-4 sm:p-8">
                         <div className="flex flex-col gap-4 sm:gap-6">
                             <div className="flex flex-col gap-3">
-                                <Badge variant="destructive" className="bg-[#fce8e8] text-[#b13e3e] hover:bg-[#fce8e8] rounded-full px-3 h-6 sm:h-7 border-none font-medium w-fit text-[10px] sm:text-xs">
-                                    {listing.is_auction ? t('listing.show.auction') : t('dashboard.status.' + listing.status)}
-                                </Badge>
+                                <div className="flex flex-wrap gap-2">
+                                    <Badge variant="destructive" className="bg-[#fce8e8] text-[#b13e3e] hover:bg-[#fce8e8] rounded-full px-3 h-6 sm:h-7 border-none font-medium w-fit text-[10px] sm:text-xs">
+                                        {listing.is_auction ? t('listing.show.auction') : t('dashboard.status.' + listing.status)}
+                                    </Badge>
+                                    {listing.status === 'sold' && (
+                                        <Badge className="bg-[#b91c1c] text-white hover:bg-[#b91c1c] rounded-full px-3 h-6 sm:h-7 border-none font-bold w-fit text-[10px] sm:text-xs uppercase tracking-wider">
+                                            {t('dashboard.status.sold')}
+                                        </Badge>
+                                    )}
+                                </div>
                                 <h1 className="text-xl sm:text-[1.8rem] font-bold tracking-tight text-[#0b1b32] leading-tight">
                                     {listing.title}
                                 </h1>
@@ -189,53 +196,63 @@ export default function Show({ listing, recommendations = [], is_watched = false
 
                                 <div className="flex flex-col sm:flex-row md:flex-col md:items-end gap-4 sm:gap-6 md:gap-3">
                                     <div className="flex items-center gap-2">
-                                        {(auth?.user && !auth.user.is_guest && Number(listing.user.id) !== Number(auth.user.id)) && (
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                className={cn(
-                                                    "rounded-full h-9 sm:h-10 px-5 flex items-center gap-2 transition-all flex-1 sm:flex-none",
-                                                    is_watched ? 'border-[#ff4d4f] text-[#ff4d4f] bg-[#fff1f0]' : 'border-[#cbd5e1] text-[#475569] hover:bg-slate-50'
-                                                )}
-                                                onClick={() => router.post(`/watchlist/${listing.id}/toggle`, {}, { preserveScroll: true })}
-                                            >
-                                                <Heart size={16} className={is_watched ? 'fill-current' : ''} />
-                                                <span className="font-semibold text-sm">{is_watched ? 'Watched' : 'Watch'}</span>
-                                            </Button>
-                                        )}
-                                        {auth?.user && !auth.user.is_guest && Number(listing.user.id) === Number(auth.user.id) && (
-                                            <div className="flex items-center gap-2 w-full sm:w-auto">
-                                                <Link href={`/listings/${listing.id}/edit`} className="flex-1 sm:flex-none">
-                                                    <Button variant="outline" size="sm" className="rounded-full w-full h-9 sm:h-10 px-5 border-[#cbd5e1] text-[#475569]">
-                                                        {t('common.edit')}
+                                        {listing.status !== 'sold' && (
+                                            <>
+                                                {(auth?.user && !auth.user.is_guest && Number(listing.user.id) !== Number(auth.user.id)) && (
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        className={cn(
+                                                            "rounded-full h-9 sm:h-10 px-5 flex items-center gap-2 transition-all flex-1 sm:flex-none",
+                                                            is_watched ? 'border-[#ff4d4f] text-[#ff4d4f] bg-[#fff1f0]' : 'border-[#cbd5e1] text-[#475569] hover:bg-slate-50'
+                                                        )}
+                                                        onClick={() => router.post(`/watchlist/${listing.id}/toggle`, {}, { preserveScroll: true })}
+                                                    >
+                                                        <Heart size={16} className={is_watched ? 'fill-current' : ''} />
+                                                        <span className="font-semibold text-sm">{is_watched ? 'Watched' : 'Watch'}</span>
                                                     </Button>
-                                                </Link>
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    className="rounded-full h-9 sm:h-10 px-5 border-red-200 text-red-500 hover:bg-red-50 flex-1 sm:flex-none"
-                                                    onClick={() => {
-                                                        if (confirm(t('listing.delete_confirm'))) {
-                                                            router.delete(`/listings/${listing.id}`);
-                                                        }
-                                                    }}
-                                                >
-                                                    <Trash2 size={14} className="mr-1" />
-                                                    {t('common.delete')}
-                                                </Button>
-                                            </div>
+                                                )}
+                                                {auth?.user && !auth.user.is_guest && Number(listing.user.id) === Number(auth.user.id) && (
+                                                    <div className="flex items-center gap-2 w-full sm:w-auto">
+                                                        <Link href={`/listings/${listing.id}/edit`} className="flex-1 sm:flex-none">
+                                                            <Button variant="outline" size="sm" className="rounded-full w-full h-9 sm:h-10 px-5 border-[#cbd5e1] text-[#475569]">
+                                                                {t('common.edit')}
+                                                            </Button>
+                                                        </Link>
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            className="rounded-full h-9 sm:h-10 px-5 border-red-200 text-red-500 hover:bg-red-50 flex-1 sm:flex-none"
+                                                            onClick={() => {
+                                                                if (confirm(t('listing.delete_confirm'))) {
+                                                                    router.delete(`/listings/${listing.id}`);
+                                                                }
+                                                            }}
+                                                        >
+                                                            <Trash2 size={14} className="mr-1" />
+                                                            {t('common.delete')}
+                                                        </Button>
+                                                    </div>
+                                                )}
+                                                {(!auth?.user || auth.user.is_guest) && (
+                                                    <Link href="/login" className="flex-1 sm:flex-none">
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            className="rounded-full h-9 sm:h-10 px-5 flex items-center gap-2 border-[#cbd5e1] text-[#475569] hover:bg-slate-50 w-full"
+                                                        >
+                                                            <Heart size={16} />
+                                                            <span className="font-semibold text-sm">{t('listing.sidebar.add_to_watchlist')}</span>
+                                                        </Button>
+                                                    </Link>
+                                                )}
+                                            </>
                                         )}
-                                        {(!auth?.user || auth.user.is_guest) && (
-                                             <Link href="/login" className="flex-1 sm:flex-none">
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    className="rounded-full h-9 sm:h-10 px-5 flex items-center gap-2 border-[#cbd5e1] text-[#475569] hover:bg-slate-50 w-full"
-                                                >
-                                                    <Heart size={16} />
-                                                    <span className="font-semibold text-sm">{t('listing.sidebar.add_to_watchlist')}</span>
-                                                </Button>
-                                            </Link>
+                                        {listing.status === 'sold' && (
+                                            <Badge variant="outline" className="rounded-full px-4 h-10 border-[#e2e8f0] text-[#64748b] bg-slate-50 font-semibold gap-2">
+                                                <Package size={14} />
+                                                {t('dashboard.status.sold')}
+                                            </Badge>
                                         )}
                                     </div>
 

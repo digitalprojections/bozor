@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ChevronLeft, ChevronRight, Package, Heart } from 'lucide-react';
 import { useTranslations } from '@/hooks/use-translations';
 import { useInitials } from '@/hooks/use-initials';
+import { cn } from '@/lib/utils';
 
 
 interface Listing {
@@ -106,11 +107,21 @@ export function ListingsGrid({
                                     <img
                                         src={listing.main_image_url}
                                         alt={listing.title}
-                                        className="h-full w-full object-cover"
+                                        className={cn(
+                                            "h-full w-full object-cover",
+                                            listing.status === 'sold' && "grayscale-[0.5] opacity-80"
+                                        )}
                                     />
                                 ) : (
                                     <div className="flex h-full items-center justify-center">
                                         <Package className="h-12 w-12 text-muted-foreground" />
+                                    </div>
+                                )}
+                                {listing.status === 'sold' && (
+                                    <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                                        <Badge className="bg-[#b91c1c] text-white hover:bg-[#b91c1c] font-black text-sm px-4 py-1.5 uppercase tracking-widest shadow-lg border-none -rotate-12 scale-110">
+                                            {t('dashboard.status.sold')}
+                                        </Badge>
                                     </div>
                                 )}
                                 <button
@@ -140,13 +151,22 @@ export function ListingsGrid({
                             {/* Listing Details */}
                             <div className="flex flex-1 flex-col p-4">
                                 <div className="mb-2 flex items-start justify-between gap-2">
-                                    <h3 className="line-clamp-2 font-semibold group-hover:text-primary">
+                                    <h3 className={cn(
+                                        "line-clamp-2 font-semibold group-hover:text-primary",
+                                        listing.status === 'sold' && "text-muted-foreground line-through decoration-1"
+                                    )}>
                                         {listing.title}
                                     </h3>
-                                    <Badge variant="secondary" className="shrink-0">
-                                        {listing.categories?.[0]?.name || t('common.not_specified')}
-                                        {listing.categories?.length > 1 && ` +${listing.categories.length - 1}`}
-                                    </Badge>
+                                    <div className="flex flex-col items-end gap-1">
+                                        <Badge variant="secondary" className="shrink-0">
+                                            {listing.categories?.[0]?.name || t('common.not_specified')}
+                                        </Badge>
+                                        {listing.status === 'sold' && (
+                                            <Badge variant="destructive" className="bg-[#fee2e2] text-[#b91c1c] border-none text-[10px] h-5 py-0">
+                                                {t('dashboard.status.sold')}
+                                            </Badge>
+                                        )}
+                                    </div>
                                 </div>
 
                                 <p className="mb-3 line-clamp-2 text-sm text-muted-foreground">
@@ -155,9 +175,14 @@ export function ListingsGrid({
 
 
                                 <div className="mt-auto space-y-3">
-                                    <p className="text-2xl font-bold">
+                                    <div className="text-2xl sm:text-3xl font-bold text-[#0e1d38]">
                                         ¥{listing.price.toLocaleString()}
-                                    </p>
+                                    </div>
+                                    {listing.status === 'sold' && (
+                                        <Badge className="bg-[#fee2e2] text-[#b91c1c] border-none font-bold mt-1 w-fit">
+                                            {t('dashboard.status.sold')}
+                                        </Badge>
+                                    )}
 
                                     <div className="flex items-center gap-2">
                                         <Avatar className="h-6 w-6">

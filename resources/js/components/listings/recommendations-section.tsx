@@ -7,6 +7,7 @@ interface Listing {
     id: number;
     title: string;
     price: number;
+    status: string;
     images?: string[];
     main_image_url?: string;
 }

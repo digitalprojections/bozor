@@ -3,6 +3,7 @@ import { Link, Head, router } from '@inertiajs/react';
 import { Heart, MessageCircle, Info, Truck, CreditCard, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { useTranslations } from '@/hooks/use-translations';
 import { useInitials } from '@/hooks/use-initials';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -21,6 +22,7 @@ interface ListingSidebarProps {
         images: string[];
         location?: string | null;
         price: number;
+        status: string;
         buy_now_price: number | null;
         is_auction: boolean;
         auction_end_date: string | null;
@@ -105,6 +107,11 @@ export function ListingSidebar({ listing }: ListingSidebarProps) {
                         <div className="text-2xl sm:text-3xl font-bold text-[#0e1d38]">
                             ¥{currentPrice.toLocaleString()}
                         </div>
+                        {listing.status === 'sold' && (
+                            <Badge className="bg-[#fee2e2] text-[#b91c1c] border-none font-bold mt-1 w-fit">
+                                {t('dashboard.status.sold')}
+                            </Badge>
+                        )}
                     </div>
                     {auth?.user && !auth.user.is_guest && Number(auth.user.id) !== Number(listing.user.id) ? (
                         <div className="flex flex-col gap-4">
