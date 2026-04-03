@@ -214,6 +214,7 @@
     "listing.sidebar.time_remaining": "Time remaining",
     "listing.sidebar.place_bid": "Place Bid",
     "listing.sidebar.add_to_watchlist": "Add to Watchlist",
+    "listing.sidebar.remove_from_watchlist": "Remove from Watchlist",
     "listing.sidebar.login_prefix": "Please",
     "listing.sidebar.login_link": "login",
     "listing.sidebar.login_suffix": "to bid",

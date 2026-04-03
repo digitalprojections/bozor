@@ -214,6 +214,7 @@
     "listing.sidebar.time_remaining": "Qolgan vaqt",
     "listing.sidebar.place_bid": "Tikish",
     "listing.sidebar.add_to_watchlist": "Kuzatuv ro'yxatiga qo'shish",
+    "listing.sidebar.remove_from_watchlist": "Kuzatuvdan olib tashlash",
     "listing.sidebar.login_prefix": "Iltimos,",
     "listing.sidebar.login_link": "tizimga kiring",
     "listing.sidebar.login_suffix": "tikish uchun",

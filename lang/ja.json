@@ -214,6 +214,7 @@
     "listing.sidebar.time_remaining": "残り時間",
     "listing.sidebar.place_bid": "入札する",
     "listing.sidebar.add_to_watchlist": "ウォッチリストに追加",
+    "listing.sidebar.remove_from_watchlist": "ウォッチリストから削除",
     "listing.sidebar.login_prefix": "入札するには",
     "listing.sidebar.login_link": "ログイン",
     "listing.sidebar.login_suffix": "してください",
