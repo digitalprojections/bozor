@@ -6,7 +6,9 @@ export function useInitials(): GetInitialsFn {
     return useCallback((fullName: string): string => {
         const names = fullName.trim().split(' ');
 
-        if (names.length === 0) return '';
+        // this function has issue: instead of the actual last name initial, it is returning last initial as c all the time
+
+        if (names.length === 0) return '.';
         if (names.length === 1) return names[0].charAt(0).toUpperCase();
 
         const firstInitial = names[0].charAt(0);
