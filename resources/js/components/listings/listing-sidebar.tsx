@@ -142,9 +142,9 @@ export function ListingSidebar({ listing }: ListingSidebarProps) {
                                 </Button>
                             )}
                         </div>
-                    ) : auth?.user && !auth.user.is_guest && Number(auth.user.id) === Number(listing.user.id) ? (
+                    ) : auth?.user && !auth.user.is_guest && Number(auth.user.id) === Number(listing.user.id) && listing.status !== 'sold' ? (
                         <div className="text-center text-xs sm:text-sm text-amber-600 bg-amber-50 p-3 sm:p-4 rounded-[16px] sm:rounded-2xl border border-dashed border-amber-200">
-                             {t('listing.owner_actions_restricted') || 'You cannot bid on or buy your own listing.'}
+                            {t('listing.owner_actions_restricted') || 'You cannot bid on or buy your own listing.'}
                         </div>
                     ) : (
                         <div className="text-center text-xs sm:text-sm text-[#5f6c84] bg-muted/50 p-3 sm:p-4 rounded-[16px] sm:rounded-2xl border border-dashed">
@@ -156,10 +156,10 @@ export function ListingSidebar({ listing }: ListingSidebarProps) {
                         </div>
                     )}
 
-                    <WatchButton 
-                        listingId={listing.id} 
-                        isWatched={is_watched} 
-                        className="w-full h-10 sm:h-12 text-sm" 
+                    <WatchButton
+                        listingId={listing.id}
+                        isWatched={is_watched}
+                        className="w-full h-10 sm:h-12 text-sm"
                     />
                 </CardContent>
             </Card>
@@ -216,9 +216,9 @@ export function ListingSidebar({ listing }: ListingSidebarProps) {
                 <div>{t('listing.sidebar.watchlist_reminder')}</div>
             </div>
 
-            <TermsAcceptanceModal 
-                isOpen={isTermsModalOpen} 
-                onClose={() => setIsTermsModalOpen(false)} 
+            <TermsAcceptanceModal
+                isOpen={isTermsModalOpen}
+                onClose={() => setIsTermsModalOpen(false)}
                 onAccepted={() => {
                     if (pendingAction) {
                         pendingAction();
