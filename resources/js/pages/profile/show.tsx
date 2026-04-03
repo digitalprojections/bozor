@@ -155,7 +155,7 @@ export default function Show({ profileUser }: ProfileProps) {
                     <div>
                         <h2 className="text-xl font-bold text-[#0b1b32] mb-4 flex items-center gap-2">
                             <Package size={20} className="text-[#0d9488]" />
-                            {t('marketplace.active_listings')}
+                            {t('profile.listings_title')}
                         </h2>
                         {profileUser.listings.length > 0 ? (
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

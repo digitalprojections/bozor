@@ -113,6 +113,7 @@
     "profile.delete_account.button": "Akkauntni o'chirish",
     "auth.profile.joined": "Ro'yxatdan o'tgan",
     "auth.profile.title": "Ochiq profil",
+    "profile.listings_title": "E'lonlar",
     "layout.header.search_placeholder": "Nima qidiryapsiz?",
     "layout.header.guide": "birinchi marta? → qo'llanma",
     "layout.header.my_listings": "Mening e'lonlarim",

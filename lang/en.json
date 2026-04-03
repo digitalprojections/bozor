@@ -113,6 +113,7 @@
     "profile.delete_account.button": "Delete account",
     "auth.profile.joined": "Joined",
     "auth.profile.title": "Public Profile",
+    "profile.listings_title": "Listings",
     "layout.header.search_placeholder": "What are you looking for?",
     "layout.header.guide": "first time? → guide",
     "layout.header.my_listings": "My Listings",

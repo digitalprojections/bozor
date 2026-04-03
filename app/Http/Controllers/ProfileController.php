@@ -11,7 +11,7 @@ class ProfileController extends Controller
     public function show(User $user): Response
     {
         $user->load(['receivedRatings.rater', 'listings' => function ($query) {
-            $query->where('status', 'active')->latest()->take(10);
+            $query->whereNotIn('status', ['draft', 'inactive'])->latest();
         }]);
 
         $user->append(['average_rating', 'ratings_count']);
