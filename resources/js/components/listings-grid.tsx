@@ -130,20 +130,20 @@ export function ListingsGrid({
                                         e.preventDefault();
                                         e.stopPropagation();
                                         setProcessingIds(prev => [...prev, listing.id]);
-                                        router.post(`/watchlist/${listing.id}/toggle`, {}, { 
+                                        router.post(`/watchlist/${listing.id}/toggle`, {}, {
                                             preserveScroll: true,
                                             onFinish: () => setProcessingIds(ids => ids.filter(id => id !== listing.id))
                                         });
                                     }}
                                     className={`absolute top-2 right-2 h-8 w-8 flex items-center justify-center rounded-full shadow transition-all ${watchedIds.includes(listing.id)
-                                            ? 'bg-white text-rose-500'
-                                            : 'bg-black/30 text-white hover:bg-white hover:text-rose-400'
+                                        ? 'bg-white text-rose-500'
+                                        : 'bg-black/30 text-white hover:bg-white hover:text-rose-400'
                                         } ${processingIds.includes(listing.id) ? 'opacity-50 scale-90' : ''}`}
                                     title={watchedIds.includes(listing.id) ? 'Remove from watchlist' : 'Add to watchlist'}
                                 >
-                                    <Heart 
-                                        size={15} 
-                                        className={`${watchedIds.includes(listing.id) ? 'fill-current' : ''} ${processingIds.includes(listing.id) ? 'animate-pulse' : ''}`} 
+                                    <Heart
+                                        size={15}
+                                        className={`${watchedIds.includes(listing.id) ? 'fill-current' : ''} ${processingIds.includes(listing.id) ? 'animate-pulse' : ''}`}
                                     />
                                 </button>
                             </div>
@@ -151,10 +151,7 @@ export function ListingsGrid({
                             {/* Listing Details */}
                             <div className="flex flex-1 flex-col p-4">
                                 <div className="mb-2 flex items-start justify-between gap-2">
-                                    <h3 className={cn(
-                                        "line-clamp-2 font-semibold group-hover:text-primary",
-                                        listing.status === 'sold' && "text-muted-foreground line-through decoration-1"
-                                    )}>
+                                    <h3 className="line-clamp-2 font-semibold group-hover:text-primary">
                                         {listing.title}
                                     </h3>
                                     <div className="flex flex-col items-end gap-1">
