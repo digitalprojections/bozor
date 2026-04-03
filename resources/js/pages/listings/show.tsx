@@ -26,6 +26,7 @@ interface ListingProps {
         user: {
             id: number;
             name: string;
+            masked_name: string;
             avatar_url: string;
             average_rating?: number;
             ratings_count?: number;
@@ -188,7 +189,7 @@ export default function Show({ listing, recommendations = [], is_watched = false
 
                                 <div className="flex flex-col sm:flex-row md:flex-col md:items-end gap-4 sm:gap-6 md:gap-3">
                                     <div className="flex items-center gap-2">
-                                        {Number(listing.user_id) !== Number(auth?.user?.id) && (
+                                        {(auth?.user && !auth.user.is_guest && Number(listing.user.id) !== Number(auth.user.id)) && (
                                             <Button
                                                 variant="outline"
                                                 size="sm"
@@ -202,7 +203,7 @@ export default function Show({ listing, recommendations = [], is_watched = false
                                                 <span className="font-semibold text-sm">{is_watched ? 'Watched' : 'Watch'}</span>
                                             </Button>
                                         )}
-                                        {Number(listing.user_id) === Number(auth?.user?.id) && (
+                                        {auth?.user && !auth.user.is_guest && Number(listing.user.id) === Number(auth.user.id) && (
                                             <div className="flex items-center gap-2 w-full sm:w-auto">
                                                 <Link href={`/listings/${listing.id}/edit`} className="flex-1 sm:flex-none">
                                                     <Button variant="outline" size="sm" className="rounded-full w-full h-9 sm:h-10 px-5 border-[#cbd5e1] text-[#475569]">
@@ -223,6 +224,18 @@ export default function Show({ listing, recommendations = [], is_watched = false
                                                     {t('common.delete')}
                                                 </Button>
                                             </div>
+                                        )}
+                                        {(!auth?.user || auth.user.is_guest) && (
+                                             <Link href="/login" className="flex-1 sm:flex-none">
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="rounded-full h-9 sm:h-10 px-5 flex items-center gap-2 border-[#cbd5e1] text-[#475569] hover:bg-slate-50 w-full"
+                                                >
+                                                    <Heart size={16} />
+                                                    <span className="font-semibold text-sm">{t('listing.sidebar.add_to_watchlist')}</span>
+                                                </Button>
+                                            </Link>
                                         )}
                                     </div>
 
