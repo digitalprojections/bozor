@@ -5,7 +5,6 @@
     "common.login": "Kirish",
     "common.sign_up": "Ro'yxatdan o'tish",
     "common.register": "Ro'yxatdan o'tish",
-
     "common.create_free_account": "Bepul akkaunt yaratish",
     "welcome.title": "O'z narsalaringizni",
     "welcome.title_highlight": "onlayn soting",
@@ -114,6 +113,8 @@
     "auth.profile.joined": "Ro'yxatdan o'tgan",
     "auth.profile.title": "Ochiq profil",
     "profile.listings_title": "E'lonlar",
+    "profile.sold_items": "Sotilgan mahsulotlar",
+    "profile.active_listings": "Faol e'lonlar",
     "layout.header.search_placeholder": "Nima qidiryapsiz?",
     "layout.header.guide": "birinchi marta? → qo'llanma",
     "layout.header.my_listings": "Mening e'lonlarim",
@@ -141,7 +142,6 @@
     "layout.sidebar.auth": "Autentifikatsiya",
     "layout.sidebar.notifications": "Bildirishnomalar",
     "layout.sidebar.sold_items": "Sotilgan mahsulotlar",
-
     "layout.balance.wallet": "Hamyon balansi",
     "layout.balance.points": "Mukofot ballari",
     "layout.balance.auto_topup": "avtomatik to'ldirish",

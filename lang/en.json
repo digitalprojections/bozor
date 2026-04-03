@@ -5,7 +5,6 @@
     "common.login": "Log in",
     "common.sign_up": "Sign up",
     "common.register": "Register",
-
     "common.create_free_account": "Create free account",
     "welcome.title": "Sell your things",
     "welcome.title_highlight": "online",
@@ -111,6 +110,8 @@
     "profile.delete_account.confirm_title": "Are you sure you want to delete your account?",
     "profile.delete_account.confirm_description": "Once your account is deleted, all of its resources and data will also be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.",
     "profile.delete_account.button": "Delete account",
+    "profile.sold_items": "Sold Items",
+    "profile.active_listings": "Active Listings",
     "auth.profile.joined": "Joined",
     "auth.profile.title": "Public Profile",
     "profile.listings_title": "Listings",
@@ -141,7 +142,6 @@
     "layout.sidebar.auth": "Authentication",
     "layout.sidebar.notifications": "Notifications",
     "layout.sidebar.sold_items": "Sold Items",
-
     "layout.balance.wallet": "Wallet Balance",
     "layout.balance.points": "Reward Points",
     "layout.balance.auto_topup": "auto-topup",

@@ -63,12 +63,12 @@ export default function Show({ profileUser }: ProfileProps) {
             breadcrumbs={breadcrumbs}
         >
             <Head title={`${profileUser.store_name || profileUser.name} - ${t('marketplace.title')}`} />
-            
+
             {profileUser.store_banner_url && (
                 <div className="w-full h-48 sm:h-64 rounded-[24px] overflow-hidden mb-8 shadow-sm border border-[#edf2f9]">
-                    <img 
-                        src={profileUser.store_banner_url} 
-                        alt={profileUser.store_name || profileUser.name} 
+                    <img
+                        src={profileUser.store_banner_url}
+                        alt={profileUser.store_name || profileUser.name}
                         className="w-full h-full object-cover"
                     />
                 </div>
@@ -157,9 +157,56 @@ export default function Show({ profileUser }: ProfileProps) {
                             <Package size={20} className="text-[#0d9488]" />
                             {t('profile.listings_title')}
                         </h2>
-                        {profileUser.listings.length > 0 ? (
+                        {/* filter by listing status */}
+                        {/* "active" title*/}
+                        <h3 className="text-sm font-bold text-[#0b1b32] uppercase tracking-wider mb-3 px-1">
+                            {t('profile.active_listings')}
+                        </h3>
+                        {profileUser.listings.filter((listing) => listing.status === 'active').length > 0 ? (
+
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                {profileUser.listings.map((listing) => (
+                                {profileUser.listings.filter((listing) => listing.status === 'active').map((listing) => (
+                                    <Link key={listing.id} href={`/listings/${listing.id}`}>
+                                        <Card className="rounded-[20px] border-[#edf2f9] shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
+                                            <div className="aspect-video bg-[#f0f5fd] relative overflow-hidden">
+                                                {listing.images && listing.images.length > 0 ? (
+                                                    <img
+                                                        src={`/storage/${listing.images[0]}`}
+                                                        alt={listing.title}
+                                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                                    />
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center opacity-30">
+                                                        <Package size={32} />
+                                                    </div>
+                                                )}
+                                                <div className="absolute bottom-3 left-3">
+                                                    <Badge className="bg-white/90 text-[#0b1b32] hover:bg-white border-none font-bold shadow-sm">
+                                                        ¥{listing.price.toLocaleString()}
+                                                    </Badge>
+                                                </div>
+                                            </div>
+                                            <CardContent className="p-4">
+                                                <h3 className="font-bold text-[#0b1b32] truncate">{listing.title}</h3>
+                                            </CardContent>
+                                        </Card>
+                                    </Link>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="bg-[#f8fbfe] rounded-[24px] border border-dashed border-[#d1e2fc] p-12 text-center text-[#5f6c84]">
+                                {t('listing.show.no_listings')}
+                            </div>
+                        )}
+
+                        {/* sold listings  */}
+                        <h3 className="text-sm font-bold text-[#0b1b32] uppercase tracking-wider mb-3 px-1">
+                            {t('profile.sold_listings')}
+                        </h3>
+                        {profileUser.listings.filter((listing) => listing.status === 'sold').length > 0 ? (
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                {profileUser.listings.filter((listing) => listing.status === 'sold').map((listing) => (
                                     <Link key={listing.id} href={`/listings/${listing.id}`}>
                                         <Card className="rounded-[20px] border-[#edf2f9] shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
                                             <div className="aspect-video bg-[#f0f5fd] relative overflow-hidden">
