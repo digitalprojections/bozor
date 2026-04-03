@@ -110,7 +110,7 @@
     "profile.delete_account.confirm_title": "Are you sure you want to delete your account?",
     "profile.delete_account.confirm_description": "Once your account is deleted, all of its resources and data will also be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.",
     "profile.delete_account.button": "Delete account",
-    "profile.sold_items": "Sold Items",
+    "profile.sold_listings": "Sold Items",
     "profile.active_listings": "Active Listings",
     "auth.profile.joined": "Joined",
     "auth.profile.title": "Public Profile",
