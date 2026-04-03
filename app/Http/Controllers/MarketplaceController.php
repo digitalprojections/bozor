@@ -33,7 +33,8 @@ class MarketplaceController extends Controller
 
         // Build listings query with filters
         $listingsQuery = Listing::with(['user', 'categories'])
-            ->where('status', '!=', 'disabled');
+            ->where('status', '!=', 'disabled')
+            ->where('status', '!=', 'draft');
 
         // Apply search filter
         if ($request->filled('search')) {
@@ -53,11 +54,11 @@ class MarketplaceController extends Controller
         // Apply sorting
         $sort = $request->input('sort', 'newest');
         match ($sort) {
-                'price_low' => $listingsQuery->orderBy('price', 'asc'),
-                'price_high' => $listingsQuery->orderBy('price', 'desc'),
-                'oldest' => $listingsQuery->orderBy('created_at', 'asc'),
-                default => $listingsQuery->latest(),
-            };
+            'price_low' => $listingsQuery->orderBy('price', 'asc'),
+            'price_high' => $listingsQuery->orderBy('price', 'desc'),
+            'oldest' => $listingsQuery->orderBy('created_at', 'asc'),
+            default => $listingsQuery->latest(),
+        };
 
         // Paginate results
         $listings = $listingsQuery->paginate(24)->withQueryString();
