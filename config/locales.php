@@ -18,9 +18,10 @@ return [
     */
 
     'supported' => [
-        'en' => ['name' => 'English', 'native' => 'English'],
-        'ja' => ['name' => 'Japanese', 'native' => '日本語'],
-        'uz' => ['name' => 'Uzbek', 'native' => 'O\'zbekcha'],
+        'en' => ['name' => 'English', 'native' => 'EN'],
+        'ja' => ['name' => 'Japanese', 'native' => 'JA'],
+        'uz' => ['name' => 'Uzbek', 'native' => 'UZ'],
+        'ru' => ['name' => 'Russian', 'native' => 'RU'],
     ],
 
     /*
