@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
-import { Package, Clock, Info, FileText, Heart, Trash2 } from 'lucide-react';
+import { Package, Clock, Info, FileText, Trash2 } from 'lucide-react';
 import BazaarLayout from '@/layouts/bazaar-layout';
 import { cn } from '@/lib/utils';
 import { useTranslations } from '@/hooks/use-translations';
@@ -10,6 +10,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { usePage, router } from '@inertiajs/react';
+import { SoldBadge } from '@/components/listings/sold-badge';
+import { WatchButton } from '@/components/listings/watch-button';
+import { PriceDisplay } from '@/components/listings/price-display';
 import type { BreadcrumbItem } from '@/types';
 import { ITEM_CONDITIONS } from '@/types/item-conditions';
 
@@ -125,13 +128,21 @@ export default function Show({ listing, recommendations = [], is_watched = false
                 <Card className="rounded-[16px] sm:rounded-[24px] border-[#edf2f9] shadow-sm overflow-hidden">
                     <CardContent className="p-3 sm:p-6">
                         <div className="flex flex-col gap-3 sm:gap-4">
-                            <div className="main-image-placeholder aspect-[4/3] w-full bg-[#d9e2ef] rounded-[12px] sm:rounded-[20px] overflow-hidden flex items-center justify-center border border-[#e1e9f2]">
+                            <div className="main-image-placeholder relative aspect-[4/3] w-full bg-[#d9e2ef] rounded-[12px] sm:rounded-[20px] overflow-hidden flex items-center justify-center border border-[#e1e9f2]">
                                 {listing.images && listing.images.length > 0 ? (
-                                    <img
-                                        src={`/storage/${listing.images[activeImage]}`}
-                                        alt={listing.title}
-                                        className="w-full h-full object-cover"
-                                    />
+                                    <>
+                                        <img
+                                            src={`/storage/${listing.images[activeImage]}`}
+                                            alt={listing.title}
+                                            className="w-full h-full object-cover"
+                                        />
+                                        {listing.status === 'sold' && <SoldBadge variant="overlay" />}
+                                        <WatchButton 
+                                            listingId={listing.id} 
+                                            isWatched={is_watched} 
+                                            variant="overlay" 
+                                        />
+                                    </>
                                 ) : (
                                     <div className="flex flex-col items-center gap-2 sm:gap-3 text-[#4d627a]">
                                         <Package size={48} className="opacity-20 sm:w-16 sm:h-16" />
@@ -173,11 +184,7 @@ export default function Show({ listing, recommendations = [], is_watched = false
                                     <Badge variant="destructive" className="bg-[#fce8e8] text-[#b13e3e] hover:bg-[#fce8e8] rounded-full px-3 h-6 sm:h-7 border-none font-medium w-fit text-[10px] sm:text-xs">
                                         {listing.is_auction ? t('listing.show.auction') : t('dashboard.status.' + listing.status)}
                                     </Badge>
-                                    {listing.status === 'sold' && (
-                                        <Badge className="bg-[#b91c1c] text-white hover:bg-[#b91c1c] rounded-full px-3 h-6 sm:h-7 border-none font-bold w-fit text-[10px] sm:text-xs uppercase tracking-wider">
-                                            {t('dashboard.status.sold')}
-                                        </Badge>
-                                    )}
+                                    {listing.status === 'sold' && <SoldBadge className="rounded-full px-3 h-6 sm:h-7 text-[10px] sm:text-xs tracking-wider" />}
                                 </div>
                                 <h1 className="text-xl sm:text-[1.8rem] font-bold tracking-tight text-[#0b1b32] leading-tight">
                                     {listing.title}
@@ -189,28 +196,18 @@ export default function Show({ listing, recommendations = [], is_watched = false
                                     <span className="text-[#64748b] text-[10px] sm:text-sm font-medium uppercase tracking-wider">
                                         {listing.is_auction ? t('listing.show.current_price') : t('listing.create.price')}
                                     </span>
-                                    <span className="text-2xl sm:text-4xl font-bold text-[#101b2d]">
-                                        ¥{listing.price.toLocaleString()}
-                                    </span>
+                                    <PriceDisplay price={listing.price} size="xl" />
                                 </div>
 
                                 <div className="flex flex-col sm:flex-row md:flex-col md:items-end gap-4 sm:gap-6 md:gap-3">
                                     <div className="flex items-center gap-2">
-                                        {listing.status !== 'sold' && (
-                                            <>
+                                        {listing.status !== 'sold' ? (
+                                            <div className="flex items-center gap-2">
                                                 {(auth?.user && !auth.user.is_guest && Number(listing.user.id) !== Number(auth.user.id)) && (
-                                                    <Button
-                                                        variant="outline"
-                                                        size="sm"
-                                                        className={cn(
-                                                            "rounded-full h-9 sm:h-10 px-5 flex items-center gap-2 transition-all flex-1 sm:flex-none",
-                                                            is_watched ? 'border-[#ff4d4f] text-[#ff4d4f] bg-[#fff1f0]' : 'border-[#cbd5e1] text-[#475569] hover:bg-slate-50'
-                                                        )}
-                                                        onClick={() => router.post(`/watchlist/${listing.id}/toggle`, {}, { preserveScroll: true })}
-                                                    >
-                                                        <Heart size={16} className={is_watched ? 'fill-current' : ''} />
-                                                        <span className="font-semibold text-sm">{is_watched ? 'Watched' : 'Watch'}</span>
-                                                    </Button>
+                                                    <WatchButton 
+                                                        listingId={listing.id} 
+                                                        isWatched={is_watched} 
+                                                    />
                                                 )}
                                                 {auth?.user && !auth.user.is_guest && Number(listing.user.id) === Number(auth.user.id) && (
                                                     <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -235,24 +232,14 @@ export default function Show({ listing, recommendations = [], is_watched = false
                                                     </div>
                                                 )}
                                                 {(!auth?.user || auth.user.is_guest) && (
-                                                    <Link href="/login" className="flex-1 sm:flex-none">
-                                                        <Button
-                                                            variant="outline"
-                                                            size="sm"
-                                                            className="rounded-full h-9 sm:h-10 px-5 flex items-center gap-2 border-[#cbd5e1] text-[#475569] hover:bg-slate-50 w-full"
-                                                        >
-                                                            <Heart size={16} />
-                                                            <span className="font-semibold text-sm">{t('listing.sidebar.add_to_watchlist')}</span>
-                                                        </Button>
-                                                    </Link>
+                                                    <WatchButton 
+                                                        listingId={listing.id} 
+                                                        isWatched={is_watched}
+                                                    />
                                                 )}
-                                            </>
-                                        )}
-                                        {listing.status === 'sold' && (
-                                            <Badge variant="outline" className="rounded-full px-4 h-10 border-[#e2e8f0] text-[#64748b] bg-slate-50 font-semibold gap-2">
-                                                <Package size={14} />
-                                                {t('dashboard.status.sold')}
-                                            </Badge>
+                                            </div>
+                                        ) : (
+                                            <SoldBadge />
                                         )}
                                     </div>
 

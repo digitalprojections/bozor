@@ -8,6 +8,9 @@ import type { BreadcrumbItem } from '@/types';
 import { useState } from 'react';
 import { TRANSACTION_STATUS, type TransactionStatus } from '@/types/transaction-status';
 import { cn } from '@/lib/utils';
+import { TransactionStatusBadge } from '@/components/transactions/status-badge';
+import { PriceDisplay } from '@/components/listings/price-display';
+import { UserRatingBadge } from '@/components/user-rating-badge';
 
 interface SoldItem {
     id: number;
@@ -45,24 +48,6 @@ export default function SoldItems({ items }: { items: SoldItem[] }) {
         return true;
     });
 
-    const getStatusBadge = (status: TransactionStatus) => {
-        switch (status) {
-            case TRANSACTION_STATUS.PENDING_PAYMENT:
-                return <Badge className="bg-amber-50 text-amber-700 border-amber-100 hover:bg-amber-50">{t('transaction.status.pending_payment') || 'Pending Payment'}</Badge>;
-            case TRANSACTION_STATUS.PAID:
-                return <Badge className="bg-blue-50 text-blue-700 border-blue-100 hover:bg-blue-50">{t('transaction.status.paid')}</Badge>;
-            case TRANSACTION_STATUS.SHIPPED:
-                return <Badge className="bg-indigo-50 text-indigo-700 border-indigo-100 hover:bg-indigo-50">{t('transaction.status.shipped')}</Badge>;
-            case TRANSACTION_STATUS.DELIVERED:
-                return <Badge className="bg-green-50 text-green-700 border-green-100 hover:bg-green-50">{t('transaction.status.delivered')}</Badge>;
-            case TRANSACTION_STATUS.RECEIVED:
-                return <Badge className="bg-gray-50 text-gray-700 border-gray-100 hover:bg-gray-50">{t('transaction.status.completed')}</Badge>;
-            case TRANSACTION_STATUS.CANCELLED:
-                return <Badge className="bg-red-50 text-red-700 border-red-100 hover:bg-red-50">{t('transaction.status.cancelled')}</Badge>;
-            default:
-                return <Badge variant="outline">{status}</Badge>;
-        }
-    };
 
     return (
         <BazaarLayout
@@ -150,15 +135,15 @@ export default function SoldItems({ items }: { items: SoldItem[] }) {
                                                 {new Date(item.sold_at).toLocaleDateString()}
                                             </span>
                                             <span className="ml-auto">
-                                                {getStatusBadge(item.status)}
+                                                <TransactionStatusBadge status={item.status} />
                                             </span>
                                         </div>
                                         <h3 className="font-bold text-[#1a263b] truncate text-lg">{item.title}</h3>
                                         <div className="flex items-center justify-between mt-1">
                                             <div className="flex items-center gap-3 text-sm text-[#5f6c84]">
-                                                <span className="font-bold text-[#0e1d38] text-base">¥{item.price.toLocaleString()}</span>
+                                                <PriceDisplay price={item.price} size="md" />
                                                 <span>•</span>
-                                                <span>{t('transaction.buyer') || 'Buyer'}: <span className="text-[#2b4b8f] font-medium">{item.buyer.name}</span></span>
+                                                <UserRatingBadge user={item.buyer} variant="compact" />
                                             </div>
                                             <Link
                                                 href={`/transactions/${item.transaction_id}`}

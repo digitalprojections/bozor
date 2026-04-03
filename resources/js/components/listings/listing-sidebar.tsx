@@ -1,18 +1,19 @@
 import React from 'react';
 import { Link, Head, router } from '@inertiajs/react';
-import { Heart, MessageCircle, Info, Truck, CreditCard, Star } from 'lucide-react';
+import { MessageCircle, Info, Truck, CreditCard } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { useTranslations } from '@/hooks/use-translations';
-import { useInitials } from '@/hooks/use-initials';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useForm, usePage } from '@inertiajs/react';
 import { Input } from '@/components/ui/input';
 import { synth } from '@/lib/synth-service';
 import { TermsAcceptanceModal } from '@/components/terms-acceptance-modal';
+import { SoldBadge } from '@/components/listings/sold-badge';
+import { WatchButton } from '@/components/listings/watch-button';
+import { PriceDisplay } from '@/components/listings/price-display';
+import { UserRatingBadge } from '@/components/user-rating-badge';
 
 interface ListingSidebarProps {
     listing: {
@@ -41,8 +42,7 @@ interface ListingSidebarProps {
 
 export function ListingSidebar({ listing }: ListingSidebarProps) {
     const { t } = useTranslations();
-    const getInitials = useInitials();
-    const { auth } = usePage().props as any;
+    const { auth, is_watched } = usePage().props as any;
 
     const { data, setData, post, processing, errors, reset } = useForm({
         amount: Math.max(listing.price, listing.current_high_bid) + 1,
@@ -104,14 +104,8 @@ export function ListingSidebar({ listing }: ListingSidebarProps) {
                         <span className="text-xs sm:text-sm text-muted-foreground">
                             {listing.is_auction ? t('listing.show.current_price') : t('listing.create.price')}
                         </span>
-                        <div className="text-2xl sm:text-3xl font-bold text-[#0e1d38]">
-                            ¥{currentPrice.toLocaleString()}
-                        </div>
-                        {listing.status === 'sold' && (
-                            <Badge className="bg-[#fee2e2] text-[#b91c1c] border-none font-bold mt-1 w-fit">
-                                {t('dashboard.status.sold')}
-                            </Badge>
-                        )}
+                        <PriceDisplay price={currentPrice} size="lg" />
+                        {listing.status === 'sold' && <SoldBadge className="mt-1 w-fit" />}
                     </div>
                     {auth?.user && !auth.user.is_guest && Number(auth.user.id) !== Number(listing.user.id) ? (
                         <div className="flex flex-col gap-4">
@@ -162,23 +156,11 @@ export function ListingSidebar({ listing }: ListingSidebarProps) {
                         </div>
                     )}
 
-                    {auth?.user && !auth.user.is_guest && Number(auth.user.id) !== Number(listing.user.id) ? (
-                        <Button
-                            variant="outline"
-                            className="w-full h-10 sm:h-12 rounded-full border-[#cddef5] bg-[#f0f5fd] text-[#2b4b8f] font-bold hover:bg-[#e1ecfb] text-sm"
-                            onClick={() => router.post(`/watchlist/${listing.id}/toggle`, {}, { preserveScroll: true })}
-                        >
-                            <Star className="mr-2 h-4 w-4 sm:h-5 sm:w-5 fill-[#2b4b8f]" />
-                            {t('listing.sidebar.add_to_watchlist')}
-                        </Button>
-                    ) : (!auth?.user || auth.user.is_guest) && (
-                        <Link href="/login" className="w-full">
-                            <Button variant="outline" className="w-full h-10 sm:h-12 rounded-full border-[#cddef5] bg-[#f0f5fd] text-[#2b4b8f] font-bold hover:bg-[#e1ecfb] text-sm">
-                                <Star className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                                {t('listing.sidebar.add_to_watchlist')}
-                            </Button>
-                        </Link>
-                    )}
+                    <WatchButton 
+                        listingId={listing.id} 
+                        isWatched={is_watched} 
+                        className="w-full h-10 sm:h-12 text-sm" 
+                    />
                 </CardContent>
             </Card>
 
@@ -214,39 +196,7 @@ export function ListingSidebar({ listing }: ListingSidebarProps) {
 
             {/* Seller Info Card */}
             <Card className="rounded-[16px] sm:rounded-[24px] border-[#edf2f9] shadow-sm p-4 sm:p-6">
-                <div className="flex items-center gap-3">
-                    <Avatar className="h-10 w-10 sm:h-11 sm:w-11 border border-[#e1e9f2]">
-                        <AvatarImage src={listing.user.avatar_url || undefined} alt={listing.user.name} className="object-cover" />
-                        <AvatarFallback className="bg-[#d3e0f0] text-[#3a5670] text-xs sm:text-sm font-semibold">
-                            {getInitials(listing.user.name)}
-                        </AvatarFallback>
-                    </Avatar>
-                    <div className="min-w-0">
-                        <div className="font-bold text-[#0b1b32] text-sm sm:text-base truncate">
-                            {t('listing.sidebar.seller')}:
-                            <Link href={`/users/${listing.user.id}`} className="ml-1 text-[#0d9488] hover:underline">
-                                {listing.user.masked_name || listing.user.name}
-                            </Link>
-                        </div>
-                        <div className="text-[10px] sm:text-sm text-[#5f6c84] flex items-center gap-1.5 mt-0.5">
-                            <div className="flex items-center gap-0.5">
-                                {[1, 2, 3, 4, 5].map((star) => (
-                                    <Star
-                                        key={star}
-                                        size={10}
-                                        className={cn(
-                                            "sm:w-3 sm:h-3 transition-colors",
-                                            star <= Math.round(listing.user.average_rating || 0) ? "text-amber-500 fill-amber-500" : "text-slate-300"
-                                        )}
-                                    />
-                                ))}
-                            </div>
-                            <span className="text-[#0d9488] font-medium">
-                                ({listing.user.ratings_count || 0})
-                            </span>
-                        </div>
-                    </div>
-                </div>
+                <UserRatingBadge user={listing.user} variant="full" />
 
                 <Separator className="my-4 sm:my-5 bg-[#eef2f8]" />
 

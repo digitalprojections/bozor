@@ -4,10 +4,13 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ChevronLeft, ChevronRight, Package, Heart } from 'lucide-react';
+import { Package, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslations } from '@/hooks/use-translations';
-import { useInitials } from '@/hooks/use-initials';
 import { cn } from '@/lib/utils';
+import { SoldBadge } from '@/components/listings/sold-badge';
+import { WatchButton } from '@/components/listings/watch-button';
+import { PriceDisplay } from '@/components/listings/price-display';
+import { UserRatingBadge } from '@/components/user-rating-badge';
 
 
 interface Listing {
@@ -51,10 +54,7 @@ export function ListingsGrid({
     watchedIds = [],
 }: ListingsGridProps) {
     const { t } = useTranslations();
-    const getInitials = useInitials();
     const { auth } = usePage().props as any;
-    const user = auth.user;
-    const [processingIds, setProcessingIds] = React.useState<number[]>([]);
 
     const handlePageChange = (page: number) => {
         router.get(
@@ -117,35 +117,12 @@ export function ListingsGrid({
                                         <Package className="h-12 w-12 text-muted-foreground" />
                                     </div>
                                 )}
-                                {listing.status === 'sold' && (
-                                    <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                                        <Badge className="bg-[#b91c1c] text-white hover:bg-[#b91c1c] font-black text-sm px-4 py-1.5 uppercase tracking-widest shadow-lg border-none -rotate-12 scale-110">
-                                            {t('dashboard.status.sold')}
-                                        </Badge>
-                                    </div>
-                                )}
-                                <button
-                                    disabled={processingIds.includes(listing.id)}
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        setProcessingIds(prev => [...prev, listing.id]);
-                                        router.post(`/watchlist/${listing.id}/toggle`, {}, {
-                                            preserveScroll: true,
-                                            onFinish: () => setProcessingIds(ids => ids.filter(id => id !== listing.id))
-                                        });
-                                    }}
-                                    className={`absolute top-2 right-2 h-8 w-8 flex items-center justify-center rounded-full shadow transition-all ${watchedIds.includes(listing.id)
-                                        ? 'bg-white text-rose-500'
-                                        : 'bg-black/30 text-white hover:bg-white hover:text-rose-400'
-                                        } ${processingIds.includes(listing.id) ? 'opacity-50 scale-90' : ''}`}
-                                    title={watchedIds.includes(listing.id) ? 'Remove from watchlist' : 'Add to watchlist'}
-                                >
-                                    <Heart
-                                        size={15}
-                                        className={`${watchedIds.includes(listing.id) ? 'fill-current' : ''} ${processingIds.includes(listing.id) ? 'animate-pulse' : ''}`}
-                                    />
-                                </button>
+                                {listing.status === 'sold' && <SoldBadge variant="overlay" />}
+                                <WatchButton 
+                                    listingId={listing.id} 
+                                    isWatched={watchedIds.includes(listing.id)} 
+                                    variant="overlay" 
+                                />
                             </div>
 
                             {/* Listing Details */}
@@ -159,9 +136,7 @@ export function ListingsGrid({
                                             {listing.categories?.[0]?.name || t('common.not_specified')}
                                         </Badge>
                                         {listing.status === 'sold' && (
-                                            <Badge variant="destructive" className="bg-[#fee2e2] text-[#b91c1c] border-none text-[10px] h-5 py-0">
-                                                {t('dashboard.status.sold')}
-                                            </Badge>
+                                            <SoldBadge className="text-[10px] h-5 py-0 px-2" />
                                         )}
                                     </div>
                                 </div>
@@ -172,29 +147,10 @@ export function ListingsGrid({
 
 
                                 <div className="mt-auto space-y-3">
-                                    <div className="text-2xl sm:text-3xl font-bold text-[#0e1d38]">
-                                        ¥{listing.price.toLocaleString()}
-                                    </div>
-                                    {listing.status === 'sold' && (
-                                        <Badge className="bg-[#fee2e2] text-[#b91c1c] border-none font-bold mt-1 w-fit">
-                                            {t('dashboard.status.sold')}
-                                        </Badge>
-                                    )}
+                                    <PriceDisplay price={listing.price} size="lg" />
+                                    {listing.status === 'sold' && <SoldBadge className="mt-1 w-fit" />}
 
-                                    <div className="flex items-center gap-2">
-                                        <Avatar className="h-6 w-6">
-                                            <AvatarImage
-                                                src={listing.user.avatar_url}
-                                                alt={listing.user.name}
-                                            />
-                                            <AvatarFallback className="text-xs">
-                                                {getInitials(listing.user.name)}
-                                            </AvatarFallback>
-                                        </Avatar>
-                                        <span className="text-xs text-muted-foreground">
-                                            {listing.user.masked_name || listing.user.name}
-                                        </span>
-                                    </div>
+                                    <UserRatingBadge user={listing.user} variant="compact" />
                                 </div>
                             </div>
                         </Card>
