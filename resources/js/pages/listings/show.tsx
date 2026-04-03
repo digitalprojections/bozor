@@ -180,9 +180,9 @@ export default function Show({ listing, recommendations = [], is_watched = false
                     <CardContent className="p-4 sm:p-8">
                         <div className="flex flex-col gap-4 sm:gap-6">
                             <div className="flex flex-col gap-3">
-                                <div className="flex flex-wrap gap-2">
-                                    <Badge variant="destructive" className="bg-[#fce8e8] text-[#b13e3e] hover:bg-[#fce8e8] rounded-full px-3 h-6 sm:h-7 border-none font-medium w-fit text-[10px] sm:text-xs">
-                                        {listing.is_auction ? t('listing.show.auction') : t('dashboard.status.' + listing.status)}
+                                <div className="flex flex-wrap gap-2 items-center">
+                                    <Badge variant="outline" className="bg-[#f1f5f9] text-[#475569] border-[#e2e8f0] rounded-full px-3 h-6 sm:h-7 font-medium text-[10px] sm:text-xs">
+                                        {listing.is_auction ? t('listing.show.auction') : t('listing.show.buy_now')}
                                     </Badge>
                                     {listing.status === 'sold' && <SoldBadge className="rounded-full px-3 h-6 sm:h-7 text-[10px] sm:text-xs tracking-wider" />}
                                 </div>
@@ -243,17 +243,17 @@ export default function Show({ listing, recommendations = [], is_watched = false
                                         )}
                                     </div>
 
-                                    <div className="flex flex-wrap md:flex-col md:items-end gap-2 sm:gap-3 md:gap-2">
-                                        <div className="text-[10px] sm:text-xs bg-white border border-[#e2e8f0] text-[#475569] px-3 py-1.5 rounded-full font-medium flex items-center gap-2 shadow-sm">
-                                            <Clock size={12} className="text-[#0d9488]" />
-                                            <span className="opacity-70">{t('listing.show.published')}:</span>
+                                    <div className="flex flex-wrap md:flex-col md:items-end gap-3 text-[#64748b] text-[11px] font-medium uppercase tracking-wider">
+                                        <div className="flex items-center gap-2">
+                                            <span>{t('listing.show.published')}:</span>
                                             <span className="text-[#0f172a]">{new Date(listing.created_at).toLocaleDateString()}</span>
                                         </div>
-                                        <div className="text-[10px] sm:text-xs bg-white border border-[#e2e8f0] text-[#475569] px-3 py-1.5 rounded-full font-medium flex items-center gap-2 shadow-sm">
-                                            <Clock size={12} className="text-[#0d9488]" />
-                                            <span className="opacity-70">{t('listing.show.ends')}:</span>
-                                            <span className="text-[#0f172a]">{listing.auction_end_date ? new Date(listing.auction_end_date).toLocaleDateString() : t('common.n_a')}</span>
-                                        </div>
+                                        {listing.auction_end_date && (
+                                            <div className="flex items-center gap-2">
+                                                <span>{t('listing.show.ends')}:</span>
+                                                <span className="text-[#0f172a]">{new Date(listing.auction_end_date).toLocaleDateString()}</span>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>

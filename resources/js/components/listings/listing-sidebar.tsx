@@ -204,9 +204,11 @@ export function ListingSidebar({ listing }: ListingSidebarProps) {
                     <Button variant="secondary" className="flex-1 rounded-full bg-[#f3f9ff] text-[#2b4b8f] border-none hover:bg-[#e1f0ff] h-9 sm:h-10 font-medium text-xs sm:text-sm">
                         {t('listing.sidebar.ask_provider')}
                     </Button>
-                    <Button variant="secondary" className="flex-1 rounded-full bg-[#f3f9ff] text-[#2b4b8f] border-none hover:bg-[#e1f0ff] h-9 sm:h-10 font-medium text-xs sm:text-sm">
-                        {t('listing.sidebar.store_info')}
-                    </Button>
+                    <Link href={`/users/${listing.user.id}`} className="flex-1">
+                        <Button variant="secondary" className="w-full rounded-full bg-[#f3f9ff] text-[#2b4b8f] border-none hover:bg-[#e1f0ff] h-9 sm:h-10 font-medium text-xs sm:text-sm">
+                            {t('listing.sidebar.store_info')}
+                        </Button>
+                    </Link>
                 </div>
             </Card>
 
