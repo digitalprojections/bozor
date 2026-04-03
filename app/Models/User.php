@@ -29,6 +29,9 @@ class User extends Authenticatable
         'is_guest',
         'guest_id',
         'terms_accepted_at',
+        'store_name',
+        'store_description',
+        'store_banner',
     ];
 
     /**
@@ -52,6 +55,7 @@ class User extends Authenticatable
         'avatar_url',
         'masked_name',
         'has_accepted_terms',
+        'store_banner_url',
     ];
 
     /**
@@ -156,5 +160,15 @@ class User extends Authenticatable
     public function getHasAcceptedTermsAttribute(): bool
     {
         return $this->terms_accepted_at !== null;
+    }
+
+    /**
+     * Get the store banner URL
+     */
+    public function getStoreBannerUrlAttribute(): ?string
+    {
+        return $this->store_banner 
+            ? \Illuminate\Support\Facades\Storage::disk('public')->url($this->store_banner) 
+            : null;
     }
 }

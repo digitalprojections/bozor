@@ -21,6 +21,10 @@ trait ProfileValidationRules
             'avatar_style' => $this->avatarStyleRules(),
             'gender' => $this->genderRules(),
             'remove_avatar' => ['nullable', 'boolean'],
+            'store_name' => ['nullable', 'string', 'max:255'],
+            'store_description' => ['nullable', 'string', 'max:1000'],
+            'store_banner' => $this->storeBannerRules(),
+            'remove_store_banner' => ['nullable', 'boolean'],
         ];
     }
 
@@ -101,6 +105,21 @@ trait ProfileValidationRules
         return [
             'nullable',
             Rule::in(['male', 'female', 'other', 'unspecified']),
+        ];
+    }
+
+    /**
+     * Get the validation rules used to validate store banner uploads.
+     *
+     * @return array<int, \Illuminate\Contracts\Validation\Rule|array<mixed>|string>
+     */
+    protected function storeBannerRules(): array
+    {
+        return [
+            'nullable',
+            'image',
+            'mimes:jpeg,jpg,png,webp',
+            'max:5120', // 5MB max
         ];
     }
 }

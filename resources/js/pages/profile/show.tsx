@@ -42,6 +42,9 @@ interface ProfileProps {
         ratings_count: number;
         received_ratings: Rating[];
         listings: Listing[];
+        store_name: string | null;
+        store_description: string | null;
+        store_banner_url: string | null;
     };
 }
 
@@ -59,7 +62,17 @@ export default function Show({ profileUser }: ProfileProps) {
             title={profileUser.name}
             breadcrumbs={breadcrumbs}
         >
-            <Head title={`${profileUser.name} - ${t('marketplace.title')}`} />
+            <Head title={`${profileUser.store_name || profileUser.name} - ${t('marketplace.title')}`} />
+            
+            {profileUser.store_banner_url && (
+                <div className="w-full h-48 sm:h-64 rounded-[24px] overflow-hidden mb-8 shadow-sm border border-[#edf2f9]">
+                    <img 
+                        src={profileUser.store_banner_url} 
+                        alt={profileUser.store_name || profileUser.name} 
+                        className="w-full h-full object-cover"
+                    />
+                </div>
+            )}
 
             <div className="flex flex-col lg:flex-row gap-8">
                 {/* Profile Overview Sidebar */}
@@ -74,7 +87,12 @@ export default function Show({ profileUser }: ProfileProps) {
                             </Avatar>
 
                             <div className="space-y-1">
-                                <h1 className="text-2xl font-bold text-[#0b1b32]">{profileUser.name}</h1>
+                                <h1 className="text-2xl font-bold text-[#0b1b32]">
+                                    {profileUser.store_name || profileUser.name}
+                                </h1>
+                                {profileUser.store_name && (
+                                    <p className="text-sm text-[#5f6c84] font-medium">{profileUser.name}</p>
+                                )}
                                 <div className="flex items-center justify-center gap-1 text-[#0d9488] font-medium text-sm">
                                     <CheckCircle2 size={16} />
                                     {t('verification.status.approved')}
@@ -118,6 +136,17 @@ export default function Show({ profileUser }: ProfileProps) {
                             </div>
                         </div>
                     </Card>
+
+                    {profileUser.store_description && (
+                        <Card className="rounded-[24px] border-[#edf2f9] shadow-sm p-6">
+                            <h3 className="text-sm font-bold text-[#0b1b32] uppercase tracking-wider mb-3 px-1">
+                                {t('Store Description')}
+                            </h3>
+                            <p className="text-sm text-[#5f6c84] leading-relaxed whitespace-pre-wrap">
+                                {profileUser.store_description}
+                            </p>
+                        </Card>
+                    )}
                 </div>
 
                 {/* Content Area */}

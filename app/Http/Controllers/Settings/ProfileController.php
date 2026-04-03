@@ -37,6 +37,12 @@ class ProfileController extends Controller
             \Illuminate\Support\Facades\Storage::disk('public')->delete($user->avatar);
             $user->avatar = null;
         }
+
+        // Handle store banner removal
+        if ($request->boolean('remove_store_banner') && $user->store_banner) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($user->store_banner);
+            $user->store_banner = null;
+        }
         
         // Handle avatar upload
         if ($request->hasFile('avatar')) {
@@ -49,9 +55,29 @@ class ProfileController extends Controller
             $path = $request->file('avatar')->store('avatars', 'public');
             $user->avatar = $path;
         }
-        
+
+        // Handle store banner upload
+        if ($request->hasFile('store_banner')) {
+            // Delete old banner if exists
+            if ($user->store_banner) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($user->store_banner);
+            }
+
+            // Store new banner
+            $path = $request->file('store_banner')->store('banners', 'public');
+            $user->store_banner = $path;
+        }
+
         // Update other profile fields
-        $user->fill($request->only(['name', 'email', 'avatar_style', 'avatar_seed', 'gender']));
+        $user->fill($request->only([
+            'name', 
+            'email', 
+            'avatar_style', 
+            'avatar_seed', 
+            'gender',
+            'store_name',
+            'store_description',
+        ]));
 
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;

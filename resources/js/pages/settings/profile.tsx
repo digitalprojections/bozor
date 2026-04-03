@@ -14,6 +14,9 @@ import type { BreadcrumbItem } from '@/types';
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import { edit } from '@/routes/profile';
 import { send } from '@/routes/verification';
+import { useTranslations } from '@/hooks/use-translations';
+import { BannerUpload } from '@/components/banner-upload';
+import { Textarea } from '@/components/ui/textarea';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -30,22 +33,28 @@ export default function Profile({
     status?: string;
 }) {
     const { auth } = usePage().props as any;
+    const { t } = useTranslations();
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
     const [avatarStyle, setAvatarStyle] = useState<string>(auth.user.avatar_style || '');
     const [avatarSeed, setAvatarSeed] = useState<string>(auth.user.avatar_seed || '');
     const [gender, setGender] = useState<string>('');
     const [removeAvatar, setRemoveAvatar] = useState(false);
+    
+    const [bannerFile, setBannerFile] = useState<File | null>(null);
+    const [removeBanner, setRemoveBanner] = useState(false);
 
     // Reset avatar state when status changes (indicating successful save)
     useEffect(() => {
-        if (status && (avatarFile !== null || removeAvatar !== false)) {
+        if (status && (avatarFile !== null || removeAvatar !== false || bannerFile !== null || removeBanner !== false)) {
             const timer = setTimeout(() => {
                 setAvatarFile(null);
                 setRemoveAvatar(false);
+                setBannerFile(null);
+                setRemoveBanner(false);
             }, 0);
             return () => clearTimeout(timer);
         }
-    }, [status, avatarFile, removeAvatar]);
+    }, [status, avatarFile, removeAvatar, bannerFile, removeBanner]);
 
     return (
         <BazaarLayout title="Profile Settings" breadcrumbs={breadcrumbs}>
@@ -130,6 +139,29 @@ export default function Profile({
                                     <input
                                         type="hidden"
                                         name="remove_avatar"
+                                        value="1"
+                                    />
+                                )}
+
+                                {bannerFile && (
+                                    <input
+                                        type="file"
+                                        name="store_banner"
+                                        className="hidden"
+                                        ref={(input) => {
+                                            if (input) {
+                                                const dataTransfer = new DataTransfer();
+                                                dataTransfer.items.add(bannerFile);
+                                                input.files = dataTransfer.files;
+                                            }
+                                        }}
+                                    />
+                                )}
+
+                                {removeBanner && (
+                                    <input
+                                        type="hidden"
+                                        name="remove_store_banner"
                                         value="1"
                                     />
                                 )}
@@ -219,6 +251,59 @@ export default function Profile({
                                             Saved
                                         </p>
                                     </Transition>
+                                </div>
+
+                                <Separator className="my-8" />
+
+                                <div className="space-y-6">
+                                    <Heading
+                                        variant="small"
+                                        title={t('Store Information')}
+                                        description={t('Store Settings Description')}
+                                    />
+
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="store_name">{t('Store Name')}</Label>
+                                        <Input
+                                            id="store_name"
+                                            name="store_name"
+                                            defaultValue={auth.user.store_name}
+                                            placeholder={t('Store Name Placeholder')}
+                                        />
+                                        <InputError message={errors.store_name} />
+                                    </div>
+
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="store_description">{t('Store Description')}</Label>
+                                        <Textarea
+                                            id="store_description"
+                                            name="store_description"
+                                            rows={4}
+                                            defaultValue={auth.user.store_description}
+                                            placeholder={t('Store Description Placeholder')}
+                                        />
+                                        <InputError message={errors.store_description} />
+                                    </div>
+
+                                    <div className="grid gap-2">
+                                        <Label>{t('Store Banner')}</Label>
+                                        <BannerUpload
+                                            onFileChange={setBannerFile}
+                                            onRemoveBanner={setRemoveBanner}
+                                            currentFile={bannerFile}
+                                            removeBanner={removeBanner}
+                                            initialUrl={auth.user.store_banner_url}
+                                        />
+                                        <InputError message={errors.store_banner} />
+                                    </div>
+
+                                    <div className="flex items-center gap-4">
+                                        <Button
+                                            disabled={processing}
+                                        >
+                                            {t('common.save') || 'Save'}
+                                        </Button>
+                                    </div>
                                 </div>
                             </>
                         )}
