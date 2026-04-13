@@ -16,17 +16,16 @@ Route::get('auth/google/callback', [App\Http\Controllers\Auth\SocialiteControlle
 
 // Root redirect based on locale detection
 Route::get('/', function (Request $request) {
-    $supported = array_keys(config('locales.supported', ['en' => []]));
-    $default = config('app.locale', 'en');
-
-    $locale = session('locale', $request->cookie('locale'));
-
-    if (!$locale || !in_array($locale, $supported, true)) {
-        $locale = $default;
-    }
-
-    return redirect("/$locale");
+    return redirect("/" . (session('locale') ?? $request->cookie('locale') ?? config('app.locale', 'en')));
 });
+
+// Redirect bare public paths to localized versions
+Route::get('/marketplace', fn(Request $request) => redirect('/' . (session('locale') ?? $request->cookie('locale') ?? config('app.locale', 'en')) . '/marketplace'));
+Route::get('/privacy', fn(Request $request) => redirect('/' . (session('locale') ?? $request->cookie('locale') ?? config('app.locale', 'en')) . '/privacy'));
+Route::get('/terms', fn(Request $request) => redirect('/' . (session('locale') ?? $request->cookie('locale') ?? config('app.locale', 'en')) . '/terms'));
+Route::get('/listings/{listing}', fn(Request $request, $listing) => redirect('/' . (session('locale') ?? $request->cookie('locale') ?? config('app.locale', 'en')) . '/listings/' . $listing));
+Route::get('/users/{user}', fn(Request $request, $user) => redirect('/' . (session('locale') ?? $request->cookie('locale') ?? config('app.locale', 'en')) . '/users/' . $user));
+
 
 Route::group(['prefix' => '{locale}', 'where' => ['locale' => '[a-z]{2}']], function () {
     Route::get('/', function () {
