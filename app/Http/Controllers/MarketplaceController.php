@@ -77,6 +77,10 @@ class MarketplaceController extends Controller
                 'category' => $request->category,
                 'sort' => $sort,
             ],
+            'seo' => [
+                'title' => __('Marketplace') . ' | ' . config('app.name'),
+                'description' => __('Browse and buy products from individuals and small businesses across Japan. Free registration and zero sales fees!'),
+            ],
         ]);
     }
 }

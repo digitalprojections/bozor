@@ -21,14 +21,22 @@ class SetLocale
         $supported = array_keys(config('locales.supported', ['en' => []]));
         $fallback = config('locales.fallback', config('app.fallback_locale', 'en'));
 
-        // 1. Explicit session (user switched language)
+        // 1. Check URL segment (e.g. /ja/...)
+        $locale = $request->segment(1);
+        if ($locale && in_array($locale, $supported, true)) {
+            App::setLocale($locale);
+            Session::put('locale', $locale);
+            return $next($request);
+        }
+
+        // 2. Explicit session (user switched language)
         $locale = Session::get('locale');
         if ($locale && in_array($locale, $supported, true)) {
             App::setLocale($locale);
             return $next($request);
         }
 
-        // 2. Cookie (persists after logout)
+        // 3. Cookie (persists after logout)
         $locale = $request->cookie('locale');
         if ($locale && in_array($locale, $supported, true)) {
             App::setLocale($locale);
@@ -36,14 +44,14 @@ class SetLocale
             return $next($request);
         }
 
-        // 2. Accept-Language header (first match in supported)
+        // 4. Accept-Language header (first match in supported)
         $preferred = $this->preferredLocaleFromHeader($request->header('Accept-Language'), $supported);
         if ($preferred) {
             App::setLocale($preferred);
             return $next($request);
         }
 
-        // 3. Config default
+        // 5. Config default
         App::setLocale(config('app.locale', $fallback));
 
         return $next($request);

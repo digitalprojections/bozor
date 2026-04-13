@@ -50,6 +50,12 @@ class HandleInertiaRequests extends Middleware
             'locale' => $locale,
             'translations' => $this->loadTranslationsForLocale($locale, $fallback),
             'supportedLocales' => config('locales.supported', ['en' => ['name' => 'English', 'native' => 'English']]),
+            'seo' => [
+                'title' => config('app.name', 'Bozor Japan'),
+                'description' => __('Free registration and no sales fees! A marketplace for individuals and small businesses in Japan.'),
+                'canonical' => $request->url(),
+                'og_image' => asset('favicon.png'),
+            ],
         ];
     }
 

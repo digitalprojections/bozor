@@ -32,6 +32,17 @@
 
         <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
+        <meta name="description" content="Free registration and no sales fees! The ultimate marketplace for individuals and small businesses in Japan. Buy and sell items easily without hidden costs.">
+        <meta property="og:type" content="website">
+        <meta property="og:site_name" content="{{ config('app.name', 'Bozor Japan') }}">
+        <meta name="twitter:card" content="summary_large_image">
+
+        {{-- hreflang tags for SEO visibility across regions --}}
+        @foreach(array_keys(config('locales.supported', ['en' => []])) as $localeCode)
+            <link rel="alternate" hreflang="{{ $localeCode }}" href="{{ url($localeCode . '/' . Request::segment(2)) }}">
+        @endforeach
+        <link rel="alternate" hreflang="x-default" href="{{ url('en/' . Request::segment(2)) }}">
+
         <link rel="icon" href="{{ asset('favicon.png') }}" type="image/png" sizes="80x80">
         <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}" sizes="180x180">
 

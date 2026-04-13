@@ -102,6 +102,24 @@ class ListingController extends Controller
             'listing' => $listing,
             'is_watched' => auth()->check() ? auth()->user()->watchedListings()->where('listing_id', $listing->id)->exists() : false,
             'recommendations' => $recommendations,
+            'seo' => [
+                'title' => $listing->title . ' | ' . config('app.name'),
+                'description' => str($listing->description)->limit(160),
+                'og_image' => $listing->images ? asset('storage/' . $listing->images[0]) : asset('favicon.png'),
+                'json_ld' => [
+                    '@context' => 'https://schema.org/',
+                    '@type' => 'Product',
+                    'name' => $listing->title,
+                    'image' => array_map(fn($path) => asset('storage/' . $path), $listing->images ?? []),
+                    'description' => $listing->description,
+                    'offers' => [
+                        '@type' => 'Offer',
+                        'price' => $listing->price,
+                        'priceCurrency' => 'JPY',
+                        'availability' => $listing->status === 'active' ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+                    ],
+                ],
+            ],
         ]);
     }
 
