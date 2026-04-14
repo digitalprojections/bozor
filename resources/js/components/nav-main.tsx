@@ -1,4 +1,4 @@
-import { LocalizedLink as Link } from '@/components/localized-link';
+import { Link } from '@inertiajs/react';
 import {
     SidebarGroup,
     SidebarGroupLabel,

@@ -21,22 +21,7 @@ class SetLocale
         $supported = array_keys(config('locales.supported', ['en' => []]));
         $fallback = config('locales.fallback', config('app.fallback_locale', 'en'));
 
-        // 1. Check URL segment (e.g. /ja/...)
-        $locale = $request->segment(1);
-        if ($locale && in_array($locale, $supported, true)) {
-            App::setLocale($locale);
-            if (Session::get('locale') !== $locale) {
-                Session::put('locale', $locale);
-            }
-            return $next($request);
-        }
-
-        // Ignore locale prefix for these routes
-        if ($request->is('auth/*', 'sitemap.xml', 'locale', 'up')) {
-            return $next($request);
-        }
-
-        // 2. Determine best locale if prefix is missing
+        // Determine best locale
         $targetLocale = Session::get('locale') 
             ?? $request->cookie('locale') 
             ?? $this->preferredLocaleFromHeader($request->header('Accept-Language'), $supported)
@@ -46,8 +31,12 @@ class SetLocale
             $targetLocale = $fallback;
         }
 
-        // 3. Redirect to localized URL
-        return redirect()->to('/' . $targetLocale . '/' . ltrim($request->path(), '/'));
+        App::setLocale($targetLocale);
+        if (Session::get('locale') !== $targetLocale) {
+            Session::put('locale', $targetLocale);
+        }
+
+        return $next($request);
     }
 
     /**

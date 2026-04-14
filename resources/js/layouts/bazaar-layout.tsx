@@ -1,5 +1,4 @@
-import { Head, usePage, router } from '@inertiajs/react';
-import { LocalizedLink as Link } from '@/components/localized-link';
+import { Head, Link, usePage, router } from '@inertiajs/react';
 import { Search, Star, Gavel, CheckCircle, Package, Clock, Heart, CreditCard, Receipt, Wallet, ShieldCheck, Bell, MessageCircle, Settings, ChevronRight, LayoutDashboard, ShoppingCart, Lock, Palette, Truck, LogOut, Menu } from 'lucide-react';
 import React, { ReactNode } from 'react';
 import { useTranslations } from '@/hooks/use-translations';

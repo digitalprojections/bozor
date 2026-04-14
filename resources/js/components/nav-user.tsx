@@ -1,5 +1,4 @@
-import { usePage } from '@inertiajs/react';
-import { LocalizedLink as Link } from '@/components/localized-link';
+import { usePage, Link } from '@inertiajs/react';
 import { ChevronsUpDown, LogIn, UserPlus } from 'lucide-react';
 import { useTranslations } from '@/hooks/use-translations';
 import { login, register } from '@/routes';
