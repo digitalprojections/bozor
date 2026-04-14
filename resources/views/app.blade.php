@@ -38,10 +38,13 @@
         <meta name="twitter:card" content="summary_large_image">
 
         {{-- hreflang tags for SEO visibility across regions --}}
-        @foreach(array_keys(config('locales.supported', ['en' => []])) as $localeCode)
-            <link rel="alternate" hreflang="{{ $localeCode }}" href="{{ $request->fullUrlWithQuery(['lang' => $localeCode]) }}">
-        @endforeach
-        <link rel="alternate" hreflang="x-default" href="{{ $request->fullUrlWithQuery(['lang' => 'en']) }}">
+        @if(isset($request) || request())
+            @php $currentRequest = $request ?? request(); @endphp
+            @foreach(array_keys(config('locales.supported', ['en' => []])) as $localeCode)
+                <link rel="alternate" hreflang="{{ $localeCode }}" href="{{ $currentRequest->fullUrlWithQuery(['lang' => $localeCode]) }}">
+            @endforeach
+            <link rel="alternate" hreflang="x-default" href="{{ $currentRequest->fullUrlWithQuery(['lang' => 'en']) }}">
+        @endif
 
         <link rel="icon" href="{{ asset('favicon.png') }}" type="image/png" sizes="80x80">
         <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}" sizes="180x180">
