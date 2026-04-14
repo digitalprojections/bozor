@@ -25,36 +25,29 @@ class SetLocale
         $locale = $request->segment(1);
         if ($locale && in_array($locale, $supported, true)) {
             App::setLocale($locale);
-            Session::put('locale', $locale);
+            if (Session::get('locale') !== $locale) {
+                Session::put('locale', $locale);
+            }
             return $next($request);
         }
 
-        // 2. Explicit session (user switched language)
-        $locale = Session::get('locale');
-        if ($locale && in_array($locale, $supported, true)) {
-            App::setLocale($locale);
+        // Ignore locale prefix for these routes
+        if ($request->is('auth/*', 'sitemap.xml', 'locale', 'up')) {
             return $next($request);
         }
 
-        // 3. Cookie (persists after logout)
-        $locale = $request->cookie('locale');
-        if ($locale && in_array($locale, $supported, true)) {
-            App::setLocale($locale);
-            Session::put('locale', $locale);
-            return $next($request);
+        // 2. Determine best locale if prefix is missing
+        $targetLocale = Session::get('locale') 
+            ?? $request->cookie('locale') 
+            ?? $this->preferredLocaleFromHeader($request->header('Accept-Language'), $supported)
+            ?? config('app.locale', $fallback);
+
+        if (!in_array($targetLocale, $supported, true)) {
+            $targetLocale = $fallback;
         }
 
-        // 4. Accept-Language header (first match in supported)
-        $preferred = $this->preferredLocaleFromHeader($request->header('Accept-Language'), $supported);
-        if ($preferred) {
-            App::setLocale($preferred);
-            return $next($request);
-        }
-
-        // 5. Config default
-        App::setLocale(config('app.locale', $fallback));
-
-        return $next($request);
+        // 3. Redirect to localized URL
+        return redirect()->to('/' . $targetLocale . '/' . ltrim($request->path(), '/'));
     }
 
     /**

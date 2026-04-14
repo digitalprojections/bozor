@@ -1,4 +1,5 @@
-import { Link, router } from '@inertiajs/react';
+import { router } from '@inertiajs/react';
+import { LocalizedLink as Link } from '@/components/localized-link';
 import { LogIn, LogOut, Settings, Star, UserPlus } from 'lucide-react';
 import { useTranslations } from '@/hooks/use-translations';
 import {

@@ -20,6 +20,20 @@ class LocaleController extends Controller
         Session::put('locale', $locale);
         cookie()->queue('locale', $locale, 43200 * 6); // 6 months
 
-        return back();
+        // Redirect back to the same path but with the new locale segment
+        $previousUrl = url()->previous();
+        $previousPath = parse_url($previousUrl, PHP_URL_PATH) ?: '/';
+        
+        $supported = array_keys(config('locales.supported', ['en' => []]));
+        $segments = explode('/', ltrim($previousPath, '/'));
+        
+        if (isset($segments[0]) && in_array($segments[0], $supported, true)) {
+            $segments[0] = $locale;
+            $newPath = implode('/', $segments);
+        } else {
+            $newPath = $locale . '/' . ltrim($previousPath, '/');
+        }
+
+        return redirect()->to('/' . ltrim($newPath, '/'));
     }
 }
