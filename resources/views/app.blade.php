@@ -39,9 +39,9 @@
 
         {{-- hreflang tags for SEO visibility across regions --}}
         @foreach(array_keys(config('locales.supported', ['en' => []])) as $localeCode)
-            <link rel="alternate" hreflang="{{ $localeCode }}" href="{{ url($localeCode . '/' . Request::segment(2)) }}">
+            <link rel="alternate" hreflang="{{ $localeCode }}" href="{{ $request->fullUrlWithQuery(['lang' => $localeCode]) }}">
         @endforeach
-        <link rel="alternate" hreflang="x-default" href="{{ url('en/' . Request::segment(2)) }}">
+        <link rel="alternate" hreflang="x-default" href="{{ $request->fullUrlWithQuery(['lang' => 'en']) }}">
 
         <link rel="icon" href="{{ asset('favicon.png') }}" type="image/png" sizes="80x80">
         <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}" sizes="180x180">

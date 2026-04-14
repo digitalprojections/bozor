@@ -21,11 +21,18 @@ class SetLocale
         $supported = array_keys(config('locales.supported', ['en' => []]));
         $fallback = config('locales.fallback', config('app.fallback_locale', 'en'));
 
-        // Determine best locale
-        $targetLocale = Session::get('locale') 
-            ?? $request->cookie('locale') 
-            ?? $this->preferredLocaleFromHeader($request->header('Accept-Language'), $supported)
-            ?? config('app.locale', $fallback);
+        // 1. Priority: URL query parameter ?lang=... (Good for SEO and manual links)
+        $langParam = $request->query('lang');
+        if ($langParam && in_array($langParam, $supported, true)) {
+            $targetLocale = $langParam;
+        } 
+        // 2. Secondary: Session or Cookie
+        else {
+            $targetLocale = Session::get('locale') 
+                ?? $request->cookie('locale') 
+                ?? $this->preferredLocaleFromHeader($request->header('Accept-Language'), $supported)
+                ?? config('app.locale', $fallback);
+        }
 
         if (!in_array($targetLocale, $supported, true)) {
             $targetLocale = $fallback;
