@@ -18,9 +18,10 @@ export default defineConfig({
             },
         }),
         tailwindcss(),
-        wayfinder({
+        // Disable wayfinder in Docker builds (CI environment)
+        ...(process.env.DOCKER_BUILD ? [] : [wayfinder({
             formVariants: true,
-        }),
+        })]),
     ],
     esbuild: {
         jsx: 'automatic',

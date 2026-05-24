@@ -12,7 +12,7 @@ COPY resources ./resources
 COPY . .
 
 # Build Vite assets for production
-RUN npm run build
+RUN DOCKER_BUILD=1 npm run build
 
 # Multi-stage build: PHP application
 FROM php:8.3-fpm-alpine
