@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   app:
     build:
@@ -19,22 +17,19 @@ services:
       DB_DATABASE: ${DB_DATABASE}
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
-      CACHE_DRIVER: redis
+      CACHE_STORE: redis
       QUEUE_CONNECTION: redis
       SESSION_DRIVER: redis
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      FILESYSTEM_DISK: s3
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
-      AWS_BUCKET: ${AWS_BUCKET}
-      AWS_URL: ${AWS_URL}
-    volumes:
-      - .:/var/www/html
+      FILESYSTEM_DISK: ${FILESYSTEM_DISK:-s3}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-}
+      AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION:-}
+      AWS_BUCKET: ${AWS_BUCKET:-}
+      AWS_URL: ${AWS_URL:-}
     ports:
-      - "80:80"
-      - "443:443"
+      - "${APP_PORT:-80}:80"
     depends_on:
       postgres:
         condition: service_healthy
