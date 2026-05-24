@@ -28,7 +28,6 @@ Homestead.json
 .env.production
 .phpactor.json
 auth.json
-/resources/js/routes/index.ts
 bozor_database
 *.zip
 
