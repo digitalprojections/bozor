@@ -14,10 +14,6 @@ class TransactionController extends Controller
 {
     public function buyNow(Request $request, Listing $listing)
     {
-        if (auth()->user()->is_guest) {
-            return redirect()->route('login')->with('error', 'Please log in with your Google account to buy items.');
-        }
-
         if ($listing->user_id === auth()->id()) {
             return back()->withErrors(['error' => 'You cannot buy your own listing.']);
         }

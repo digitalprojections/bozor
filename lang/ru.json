@@ -24,6 +24,8 @@
     "welcome.cta_sub": "Присоединяйтесь к Bozor и начните продавать сегодня. Размещение бесплатно.",
     "welcome.footer": "Маркетплейс для всех.",
     "auth.login_with_google": "Войти через Google",
+    "auth.login_required_title": "Требуется вход",
+    "auth.login_required_description": "Пожалуйста, войдите, чтобы продолжить. Вы можете дальше просматривать сайт, а на страницу входа перейдете только после нажатия кнопки входа.",
     "auth.forgot_password": "Забыли пароль?",
     "auth.remember_me": "Запомнить меня",
     "auth.already_registered": "Уже зарегистрированы?",

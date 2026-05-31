@@ -24,6 +24,8 @@
     "welcome.cta_sub": "Bozorga qo'shiling va bugun sotishni boshlang. E'lon berish bepul.",
     "welcome.footer": "Hamma uchun bozor.",
     "auth.login_with_google": "Google orqali kirish",
+    "auth.login_required_title": "Kirish talab qilinadi",
+    "auth.login_required_description": "Davom etish uchun tizimga kiring. Ko'rishni davom ettirishingiz mumkin, login sahifasiga faqat kirish tugmasini bosganingizda o'tasiz.",
     "auth.forgot_password": "Parolingizni unutdingizmi?",
     "auth.remember_me": "Meni eslab qol",
     "auth.already_registered": "Allaqachon ro'yxatdan o'tganmisiz?",

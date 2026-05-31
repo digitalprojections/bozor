@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { useTranslations } from '@/hooks/use-translations';
 import { Link, usePage } from '@inertiajs/react';
 import { cn } from '@/lib/utils';
+import React from 'react';
+import { LoginRequiredDialog } from '@/components/login-required-dialog';
 
 
 interface Stats {
@@ -16,7 +18,8 @@ interface Stats {
 export function MarketplaceHeader({ stats }: { stats: Stats | null }) {
     const { t } = useTranslations();
     const { auth } = usePage().props as any;
-    const user = auth.user;
+    const user = auth.user && !auth.user.is_guest ? auth.user : null;
+    const [loginRequiredOpen, setLoginRequiredOpen] = React.useState(false);
 
     const statCards = stats ? [
         {
@@ -58,13 +61,22 @@ export function MarketplaceHeader({ stats }: { stats: Stats | null }) {
                         {t('marketplace.description')}
                     </p>
                 </div>
-                {user && (
+                {user ? (
                     <Link href="/listings/create" className="w-full sm:w-auto">
                         <Button size="default" className="w-full sm:w-auto bg-[#0d9488] hover:bg-[#0f766e] text-white font-bold shadow-md transition-all hover:scale-105 active:scale-95">
                             <PlusCircle className="mr-2 h-5 w-5" />
                             {t('marketplace.create_listing')}
                         </Button>
                     </Link>
+                ) : (
+                    <Button
+                        size="default"
+                        onClick={() => setLoginRequiredOpen(true)}
+                        className="w-full sm:w-auto bg-[#0d9488] hover:bg-[#0f766e] text-white font-bold shadow-md transition-all hover:scale-105 active:scale-95"
+                    >
+                        <PlusCircle className="mr-2 h-5 w-5" />
+                        {t('marketplace.create_listing')}
+                    </Button>
                 )}
             </div>
 
@@ -98,6 +110,10 @@ export function MarketplaceHeader({ stats }: { stats: Stats | null }) {
                 </div>
             )}
 
+            <LoginRequiredDialog
+                open={loginRequiredOpen}
+                onOpenChange={setLoginRequiredOpen}
+            />
         </div>
     );
 }

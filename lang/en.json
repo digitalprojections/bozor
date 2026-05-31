@@ -24,6 +24,8 @@
     "welcome.cta_sub": "Join Bozor and start selling today. No fees to list.",
     "welcome.footer": "A marketplace for everyone.",
     "auth.login_with_google": "Log in with Google",
+    "auth.login_required_title": "Login required",
+    "auth.login_required_description": "Please log in to continue. You can keep browsing, and we will only take you to login when you choose to.",
     "auth.forgot_password": "Forgot your password?",
     "auth.remember_me": "Remember me",
     "auth.already_registered": "Already registered?",

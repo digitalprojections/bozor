@@ -17,6 +17,12 @@ class IdentifyGuest
     {
         // Don't auto-login guests on landng page, auth, registration, or verification routes
         if ($request->is('/', 'login', 'register', 'forgot-password', 'reset-password*', 'two-factor-challenge', 'verification*', 'user/accept-terms')) {
+            if (auth()->user()?->is_guest) {
+                \Illuminate\Support\Facades\Auth::logout();
+                $request->session()->regenerateToken();
+                $request->setUserResolver(fn () => null);
+            }
+
             return $next($request);
         }
 

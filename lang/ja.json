@@ -24,6 +24,8 @@
     "welcome.cta_sub": "Bozorに参加して今すぐ売りましょう。出品料は無料です。",
     "welcome.footer": "みんなのマーケットプレイス。",
     "auth.login_with_google": "Googleでログイン",
+    "auth.login_required_title": "ログインが必要です",
+    "auth.login_required_description": "続行するにはログインしてください。閲覧はこのまま続けられます。ログインボタンを押したときだけログイン画面へ移動します。",
     "auth.forgot_password": "パスワードをお忘れですか？",
     "auth.remember_me": "ログイン状態を保持",
     "auth.already_registered": "すでに登録済みですか？",

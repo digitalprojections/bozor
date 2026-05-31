@@ -32,7 +32,7 @@ Route::get('/terms', function () {
 })->name('terms');
 
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['real-user'])->group(function () {
     Route::post('/user/accept-terms', function () {
         auth()->user()->update(['terms_accepted_at' => now()]);
         return back();
@@ -82,5 +82,3 @@ require __DIR__ . '/settings.php';
 // Public Wildcard Routes (Must be at the bottom to avoid shadowing static routes)
 Route::get('/listings/{listing}', [App\Http\Controllers\ListingController::class, 'show'])->name('listings.show');
 Route::get('/users/{user}', [App\Http\Controllers\ProfileController::class, 'show'])->name('profile.show');
-
-

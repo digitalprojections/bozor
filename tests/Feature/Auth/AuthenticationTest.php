@@ -19,6 +19,19 @@ class AuthenticationTest extends TestCase
         $response->assertOk();
     }
 
+    public function test_guest_user_can_visit_login_screen()
+    {
+        $guest = User::factory()->create([
+            'is_guest' => true,
+            'guest_id' => (string) \Illuminate\Support\Str::uuid(),
+        ]);
+
+        $response = $this->actingAs($guest)->get(route('login'));
+
+        $response->assertOk();
+        $this->assertGuest();
+    }
+
     public function test_users_can_authenticate_using_the_login_screen()
     {
         $user = User::factory()->create();

@@ -75,6 +75,26 @@ class TransactionBuyNowTest extends TestCase
         $this->assertDatabaseCount('transactions', 0);
     }
 
+    public function test_guest_buy_now_does_not_redirect_to_login(): void
+    {
+        Notification::fake();
+
+        $seller = User::factory()->create();
+        $listing = $this->createListing($seller, [
+            'price' => 12500,
+            'buy_now_price' => null,
+            'is_auction' => false,
+        ]);
+
+        $response = $this->from(route('listings.show', $listing))->post(route('listings.buy-now', $listing));
+
+        $response
+            ->assertRedirect(route('listings.show', $listing))
+            ->assertSessionHasErrors('auth');
+
+        $this->assertDatabaseCount('transactions', 0);
+    }
+
     private function createListing(User $seller, array $attributes = []): Listing
     {
         $category = Category::create([

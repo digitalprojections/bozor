@@ -5,6 +5,7 @@ import { useTranslations } from '@/hooks/use-translations';
 import { useInitials } from '@/hooks/use-initials';
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { LocaleSwitcher } from '@/components/locale-switcher';
+import { LoginRequiredDialog } from '@/components/login-required-dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
@@ -22,7 +23,7 @@ export default function BazaarLayout({ children, title, breadcrumbs = [], sideba
     const { t } = useTranslations();
     const getInitials = useInitials();
     const { auth } = usePage().props as any;
-    const user = auth.user;
+    const user = auth.user && !auth.user.is_guest ? auth.user : null;
 
     return (
         <div className="min-h-screen bg-[#f4f6fa] text-[#1a263b]">
@@ -191,30 +192,57 @@ function SidebarSection({ title, children }: { title: string, children: ReactNod
 
 function SidebarLink({ icon: Icon, label, href = "#" }: { icon: any, label: string, href?: string }) {
     const { url } = usePage();
+    const { auth } = usePage().props as any;
+    const [loginRequiredOpen, setLoginRequiredOpen] = React.useState(false);
     const isDashboard = href === '/dashboard';
     const isActive = isDashboard ? url === '/dashboard' : url.startsWith(href);
+    const requiresAuth = [
+        '/dashboard',
+        '/dashboard/won-items',
+        '/dashboard/sold-items',
+        '/watchlist',
+        '/settings/profile',
+        '/settings/password',
+        '/settings/two-factor',
+        '/listings/create',
+    ].some((path) => href === path || href.startsWith(`${path}/`));
+    const isGuest = !auth?.user || auth.user.is_guest;
+
+    const handleClick = (event: React.MouseEvent<Element>) => {
+        if (requiresAuth && isGuest) {
+            event.preventDefault();
+            setLoginRequiredOpen(true);
+        }
+    };
 
     return (
-        <Link
-            href={href}
-            className={cn(
-                "flex items-center gap-3 px-4 py-2 text-[0.95rem] font-medium transition-all rounded-lg group",
-                isActive
-                    ? "bg-white shadow-sm text-[#0d9488]"
-                    : "text-[#1a263b] hover:bg-white hover:shadow-sm"
-            )}
-        >
-            <Icon size={18} className={cn("transition-colors", isActive ? "text-[#0d9488]" : "text-[#3a5f8b]")} />
-            <span className="flex-1">{label}</span>
-            <ChevronRight size={14} className={cn("transition-opacity", isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100")} />
-        </Link>
+        <>
+            <Link
+                href={href}
+                onClick={handleClick}
+                className={cn(
+                    "flex items-center gap-3 px-4 py-2 text-[0.95rem] font-medium transition-all rounded-lg group",
+                    isActive
+                        ? "bg-white shadow-sm text-[#0d9488]"
+                        : "text-[#1a263b] hover:bg-white hover:shadow-sm"
+                )}
+            >
+                <Icon size={18} className={cn("transition-colors", isActive ? "text-[#0d9488]" : "text-[#3a5f8b]")} />
+                <span className="flex-1">{label}</span>
+                <ChevronRight size={14} className={cn("transition-opacity", isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100")} />
+            </Link>
+            <LoginRequiredDialog
+                open={loginRequiredOpen}
+                onOpenChange={setLoginRequiredOpen}
+            />
+        </>
     );
 }
 
 function DefaultSidebar() {
     const { t } = useTranslations();
     const { auth } = usePage().props as any;
-    const user = auth.user;
+    const user = auth.user && !auth.user.is_guest ? auth.user : null;
 
     return (
         <div className="flex flex-col gap-8">

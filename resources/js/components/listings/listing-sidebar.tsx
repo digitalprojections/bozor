@@ -14,6 +14,7 @@ import { SoldBadge } from '@/components/listings/sold-badge';
 import { WatchButton } from '@/components/listings/watch-button';
 import { PriceDisplay } from '@/components/listings/price-display';
 import { UserRatingBadge } from '@/components/user-rating-badge';
+import { LoginRequiredDialog } from '@/components/login-required-dialog';
 
 interface ListingSidebarProps {
     listing: {
@@ -54,6 +55,7 @@ export function ListingSidebar({ listing }: ListingSidebarProps) {
 
     const [isTermsModalOpen, setIsTermsModalOpen] = React.useState(false);
     const [pendingAction, setPendingAction] = React.useState<null | (() => void)>(null);
+    const [loginRequiredOpen, setLoginRequiredOpen] = React.useState(false);
 
     const checkTermsAndExecute = (action: () => void) => {
         if (auth?.user && !auth.user.has_accepted_terms) {
@@ -152,11 +154,12 @@ export function ListingSidebar({ listing }: ListingSidebarProps) {
                         </div>
                     ) : canBuyNow ? (
                         <div className="flex flex-col gap-3">
-                            <Link href="/login" className="w-full">
-                                <Button className="w-full h-10 sm:h-12 rounded-full bg-[#2b4b8f] hover:bg-[#1e3a7a] text-white font-bold text-sm sm:text-lg">
-                                    {t('listing.show.buy_now')} (¥{purchasePrice.toLocaleString()})
-                                </Button>
-                            </Link>
+                            <Button
+                                onClick={() => setLoginRequiredOpen(true)}
+                                className="w-full h-10 sm:h-12 rounded-full bg-[#2b4b8f] hover:bg-[#1e3a7a] text-white font-bold text-sm sm:text-lg"
+                            >
+                                {t('listing.show.buy_now')} (¥{purchasePrice.toLocaleString()})
+                            </Button>
                             <div className="text-center text-xs sm:text-sm text-[#5f6c84] bg-muted/50 p-3 sm:p-4 rounded-[16px] sm:rounded-2xl border border-dashed">
                                 {t('listing.sidebar.login_prefix')}{' '}
                                 <Link href="/login" className="text-[#0d9488] font-semibold underline underline-offset-4">
@@ -238,6 +241,10 @@ export function ListingSidebar({ listing }: ListingSidebarProps) {
                         setPendingAction(null);
                     }
                 }}
+            />
+            <LoginRequiredDialog
+                open={loginRequiredOpen}
+                onOpenChange={setLoginRequiredOpen}
             />
         </div>
     );

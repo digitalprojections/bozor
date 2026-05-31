@@ -26,6 +26,10 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
         ]);
+
+        $middleware->alias([
+            'real-user' => \App\Http\Middleware\RequireRealUser::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

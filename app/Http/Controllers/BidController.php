@@ -13,10 +13,6 @@ class BidController extends Controller
 {
     public function store(Request $request, Listing $listing)
     {
-        if (auth()->user()->is_guest) {
-            return redirect()->route('login')->with('error', 'Please log in with your Google account to bid on items.');
-        }
-
         $validated = $request->validate([
             'amount' => 'required|integer|min:1',
         ]);
