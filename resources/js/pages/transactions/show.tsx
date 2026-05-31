@@ -42,6 +42,7 @@ interface Transaction {
         id: number;
         title: string;
         images: string[] | null;
+        main_image_url: string | null;
     };
     seller: {
         id: number;
@@ -507,8 +508,8 @@ export default function Show({ transaction }: { transaction: Transaction }) {
                         <CardContent className="p-6">
                             <div className="flex gap-4">
                                 <div className="h-20 w-20 rounded-xl bg-[#f0f5fd] border border-[#e1e9f2] overflow-hidden shrink-0">
-                                    {transaction.listing.images && transaction.listing.images.length > 0 ? (
-                                        <img src={`/storage/${transaction.listing.images[0]}`} alt="" className="h-full w-full object-cover" />
+                                    {transaction.listing.main_image_url ? (
+                                        <img src={transaction.listing.main_image_url} alt="" className="h-full w-full object-cover" />
                                     ) : (
                                         <div className="h-full w-full flex items-center justify-center text-[#a3b6cc]">
                                             <Package size={32} />

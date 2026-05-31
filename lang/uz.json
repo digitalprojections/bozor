@@ -170,6 +170,7 @@
     "marketplace.filters.price_high_low": "Narx: Qimmatroq",
     "marketplace.filters.active_search": "Qidiruv",
     "marketplace.filters.active_category": "Kategoriya",
+    "marketplace.filters.hide_sold": "Sotilganlarni yashirish",
     "listing.show.title": "Mahsulot tafsilotlari",
     "listing.show.no_images": "Rasmlar mavjud emas",
     "listing.show.no_listings": "Hali e'lonlar yo'q",

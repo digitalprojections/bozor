@@ -23,7 +23,7 @@ interface ListingCardProps {
 export function ListingCard({ listing, className }: ListingCardProps) {
     const isSold = listing.status === 'sold';
     const [imageFailed, setImageFailed] = useState(false);
-    const imageUrl = listing.main_image_url ?? (listing.images?.[0] ? `/storage/${listing.images[0]}` : null);
+    const imageUrl = listing.main_image_url ?? null;
 
     return (
         <Link href={`/listings/${listing.id}`} className={cn("block group", className)}>

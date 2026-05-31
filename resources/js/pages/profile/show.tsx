@@ -22,6 +22,7 @@ interface Rating {
     rater: {
         id: number;
         name: string;
+        masked_name: string;
         avatar_url: string;
     };
 }
@@ -55,6 +56,7 @@ interface ProfileProps {
     profileUser: {
         id: number;
         name: string;
+        masked_name: string;
         avatar_url: string;
         created_at: string;
         average_rating: number;
@@ -71,10 +73,11 @@ interface ProfileProps {
 export default function Show({ profileUser, activeListings, soldListings }: ProfileProps) {
     const { t } = useTranslations();
     const getInitials = useInitials();
+    const profileDisplayName = profileUser.masked_name || profileUser.name;
 
     const breadcrumbs: BreadcrumbItem[] = [
         { title: t('marketplace.title'), href: '/marketplace' },
-        { title: profileUser.name, href: '#' },
+        { title: profileDisplayName, href: '#' },
     ];
 
     const Pagination = ({ pagination, preserveScroll = true }: { pagination: PaginatedListings, preserveScroll?: boolean }) => {
@@ -147,16 +150,16 @@ export default function Show({ profileUser, activeListings, soldListings }: Prof
 
     return (
         <BazaarLayout
-            title={profileUser.name}
+            title={profileDisplayName}
             breadcrumbs={breadcrumbs}
         >
-            <Head title={`${profileUser.store_name || profileUser.name} - ${t('marketplace.title')}`} />
+            <Head title={`${profileUser.store_name || profileDisplayName} - ${t('marketplace.title')}`} />
 
             {profileUser.store_banner_url && (
                 <div className="w-full h-48 sm:h-72 rounded-[32px] overflow-hidden mb-10 shadow-sm border border-[#edf2f9] relative">
                     <img
                         src={profileUser.store_banner_url}
-                        alt={profileUser.store_name || profileUser.name}
+                        alt={profileUser.store_name || profileDisplayName}
                         className="w-full h-full object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
@@ -170,9 +173,9 @@ export default function Show({ profileUser, activeListings, soldListings }: Prof
                         <div className="flex flex-col items-center text-center gap-5">
                             <div className="relative">
                                 <Avatar className="h-28 w-28 border-4 border-white shadow-xl">
-                                    <AvatarImage src={profileUser.avatar_url} alt={profileUser.name} className="object-cover" />
+                                    <AvatarImage src={profileUser.avatar_url} alt={profileDisplayName} className="object-cover" />
                                     <AvatarFallback className="bg-[#f0f5fd] text-[#3a5670] text-4xl font-extrabold">
-                                        {getInitials(profileUser.name)}
+                                        {getInitials(profileDisplayName)}
                                     </AvatarFallback>
                                 </Avatar>
                                 <div className="absolute bottom-1 right-1 bg-white rounded-full p-1 shadow-sm border border-[#f0f5fd]">
@@ -182,10 +185,10 @@ export default function Show({ profileUser, activeListings, soldListings }: Prof
 
                             <div className="space-y-1">
                                 <h1 className="text-2xl font-bold text-[#0b1b32] tracking-tight">
-                                    {profileUser.store_name || profileUser.name}
+                                    {profileUser.store_name || profileDisplayName}
                                 </h1>
                                 {profileUser.store_name && (
-                                    <p className="text-sm text-[#5f6c84] font-medium">{profileUser.name}</p>
+                                    <p className="text-sm text-[#5f6c84] font-medium">{profileDisplayName}</p>
                                 )}
                             </div>
 
@@ -327,9 +330,9 @@ export default function Show({ profileUser, activeListings, soldListings }: Prof
                                             <div className="flex gap-5">
                                                 <Link href={`/users/${rating.rater.id}`}>
                                                     <Avatar className="h-12 w-12 border-2 border-[#f0f5fd]">
-                                                        <AvatarImage src={rating.rater.avatar_url} alt={rating.rater.name} />
+                                                        <AvatarImage src={rating.rater.avatar_url} alt={rating.rater.masked_name || rating.rater.name} />
                                                         <AvatarFallback className="bg-[#f0f5fd] text-[#2b4b8f] font-bold">
-                                                            {getInitials(rating.rater.name)}
+                                                            {getInitials(rating.rater.masked_name || rating.rater.name)}
                                                         </AvatarFallback>
                                                     </Avatar>
                                                 </Link>
@@ -337,7 +340,7 @@ export default function Show({ profileUser, activeListings, soldListings }: Prof
                                                     <div className="flex justify-between items-start mb-2">
                                                         <div>
                                                             <Link href={`/users/${rating.rater.id}`} className="font-bold text-[#0b1b32] hover:text-[#0d9488] transition-colors">
-                                                                {rating.rater.name}
+                                                                {rating.rater.masked_name || rating.rater.name}
                                                             </Link>
                                                             <div className="flex items-center gap-0.5 mt-1">
                                                                 {[1, 2, 3, 4, 5].map((s) => (

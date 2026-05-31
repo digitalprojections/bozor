@@ -170,6 +170,7 @@
     "marketplace.filters.price_high_low": "Цена: от дорогих",
     "marketplace.filters.active_search": "Поиск",
     "marketplace.filters.active_category": "Категория",
+    "marketplace.filters.hide_sold": "Скрыть проданные",
     "listing.show.title": "Детали товара",
     "listing.show.no_images": "Изображения отсутствуют",
     "listing.show.no_listings": "Объявлений пока нет",

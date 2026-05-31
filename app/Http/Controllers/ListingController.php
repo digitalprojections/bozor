@@ -8,6 +8,7 @@ use App\Notifications\WatchlistItemUpdated;
 use App\Services\ListingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -58,7 +59,14 @@ class ListingController extends Controller
         $imagePaths = [];
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
-                $path = $image->store('listings', config('filesystems.default'));
+                $path = $image->store('listings', 'public');
+
+                if (! $path) {
+                    throw ValidationException::withMessages([
+                        'images' => __('One or more images could not be saved. Please try again.'),
+                    ]);
+                }
+
                 $imagePaths[] = $path;
             }
         }
@@ -107,12 +115,12 @@ class ListingController extends Controller
             'seo' => [
                 'title' => $listing->title.' | '.config('app.name'),
                 'description' => str($listing->description)->limit(160),
-                'og_image' => $listing->images ? asset('storage/'.$listing->images[0]) : asset('favicon.png'),
+                'og_image' => $listing->main_image_url ?: asset('favicon.png'),
                 'json_ld' => [
                     '@context' => 'https://schema.org/',
                     '@type' => 'Product',
                     'name' => $listing->title,
-                    'image' => array_map(fn ($path) => asset('storage/'.$path), $listing->images ?? []),
+                    'image' => $listing->all_image_urls,
                     'description' => $listing->description,
                     'offers' => [
                         '@type' => 'Offer',

@@ -20,6 +20,7 @@ interface WonItem {
         avatar_url: string;
     };
     images: string[] | null;
+    main_image_url: string | null;
     won_at: string;
     type: 'purchase' | 'auction';
     status: TransactionStatus;
@@ -127,8 +128,8 @@ export default function WonItems({ items }: { items: WonItem[] }) {
                             <Card key={`${item.type}-${item.id}-${index}`} className="rounded-xl border-[#f0f2f5] shadow-sm overflow-hidden hover:border-[#ced9e5] transition-all group">
                                 <CardContent className="p-4 flex items-center gap-4">
                                     <div className="h-20 w-20 rounded-xl bg-[#f0f5fd] flex items-center justify-center shrink-0 border border-[#e1e9f2] overflow-hidden">
-                                        {item.images && item.images.length > 0 ? (
-                                            <img src={`/storage/${item.images[0]}`} alt="" className="h-full w-full object-cover" />
+                                        {item.main_image_url ? (
+                                            <img src={item.main_image_url} alt="" className="h-full w-full object-cover" />
                                         ) : (
                                             <Package className="text-[#a3b6cc]" size={24} />
                                         )}

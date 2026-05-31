@@ -50,9 +50,42 @@ class TransactionController extends Controller
     public function show(Transaction $transaction)
     {
         $transaction->load(['listing', 'seller', 'buyer', 'ratings.rater']);
+        $canSeeFullNames = auth()->check() && in_array(auth()->id(), [$transaction->buyer_id, $transaction->seller_id], true);
 
         return inertia('transactions/show', [
-            'transaction' => $transaction,
+            'transaction' => [
+                'id' => $transaction->id,
+                'listing_id' => $transaction->listing_id,
+                'buyer_id' => $transaction->buyer_id,
+                'seller_id' => $transaction->seller_id,
+                'amount' => $transaction->amount,
+                'status' => $transaction->status,
+                'tracking_number' => $transaction->tracking_number,
+                'shipping_method' => $transaction->shipping_method,
+                'paid_at' => $transaction->paid_at,
+                'shipped_at' => $transaction->shipped_at,
+                'delivered_at' => $transaction->delivered_at,
+                'received_at' => $transaction->received_at,
+                'completed_at' => $transaction->completed_at,
+                'created_at' => $transaction->created_at,
+                'listing' => [
+                    'id' => $transaction->listing->id,
+                    'title' => $transaction->listing->title,
+                    'images' => $transaction->listing->images,
+                ],
+                'seller' => $this->transactionUser($transaction->seller, $canSeeFullNames),
+                'buyer' => $this->transactionUser($transaction->buyer, $canSeeFullNames),
+                'ratings' => $transaction->ratings->map(fn ($rating) => [
+                    'id' => $rating->id,
+                    'transaction_id' => $rating->transaction_id,
+                    'rater_id' => $rating->rater_id,
+                    'rated_user_id' => $rating->rated_user_id,
+                    'score' => $rating->score,
+                    'comment' => $rating->comment,
+                    'created_at' => $rating->created_at,
+                    'rater' => $this->transactionUser($rating->rater, $canSeeFullNames),
+                ]),
+            ],
         ]);
     }
 
@@ -168,5 +201,15 @@ class TransactionController extends Controller
         } catch (Throwable $exception) {
             report($exception);
         }
+    }
+
+    private function transactionUser($user, bool $canSeeFullName): array
+    {
+        return [
+            'id' => $user->id,
+            'name' => $canSeeFullName ? $user->name : $user->masked_name,
+            'masked_name' => $user->masked_name,
+            'avatar_url' => $user->avatar_url,
+        ];
     }
 }

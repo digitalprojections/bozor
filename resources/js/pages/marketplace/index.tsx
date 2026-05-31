@@ -59,6 +59,7 @@ interface Filters {
     search?: string;
     category?: number;
     sort?: string;
+    hide_sold?: boolean;
 }
 
 export default function Marketplace({
@@ -102,6 +103,14 @@ export default function Marketplace({
         );
     };
 
+    const handleHideSoldChange = (hideSold: boolean) => {
+        router.get(
+            '/marketplace',
+            { ...filters, hide_sold: hideSold ? 1 : undefined },
+            { preserveState: true, preserveScroll: true }
+        );
+    };
+
     return (
         <BazaarLayout title="Marketplace" breadcrumbs={breadcrumbs}>
             <Head title="Marketplace" />
@@ -114,10 +123,12 @@ export default function Marketplace({
                     currentCategory={filters.category}
                     currentSort={filters.sort || 'newest'}
                     currentSearch={filters.search || ''}
+                    hideSold={filters.hide_sold || false}
                     viewMode={viewMode}
                     onSearch={handleSearch}
                     onCategoryChange={handleCategoryChange}
                     onSortChange={handleSortChange}
+                    onHideSoldChange={handleHideSoldChange}
                     onViewModeChange={setViewMode}
                 />
 
@@ -130,6 +141,7 @@ export default function Marketplace({
                         lastPage: listings.last_page,
                         total: listings.total,
                     }}
+                    filters={filters}
                 />
 
                 <RecommendationsSection recommendations={recommendations} />

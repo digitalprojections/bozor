@@ -1,6 +1,6 @@
 services:
   app:
-    image: bozor-app
+    image: ${APP_IMAGE:-fuzalov/bozor-app:latest}
     build:
       context: .
       dockerfile: Dockerfile.prod
@@ -23,7 +23,7 @@ services:
       SESSION_DRIVER: redis
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      FILESYSTEM_DISK: ${FILESYSTEM_DISK:-s3}
+      FILESYSTEM_DISK: ${FILESYSTEM_DISK:-public}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-}
       AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION:-}

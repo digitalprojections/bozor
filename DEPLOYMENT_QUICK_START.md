@@ -15,6 +15,7 @@ Complete deployment checklist for Bozor to AWS EC2 via Docker.
 ### 2. Local Preparation
 - [ ] Update `.env.production.example` with your values
 - [ ] Install Docker locally for testing
+- [ ] Confirm `APP_IMAGE` points to the Docker Hub image you want to publish
 - [ ] Build frontend assets: `npm run build`
 - [ ] Test Docker build: `docker build -f Dockerfile.prod -t bozor:test .`
 - [ ] Commit and push code to GitHub `main` branch
@@ -103,7 +104,7 @@ nano /home/ubuntu/bozor/.env
 # Navigate to app directory
 cd /home/ubuntu/bozor
 
-# Build and start containers
+# Build and start containers locally on the server
 docker-compose -f docker-compose.prod.yml build
 docker-compose -f docker-compose.prod.yml up -d
 
@@ -116,6 +117,29 @@ docker-compose -f docker-compose.prod.yml exec app php artisan db:seed --class=C
 
 # Check logs
 docker-compose -f docker-compose.prod.yml logs -f app
+```
+
+### Optional: Build and Push via Docker Hub
+
+The default production image is `fuzalov/bozor-app:latest`. Set `APP_IMAGE` in the EC2 `.env` before building if you use a different Docker Hub namespace or tag. For production deploys, also push an immutable tag such as the git SHA or release number so the exact image can be identified later.
+
+Do not upload local `.env` to EC2. Keep local values like `localhost` in local `.env`, and keep production domain, DB, and OAuth values in the EC2 `.env`.
+
+```powershell
+.\scripts\deploy-dockerhub.ps1
+```
+
+```bash
+# From your local checkout
+docker compose -f docker-compose.prod.yml build app
+docker compose -f docker-compose.prod.yml push app
+docker tag fuzalov/bozor-app:latest fuzalov/bozor-app:<git-sha-or-release>
+docker push fuzalov/bozor-app:<git-sha-or-release>
+
+# On the server
+docker compose -f docker-compose.prod.yml pull app
+docker compose -f docker-compose.prod.yml up -d
+docker compose -f docker-compose.prod.yml exec app php artisan migrate --force
 ```
 
 ### Step 6: DNS & SSL Setup
@@ -203,6 +227,12 @@ git pull origin main
 docker-compose -f docker-compose.prod.yml build
 docker-compose -f docker-compose.prod.yml up -d
 docker-compose -f docker-compose.prod.yml exec app php artisan migrate --force
+
+# Build and push Docker Hub image
+docker compose -f docker-compose.prod.yml build app
+docker compose -f docker-compose.prod.yml push app
+docker tag fuzalov/bozor-app:latest fuzalov/bozor-app:<git-sha-or-release>
+docker push fuzalov/bozor-app:<git-sha-or-release>
 ```
 
 ---

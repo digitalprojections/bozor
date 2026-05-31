@@ -2,6 +2,7 @@ import { Search, Grid, List, SlidersHorizontal } from 'lucide-react';
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useTranslations } from '@/hooks/use-translations';
 import {
     Select,
@@ -23,10 +24,12 @@ interface SearchAndFiltersProps {
     currentCategory?: number;
     currentSort: string;
     currentSearch: string;
+    hideSold: boolean;
     viewMode: 'grid' | 'list';
     onSearch: (search: string) => void;
     onCategoryChange: (categoryId: number | null) => void;
     onSortChange: (sort: string) => void;
+    onHideSoldChange: (hideSold: boolean) => void;
     onViewModeChange: (mode: 'grid' | 'list') => void;
 }
 
@@ -35,10 +38,12 @@ export function SearchAndFilters({
     currentCategory,
     currentSort,
     currentSearch,
+    hideSold,
     viewMode,
     onSearch,
     onCategoryChange,
     onSortChange,
+    onHideSoldChange,
     onViewModeChange,
 }: SearchAndFiltersProps) {
     const { t } = useTranslations();
@@ -116,6 +121,16 @@ export function SearchAndFilters({
                             </SelectItem>
                         </SelectContent>
                     </Select>
+
+                    <label className="flex h-10 w-full cursor-pointer items-center gap-2 rounded-md border bg-white px-3 text-sm text-[#333333] sm:w-auto">
+                        <Checkbox
+                            checked={hideSold}
+                            onCheckedChange={(checked) =>
+                                onHideSoldChange(checked === true)
+                            }
+                        />
+                        <span>{t('marketplace.filters.hide_sold')}</span>
+                    </label>
                 </div>
 
                 {/* View Mode Toggle */}
@@ -140,7 +155,7 @@ export function SearchAndFilters({
             </div>
 
             {/* Active Filters */}
-            {(currentSearch || currentCategory) && (
+            {(currentSearch || currentCategory || hideSold) && (
                 <div className="flex flex-wrap gap-2">
                     {currentSearch && (
                         <Badge variant="secondary">
@@ -165,6 +180,17 @@ export function SearchAndFilters({
                             }
                             <button
                                 onClick={() => onCategoryChange(null)}
+                                className="ml-2"
+                            >
+                                ×
+                            </button>
+                        </Badge>
+                    )}
+                    {hideSold && (
+                        <Badge variant="secondary">
+                            {t('marketplace.filters.hide_sold')}
+                            <button
+                                onClick={() => onHideSoldChange(false)}
                                 className="ml-2"
                             >
                                 ×

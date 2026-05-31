@@ -170,6 +170,7 @@
     "marketplace.filters.price_high_low": "Price: High to Low",
     "marketplace.filters.active_search": "Search",
     "marketplace.filters.active_category": "Category",
+    "marketplace.filters.hide_sold": "Hide sold",
     "listing.show.title": "Item Details",
     "listing.show.no_images": "No images available",
     "listing.show.no_listings": "No listings yet",

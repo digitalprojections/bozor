@@ -200,6 +200,31 @@ docker-compose -f docker-compose.prod.yml up -d
 docker-compose -f docker-compose.prod.yml exec app php artisan migrate --force
 ```
 
+### Docker Hub Image Deployment
+
+The production Compose file tags the app image as `fuzalov/bozor-app:latest` by default. Override it with `APP_IMAGE` in the EC2 `.env` if you need a different Docker Hub repository or tag. For production deploys, also push an immutable tag such as the git SHA or release number so the exact image can be identified later.
+
+Do not copy your local `.env` over the EC2 `.env`. Local values such as `APP_DOMAIN=localhost` and local OAuth redirects will break Caddy and login in production. Use `scripts/deploy-dockerhub.ps1` for manual Docker Hub deploys; it uploads compose/Caddy config, pins `APP_IMAGE`, and leaves production secrets/domain values intact.
+
+```powershell
+.\scripts\deploy-dockerhub.ps1
+```
+
+```bash
+# Build the production app image with Compose
+docker compose -f docker-compose.prod.yml build app
+
+# Push the app image to Docker Hub
+docker compose -f docker-compose.prod.yml push app
+docker tag fuzalov/bozor-app:latest fuzalov/bozor-app:<git-sha-or-release>
+docker push fuzalov/bozor-app:<git-sha-or-release>
+
+# Pull and run the pushed image on the server
+docker compose -f docker-compose.prod.yml pull app
+docker compose -f docker-compose.prod.yml up -d
+docker compose -f docker-compose.prod.yml exec app php artisan migrate --force
+```
+
 ---
 
 ## 📋 Pre-Deployment Requirements
@@ -274,6 +299,12 @@ git pull origin main
 docker-compose -f docker-compose.prod.yml build
 docker-compose -f docker-compose.prod.yml up -d
 docker-compose -f docker-compose.prod.yml exec app php artisan migrate --force
+
+# Build and push Docker Hub image
+docker compose -f docker-compose.prod.yml build app
+docker compose -f docker-compose.prod.yml push app
+docker tag fuzalov/bozor-app:latest fuzalov/bozor-app:<git-sha-or-release>
+docker push fuzalov/bozor-app:<git-sha-or-release>
 
 # Restart
 docker-compose -f docker-compose.prod.yml restart

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Listing;
+use App\Services\ListingService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -13,7 +14,7 @@ class MarketplaceController extends Controller
     /**
      * Display the marketplace with listings, categories, and user stats.
      */
-    public function index(Request $request, \App\Services\ListingService $listingService): Response
+    public function index(Request $request, ListingService $listingService): Response
     {
         $user = $request->user();
 
@@ -35,6 +36,11 @@ class MarketplaceController extends Controller
         $listingsQuery = Listing::with(['user', 'categories'])
             ->where('status', '!=', 'disabled')
             ->where('status', '!=', 'draft');
+
+        // Optionally hide sold listings while still allowing the default view to show all.
+        if ($request->boolean('hide_sold')) {
+            $listingsQuery->where('status', '!=', 'sold');
+        }
 
         // Apply search filter
         if ($request->filled('search')) {
@@ -76,9 +82,10 @@ class MarketplaceController extends Controller
                 'search' => $request->search,
                 'category' => $request->category,
                 'sort' => $sort,
+                'hide_sold' => $request->boolean('hide_sold'),
             ],
             'seo' => [
-                'title' => __('Marketplace') . ' | ' . config('app.name'),
+                'title' => __('Marketplace').' | '.config('app.name'),
                 'description' => __('Browse and buy products from individuals and small businesses across Japan. Free registration and zero sales fees!'),
             ],
         ]);

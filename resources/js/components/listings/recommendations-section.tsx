@@ -36,11 +36,7 @@ export function RecommendationsSection({
 
             <div className="flex gap-3 overflow-x-auto pb-1">
                 {recommendations.map((item) => {
-                    const imageUrl =
-                        item.main_image_url ||
-                        (item.images?.[0]
-                            ? `/storage/${item.images[0]}`
-                            : null);
+                    const imageUrl = item.main_image_url || null;
 
                     return (
                         <Link

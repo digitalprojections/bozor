@@ -38,11 +38,19 @@ interface Pagination {
     total: number;
 }
 
+interface ListingFilters {
+    search?: string;
+    category?: number;
+    sort?: string;
+    hide_sold?: boolean;
+}
+
 interface ListingsGridProps {
     listings: Listing[];
     viewMode: 'grid' | 'list';
     pagination: Pagination;
     watchedIds?: number[];
+    filters?: ListingFilters;
 }
 
 export function ListingsGrid({
@@ -50,13 +58,14 @@ export function ListingsGrid({
     viewMode,
     pagination,
     watchedIds = [],
+    filters = {},
 }: ListingsGridProps) {
     const { t } = useTranslations();
 
     const handlePageChange = (page: number) => {
         router.get(
             '/marketplace',
-            { page },
+            { ...filters, page },
             { preserveState: true, preserveScroll: false },
         );
     };

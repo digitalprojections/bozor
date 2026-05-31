@@ -11,20 +11,20 @@ services:
       APP_ENV: local
       APP_DEBUG: "true"
       APP_KEY: ${APP_KEY}
-      APP_URL: ${APP_URL:-http://localhost:8080}
+      APP_URL: ${LOCAL_APP_URL:-http://localhost:8080}
       DB_CONNECTION: pgsql
       DB_HOST: postgres
       DB_PORT: 5432
-      DB_DATABASE: ${LOCAL_DB_DATABASE:-bozor_local}
-      DB_USERNAME: ${LOCAL_DB_USERNAME:-bozor_local}
-      DB_PASSWORD: ${LOCAL_DB_PASSWORD:-bozor_local}
+      DB_DATABASE: ${LOCAL_DB_DATABASE:-${DB_DATABASE:-bozor_local}}
+      DB_USERNAME: ${LOCAL_DB_USERNAME:-${DB_USERNAME:-bozor_local}}
+      DB_PASSWORD: ${LOCAL_DB_PASSWORD:-${DB_PASSWORD:-bozor_local}}
       CACHE_STORE: file
       QUEUE_CONNECTION: sync
       SESSION_DRIVER: file
       FILESYSTEM_DISK: public
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
-      GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI:-}
+      GOOGLE_REDIRECT_URI: ${LOCAL_GOOGLE_REDIRECT_URI:-http://localhost:8080/auth/google/callback}
     ports:
       - "${HTTP_PORT:-8080}:80"
     volumes:
@@ -45,9 +45,9 @@ services:
     container_name: bozor-postgres-local
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${LOCAL_DB_DATABASE:-bozor_local}
-      POSTGRES_USER: ${LOCAL_DB_USERNAME:-bozor_local}
-      POSTGRES_PASSWORD: ${LOCAL_DB_PASSWORD:-bozor_local}
+      POSTGRES_DB: ${LOCAL_DB_DATABASE:-${DB_DATABASE:-bozor_local}}
+      POSTGRES_USER: ${LOCAL_DB_USERNAME:-${DB_USERNAME:-bozor_local}}
+      POSTGRES_PASSWORD: ${LOCAL_DB_PASSWORD:-${DB_PASSWORD:-bozor_local}}
     ports:
       - "${LOCAL_DB_PORT:-5433}:5432"
     volumes:

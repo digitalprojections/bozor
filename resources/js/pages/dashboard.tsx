@@ -60,8 +60,8 @@ export default function Dashboard({
                             <Card key={listing.id} className="rounded-[4px] border-[#f0f2f5] shadow-sm overflow-hidden hover:border-[#ced9e5] transition-colors">
                                 <CardContent className="p-4 flex flex-col xs:flex-row items-start xs:items-center gap-4">
                                     <div className="h-16 w-16 rounded bg-[#f0f5fd] flex items-center justify-center shrink-0 border border-[#e1e9f2]">
-                                        {listing.images && listing.images.length > 0 ? (
-                                            <img src={`/storage/${listing.images[0]}`} alt="" className="h-full w-full object-cover rounded" />
+                                        {listing.main_image_url ? (
+                                            <img src={listing.main_image_url} alt="" className="h-full w-full object-cover rounded" />
                                         ) : (
                                             <Package className="text-[#a3b6cc]" size={24} />
                                         )}

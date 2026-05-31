@@ -11,6 +11,7 @@ interface Listing {
     description: string;
     price: number;
     images: string[];
+    main_image_url: string | null;
     status: string;
     user: {
         name: string;
@@ -61,9 +62,9 @@ export default function Watchlist({ listings }: Props) {
                             <Link key={listing.id} href={`/listings/${listing.id}`}>
                                 <Card className="overflow-hidden rounded-[4px] border-[#f0f2f5] bg-white shadow-sm hover:shadow-md transition-shadow h-full flex flex-col">
                                     <div className="aspect-[4/3] w-full bg-[#f8f9fa] relative">
-                                        {listing.images && listing.images[0] ? (
+                                        {listing.main_image_url ? (
                                             <img
-                                                src={`/storage/${listing.images[0]}`}
+                                                src={listing.main_image_url}
                                                 alt={listing.title}
                                                 className="h-full w-full object-cover"
                                             />

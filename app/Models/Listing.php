@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Storage;
 
 class Listing extends Model
 {
@@ -45,11 +44,13 @@ class Listing extends Model
      */
     public function getMainImageUrlAttribute(): ?string
     {
-        if (empty($this->images) || ! isset($this->images[0])) {
+        $images = $this->validImages();
+
+        if (empty($images)) {
             return null;
         }
 
-        return $this->imageUrl($this->images[0]);
+        return $this->imageUrl($images[0]);
     }
 
     /**
@@ -57,28 +58,24 @@ class Listing extends Model
      */
     public function getAllImageUrlsAttribute(): array
     {
-        if (empty($this->images)) {
-            return [];
-        }
-
-        return array_map(fn ($path) => $this->imageUrl($path), $this->images);
+        return array_map(fn ($path) => $this->imageUrl($path), $this->validImages());
     }
 
     private function imageUrl(string $path): string
     {
-        $disk = config('filesystems.default', 'public');
+        return asset('storage/'.$path);
+    }
 
-        if ($disk === 's3') {
-            $s3 = Storage::disk('s3');
-
-            try {
-                return $s3->temporaryUrl($path, now()->addMinutes(30));
-            } catch (\Throwable) {
-                return $s3->url($path);
-            }
+    private function validImages(): array
+    {
+        if (empty($this->images)) {
+            return [];
         }
 
-        return asset('storage/'.$path);
+        return array_values(array_filter(
+            $this->images,
+            fn ($path) => is_string($path) && $path !== ''
+        ));
     }
 
     public function user()

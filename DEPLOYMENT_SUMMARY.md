@@ -57,7 +57,7 @@ CloudWatch (Monitoring)
 
 ### Docker Services
 
-- **app**: PHP 8.3 + Laravel + Vite frontend
+- **app**: PHP 8.4 + Laravel + Vite frontend (`fuzalov/bozor-app:latest` by default)
 - **postgres**: PostgreSQL 16 database
 - **redis**: Redis cache and queue
 - **nginx**: Reverse proxy (configured via supervisord in app container)
@@ -109,6 +109,27 @@ git pull origin main
 docker-compose -f docker-compose.prod.yml build
 docker-compose -f docker-compose.prod.yml up -d
 docker-compose -f docker-compose.prod.yml exec app php artisan migrate --force
+```
+
+### Docker Hub
+
+For manual Docker Hub deploys from Windows, use the helper script. It builds and pushes both `latest` and an immutable tag, uploads compose/Caddy config, updates only `APP_IMAGE` in the EC2 `.env`, and preserves production-only values such as `APP_DOMAIN`, DB credentials, and OAuth redirects.
+
+```powershell
+.\scripts\deploy-dockerhub.ps1
+```
+
+```bash
+# Build and push from local checkout
+docker compose -f docker-compose.prod.yml build app
+docker compose -f docker-compose.prod.yml push app
+docker tag fuzalov/bozor-app:latest fuzalov/bozor-app:<git-sha-or-release>
+docker push fuzalov/bozor-app:<git-sha-or-release>
+
+# Pull and run on the server
+docker compose -f docker-compose.prod.yml pull app
+docker compose -f docker-compose.prod.yml up -d
+docker compose -f docker-compose.prod.yml exec app php artisan migrate --force
 ```
 
 ---

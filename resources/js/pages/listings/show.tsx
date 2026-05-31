@@ -55,9 +55,7 @@ export default function Show({ listing, recommendations = [], is_watched = false
     const { auth } = usePage().props as any;
     const [activeImage, setActiveImage] = useState(0);
     const [failedImages, setFailedImages] = useState<Set<number>>(() => new Set());
-    const imageUrls = listing.all_image_urls?.length
-        ? listing.all_image_urls
-        : listing.images.map((img) => `/storage/${img}`);
+    const imageUrls = listing.all_image_urls ?? [];
     const activeImageUrl = imageUrls[activeImage];
     const activeImageFailed = failedImages.has(activeImage);
     const markImageFailed = (index: number) => {

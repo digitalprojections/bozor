@@ -169,6 +169,7 @@
     "marketplace.filters.price_high_low": "価格：高い順",
     "marketplace.filters.active_search": "検索",
     "marketplace.filters.active_category": "カテゴリ",
+    "marketplace.filters.hide_sold": "売り切れを非表示",
     "listing.show.title": "商品詳細",
     "listing.show.no_images": "画像がありません",
     "listing.show.no_listings": "まだ出品がありません",
