@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 
 class Listing extends Model
 {
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'user_id',
@@ -43,11 +45,11 @@ class Listing extends Model
      */
     public function getMainImageUrlAttribute(): ?string
     {
-        if (empty($this->images) || !isset($this->images[0])) {
+        if (empty($this->images) || ! isset($this->images[0])) {
             return null;
         }
 
-        return asset('storage/' . $this->images[0]);
+        return $this->imageUrl($this->images[0]);
     }
 
     /**
@@ -59,7 +61,24 @@ class Listing extends Model
             return [];
         }
 
-        return array_map(fn($path) => asset('storage/' . $path), $this->images);
+        return array_map(fn ($path) => $this->imageUrl($path), $this->images);
+    }
+
+    private function imageUrl(string $path): string
+    {
+        $disk = config('filesystems.default', 'public');
+
+        if ($disk === 's3') {
+            $s3 = Storage::disk('s3');
+
+            try {
+                return $s3->temporaryUrl($path, now()->addMinutes(30));
+            } catch (\Throwable) {
+                return $s3->url($path);
+            }
+        }
+
+        return asset('storage/'.$path);
     }
 
     public function user()
@@ -92,6 +111,6 @@ class Listing extends Model
 
     public function watchedBy()
     {
-        return $this->belongsToMany(User::class , 'watchlists')->withTimestamps();
+        return $this->belongsToMany(User::class, 'watchlists')->withTimestamps();
     }
 }

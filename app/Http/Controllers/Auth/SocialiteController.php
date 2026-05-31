@@ -33,6 +33,7 @@ class SocialiteController extends Controller
                 'name' => $googleUser->getName(),
                 'avatar' => $googleUser->getAvatar(),
                 'is_guest' => false,
+                'email_verified_at' => $user->email_verified_at ?? now(),
             ]);
         } else {
             // Create a new user

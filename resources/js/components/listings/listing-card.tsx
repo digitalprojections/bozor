@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -11,6 +11,7 @@ interface Listing {
     title: string;
     price: number;
     images: string[];
+    main_image_url?: string | null;
     status: string;
 }
 
@@ -21,19 +22,22 @@ interface ListingCardProps {
 
 export function ListingCard({ listing, className }: ListingCardProps) {
     const isSold = listing.status === 'sold';
+    const [imageFailed, setImageFailed] = useState(false);
+    const imageUrl = listing.main_image_url ?? (listing.images?.[0] ? `/storage/${listing.images[0]}` : null);
 
     return (
         <Link href={`/listings/${listing.id}`} className={cn("block group", className)}>
             <Card className="rounded-[20px] border-[#edf2f9] shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden bg-white">
                 <div className="aspect-[4/3] bg-[#f0f5fd] relative overflow-hidden">
-                    {listing.images && listing.images.length > 0 ? (
+                    {imageUrl && !imageFailed ? (
                         <img
-                            src={`/storage/${listing.images[0]}`}
+                            src={imageUrl}
                             alt={listing.title}
                             className={cn(
                                 "w-full h-full object-cover group-hover:scale-105 transition-transform duration-500",
                                 isSold && "grayscale-[0.2] opacity-90"
                             )}
+                            onError={() => setImageFailed(true)}
                         />
                     ) : (
                         <div className="w-full h-full flex items-center justify-center opacity-20">

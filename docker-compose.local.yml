@@ -1,0 +1,62 @@
+services:
+  app:
+    image: bozor-app-local
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    container_name: bozor-app-local
+    restart: unless-stopped
+    working_dir: /var/www/html
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      APP_KEY: ${APP_KEY}
+      APP_URL: ${APP_URL:-http://localhost:8080}
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: ${LOCAL_DB_DATABASE:-bozor_local}
+      DB_USERNAME: ${LOCAL_DB_USERNAME:-bozor_local}
+      DB_PASSWORD: ${LOCAL_DB_PASSWORD:-bozor_local}
+      CACHE_STORE: file
+      QUEUE_CONNECTION: sync
+      SESSION_DRIVER: file
+      FILESYSTEM_DISK: public
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI:-}
+    ports:
+      - "${HTTP_PORT:-8080}:80"
+    volumes:
+      - ./storage/app/public:/var/www/html/storage/app/public
+      - ./storage/logs:/var/www/html/storage/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: bozor-postgres-local
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${LOCAL_DB_DATABASE:-bozor_local}
+      POSTGRES_USER: ${LOCAL_DB_USERNAME:-bozor_local}
+      POSTGRES_PASSWORD: ${LOCAL_DB_PASSWORD:-bozor_local}
+    ports:
+      - "${LOCAL_DB_PORT:-5433}:5432"
+    volumes:
+      - local_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  local_postgres_data:

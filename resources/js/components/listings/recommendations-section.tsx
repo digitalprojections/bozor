@@ -1,5 +1,4 @@
 import { Link } from '@inertiajs/react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Package } from 'lucide-react';
 import { useTranslations } from '@/hooks/use-translations';
 
@@ -17,7 +16,10 @@ interface RecommendationsSectionProps {
     title?: string;
 }
 
-export function RecommendationsSection({ recommendations, title }: RecommendationsSectionProps) {
+export function RecommendationsSection({
+    recommendations,
+    title,
+}: RecommendationsSectionProps) {
     const { t } = useTranslations();
 
     if (!recommendations || recommendations.length === 0) {
@@ -25,44 +27,53 @@ export function RecommendationsSection({ recommendations, title }: Recommendatio
     }
 
     return (
-        <div className="flex flex-col gap-4 mt-4">
-            <div className="flex items-center justify-between px-2">
-                <h2 className="text-xl font-bold tracking-tight text-[#0b1a31]">
+        <section className="mt-2 flex flex-col gap-3 border-t border-[#eeeeee] bg-white px-3 py-4 sm:px-4">
+            <div className="flex items-center justify-between">
+                <h2 className="text-base font-bold text-[#222222] sm:text-lg">
                     {title || t('dashboard.recommendations.title')}
                 </h2>
             </div>
 
-            <Card className="rounded-[4px] border-[#f0f2f5] shadow-sm">
-                <CardContent className="p-6">
-                    <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
-                        {recommendations.map((item) => (
-                            <Link
-                                key={item.id}
-                                href={`/listings/${item.id}`}
-                                className="min-w-[140px] flex flex-col gap-2 group cursor-pointer"
-                            >
-                                <div className="aspect-square w-full rounded-md bg-[#f0f5fd] flex items-center justify-center border border-[#e1e9f2] overflow-hidden group-hover:border-[#ced9e5] transition-colors">
-                                    {item.images && item.images.length > 0 ? (
-                                        <img
-                                            src={`/storage/${item.images[0]}`}
-                                            alt={item.title}
-                                            className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
+            <div className="flex gap-3 overflow-x-auto pb-1">
+                {recommendations.map((item) => {
+                    const imageUrl =
+                        item.main_image_url ||
+                        (item.images?.[0]
+                            ? `/storage/${item.images[0]}`
+                            : null);
+
+                    return (
+                        <Link
+                            key={item.id}
+                            href={`/listings/${item.id}`}
+                            className="group flex max-w-[104px] min-w-[104px] flex-col gap-1.5 sm:max-w-[116px] sm:min-w-[116px]"
+                        >
+                            <div className="relative aspect-square overflow-hidden rounded-sm bg-[#f5f5f5]">
+                                {imageUrl ? (
+                                    <img
+                                        src={imageUrl}
+                                        alt={item.title}
+                                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                                    />
+                                ) : (
+                                    <div className="flex h-full w-full items-center justify-center">
+                                        <Package
+                                            className="text-[#b9b9b9]"
+                                            size={26}
                                         />
-                                    ) : (
-                                        <Package className="text-[#a3b6cc]" size={32} />
-                                    )}
-                                </div>
-                                <span className="text-xs font-medium text-[#1a263b] line-clamp-2 group-hover:text-[#2b4b8f] transition-colors">
-                                    {item.title}
+                                    </div>
+                                )}
+                                <span className="absolute bottom-0 left-0 rounded-tr-sm bg-black/70 px-1.5 py-0.5 text-[11px] font-bold text-white">
+                                    ¥{item.price.toLocaleString()}
                                 </span>
-                                <span className="text-sm font-bold text-[#b91c1c]">
-                                    ¥ {item.price.toLocaleString()}
-                                </span>
-                            </Link>
-                        ))}
-                    </div>
-                </CardContent>
-            </Card>
-        </div>
+                            </div>
+                            <span className="line-clamp-2 text-xs leading-snug text-[#333333] group-hover:text-[#e62017]">
+                                {item.title}
+                            </span>
+                        </Link>
+                    );
+                })}
+            </div>
+        </section>
     );
 }

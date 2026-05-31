@@ -43,6 +43,10 @@ interface ListingSidebarProps {
 export function ListingSidebar({ listing }: ListingSidebarProps) {
     const { t } = useTranslations();
     const { auth, is_watched } = usePage().props as any;
+    const purchasePrice = listing.buy_now_price ?? (!listing.is_auction ? listing.price : null);
+    const isOwner = auth?.user && Number(auth.user.id) === Number(listing.user.id);
+    const canTransact = auth?.user && !auth.user.is_guest && !isOwner;
+    const canBuyNow = listing.status === 'active' && purchasePrice !== null;
 
     const { data, setData, post, processing, errors, reset } = useForm({
         amount: Math.max(listing.price, listing.current_high_bid) + 1,
@@ -107,9 +111,9 @@ export function ListingSidebar({ listing }: ListingSidebarProps) {
                         <PriceDisplay price={currentPrice} size="lg" />
                         {listing.status === 'sold' && <SoldBadge className="mt-1 w-fit" />}
                     </div>
-                    {auth?.user && !auth.user.is_guest && Number(auth.user.id) !== Number(listing.user.id) ? (
+                    {canTransact ? (
                         <div className="flex flex-col gap-4">
-                            {listing.is_auction && (
+                            {listing.is_auction && listing.status === 'active' && (
                                 <form onSubmit={submitBid} className="space-y-3">
                                     <div className="flex flex-col gap-1.5">
                                         <div className="flex gap-2">
@@ -132,27 +136,34 @@ export function ListingSidebar({ listing }: ListingSidebarProps) {
                                     </div>
                                 </form>
                             )}
-                            {listing.buy_now_price && (
+                            {canBuyNow && (
                                 <Button
                                     onClick={buyNow}
                                     disabled={processing}
                                     className="w-full h-10 sm:h-12 rounded-full bg-[#2b4b8f] hover:bg-[#1e3a7a] text-white font-bold text-sm sm:text-lg"
                                 >
-                                    {t('listing.show.buy_now')} (¥{listing.buy_now_price.toLocaleString()})
+                                    {t('listing.show.buy_now')} (¥{purchasePrice.toLocaleString()})
                                 </Button>
                             )}
                         </div>
-                    ) : auth?.user && !auth.user.is_guest && Number(auth.user.id) === Number(listing.user.id) ? (
+                    ) : auth?.user && !auth.user.is_guest && isOwner ? (
                         <div className="text-center text-xs sm:text-sm text-amber-600 bg-amber-50 p-3 sm:p-4 rounded-[16px] sm:rounded-2xl border border-dashed border-amber-200">
                             {t('listing.owner_actions_restricted') || 'You cannot bid on or buy your own listing.'}
                         </div>
-                    ) : listing.status === 'active' ? (
-                        <div className="text-center text-xs sm:text-sm text-[#5f6c84] bg-muted/50 p-3 sm:p-4 rounded-[16px] sm:rounded-2xl border border-dashed">
-                            {t('listing.sidebar.login_prefix')}{' '}
-                            <Link href="/login" className="text-[#0d9488] font-semibold underline underline-offset-4">
-                                {t('listing.sidebar.login_link')}
-                            </Link>{' '}
-                            {t('listing.sidebar.login_suffix')}
+                    ) : canBuyNow ? (
+                        <div className="flex flex-col gap-3">
+                            <Link href="/login" className="w-full">
+                                <Button className="w-full h-10 sm:h-12 rounded-full bg-[#2b4b8f] hover:bg-[#1e3a7a] text-white font-bold text-sm sm:text-lg">
+                                    {t('listing.show.buy_now')} (¥{purchasePrice.toLocaleString()})
+                                </Button>
+                            </Link>
+                            <div className="text-center text-xs sm:text-sm text-[#5f6c84] bg-muted/50 p-3 sm:p-4 rounded-[16px] sm:rounded-2xl border border-dashed">
+                                {t('listing.sidebar.login_prefix')}{' '}
+                                <Link href="/login" className="text-[#0d9488] font-semibold underline underline-offset-4">
+                                    {t('listing.sidebar.login_link')}
+                                </Link>{' '}
+                                {t('listing.sidebar.login_suffix')}
+                            </div>
                         </div>
                     ) : null}
 

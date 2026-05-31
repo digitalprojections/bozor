@@ -26,6 +26,7 @@ interface ListingProps {
         created_at: string;
         location: string | null;
         images: string[];
+        all_image_urls: string[];
         user: {
             id: number;
             name: string;
@@ -53,6 +54,15 @@ export default function Show({ listing, recommendations = [], is_watched = false
     const { t } = useTranslations();
     const { auth } = usePage().props as any;
     const [activeImage, setActiveImage] = useState(0);
+    const [failedImages, setFailedImages] = useState<Set<number>>(() => new Set());
+    const imageUrls = listing.all_image_urls?.length
+        ? listing.all_image_urls
+        : listing.images.map((img) => `/storage/${img}`);
+    const activeImageUrl = imageUrls[activeImage];
+    const activeImageFailed = failedImages.has(activeImage);
+    const markImageFailed = (index: number) => {
+        setFailedImages((current) => new Set(current).add(index));
+    };
 
     const breadcrumbs: BreadcrumbItem[] = [
         { title: t('marketplace.title'), href: '/marketplace' },
@@ -72,15 +82,15 @@ export default function Show({ listing, recommendations = [], is_watched = false
                 <meta property="og:title" content={listing.title} />
                 <meta property="og:description" content={listing.description.substring(0, 160)} />
                 <meta property="og:type" content="product" />
-                {listing.images && listing.images.length > 0 && (
-                    <meta property="og:image" content={`${window.location.origin}/storage/${listing.images[0]}`} />
+                {imageUrls.length > 0 && (
+                    <meta property="og:image" content={imageUrls[0]} />
                 )}
                 <script type="application/ld+json">
                     {JSON.stringify({
                         "@context": "https://schema.org/",
                         "@type": "Product",
                         "name": listing.title,
-                        "image": listing.images.map(img => `${window.location.origin}/storage/${img}`),
+                        "image": imageUrls,
                         "description": listing.description,
                         "offers": {
                             "@type": "Offer",
@@ -129,12 +139,13 @@ export default function Show({ listing, recommendations = [], is_watched = false
                     <CardContent className="p-3 sm:p-6">
                         <div className="flex flex-col gap-3 sm:gap-4">
                             <div className="main-image-placeholder relative aspect-[4/3] w-full bg-[#d9e2ef] rounded-[12px] sm:rounded-[20px] overflow-hidden flex items-center justify-center border border-[#e1e9f2]">
-                                {listing.images && listing.images.length > 0 ? (
+                                {activeImageUrl && !activeImageFailed ? (
                                     <>
                                         <img
-                                            src={`/storage/${listing.images[activeImage]}`}
+                                            src={activeImageUrl}
                                             alt={listing.title}
                                             className="w-full h-full object-cover"
+                                            onError={() => markImageFailed(activeImage)}
                                         />
                                         {listing.status === 'sold' && <SoldBadge variant="overlay" />}
                                         <WatchButton 
@@ -151,9 +162,9 @@ export default function Show({ listing, recommendations = [], is_watched = false
                                 )}
                             </div>
 
-                            {listing.images && listing.images.length > 1 && (
+                            {imageUrls.length > 1 && (
                                 <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 scrollbar-hide">
-                                    {listing.images.map((img, idx) => (
+                                    {imageUrls.map((img, idx) => (
                                         <button
                                             key={idx}
                                             onClick={() => setActiveImage(idx)}
@@ -162,11 +173,18 @@ export default function Show({ listing, recommendations = [], is_watched = false
                                                 activeImage === idx ? 'border-[#0d9488]' : 'border-transparent bg-[#e6ecf5] hover:border-[#ccd6e5]'
                                             )}
                                         >
-                                            <img
-                                                src={`/storage/${img}`}
-                                                alt={`Thumbnail ${idx + 1}`}
-                                                className="w-full h-full object-cover"
-                                            />
+                                            {failedImages.has(idx) ? (
+                                                <div className="w-full h-full flex items-center justify-center text-[#4d627a]">
+                                                    <Package size={24} className="opacity-30" />
+                                                </div>
+                                            ) : (
+                                                <img
+                                                    src={img}
+                                                    alt={`Thumbnail ${idx + 1}`}
+                                                    className="w-full h-full object-cover"
+                                                    onError={() => markImageFailed(idx)}
+                                                />
+                                            )}
                                         </button>
                                     ))}
                                 </div>

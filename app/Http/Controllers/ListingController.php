@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Listing;
+use App\Notifications\WatchlistItemUpdated;
+use App\Services\ListingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -16,7 +18,7 @@ class ListingController extends Controller
      */
     public function index()
     {
-    //
+        //
     }
 
     /**
@@ -56,7 +58,7 @@ class ListingController extends Controller
         $imagePaths = [];
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
-                $path = $image->store('listings', 'public');
+                $path = $image->store('listings', config('filesystems.default'));
                 $imagePaths[] = $path;
             }
         }
@@ -87,7 +89,7 @@ class ListingController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Listing $listing, \App\Services\ListingService $listingService): Response
+    public function show(Listing $listing, ListingService $listingService): Response
     {
         $listing->load(['user', 'categories'])->loadCount('bids');
         $listing->user->append(['average_rating', 'ratings_count']);
@@ -103,14 +105,14 @@ class ListingController extends Controller
             'is_watched' => auth()->check() ? auth()->user()->watchedListings()->where('listing_id', $listing->id)->exists() : false,
             'recommendations' => $recommendations,
             'seo' => [
-                'title' => $listing->title . ' | ' . config('app.name'),
+                'title' => $listing->title.' | '.config('app.name'),
                 'description' => str($listing->description)->limit(160),
-                'og_image' => $listing->images ? asset('storage/' . $listing->images[0]) : asset('favicon.png'),
+                'og_image' => $listing->images ? asset('storage/'.$listing->images[0]) : asset('favicon.png'),
                 'json_ld' => [
                     '@context' => 'https://schema.org/',
                     '@type' => 'Product',
                     'name' => $listing->title,
-                    'image' => array_map(fn($path) => asset('storage/' . $path), $listing->images ?? []),
+                    'image' => array_map(fn ($path) => asset('storage/'.$path), $listing->images ?? []),
                     'description' => $listing->description,
                     'offers' => [
                         '@type' => 'Offer',
@@ -189,9 +191,9 @@ class ListingController extends Controller
         $listing->categories()->sync($validated['categories']);
 
         // Notify watchers if anything relevant changed
-        if (!empty($changes)) {
+        if (! empty($changes)) {
             $listing->watchedBy()->each(function ($watcher) use ($listing, $changes) {
-                $watcher->notify(new \App\Notifications\WatchlistItemUpdated($listing, $changes));
+                $watcher->notify(new WatchlistItemUpdated($listing, $changes));
             });
         }
 

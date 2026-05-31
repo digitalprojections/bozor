@@ -21,7 +21,9 @@ class ListingService
         $query = Listing::with(['user', 'categories'])
             ->where('status', 'active');
 
-        // Exclude current user's listings if authenticated (removed per user request to show all marketplace items)
+        if ($currentUser) {
+            $query->where('user_id', '!=', $currentUser->id);
+        }
 
         // Exclude specific listing (e.g., when viewing a listing page)
         if ($excludeListingId) {

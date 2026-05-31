@@ -8,6 +8,7 @@ use App\Notifications\Seller\ListingSold;
 use App\Notifications\TransactionUpdated;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class TransactionController extends Controller
 {
@@ -17,38 +18,39 @@ class TransactionController extends Controller
             return redirect()->route('login')->with('error', 'Please log in with your Google account to buy items.');
         }
 
-        if ($listing->status !== 'active') {
-            return back()->withErrors(['error' => 'This listing is no longer active.']);
-        }
-
-        if ($listing->buy_now_price === null) {
-            return back()->withErrors(['error' => 'This listing does not have a "Buy Now" price.']);
-        }
-
         if ($listing->user_id === auth()->id()) {
             return back()->withErrors(['error' => 'You cannot buy your own listing.']);
         }
 
-        // Potential balance check logic here if a wallet system exists
-
         $transaction = null;
         DB::transaction(function () use ($listing, &$transaction) {
+            $listing = Listing::query()->lockForUpdate()->findOrFail($listing->id);
+            $purchasePrice = $listing->buy_now_price ?? ($listing->is_auction ? null : $listing->price);
+
+            if ($listing->status !== 'active') {
+                abort(409, 'This listing is no longer active.');
+            }
+
+            if ($purchasePrice === null) {
+                abort(422, 'This listing does not have a Buy Now price.');
+            }
+
             $transaction = Transaction::create([
                 'listing_id' => $listing->id,
                 'buyer_id' => auth()->id(),
                 'seller_id' => $listing->user_id,
-                'amount' => $listing->buy_now_price,
+                'amount' => $purchasePrice,
                 'status' => Transaction::STATUS_PENDING_PAYMENT,
             ]);
 
             $listing->update(['status' => 'sold']);
         });
 
-        // Notify the seller
-        $listing->user->notify(new ListingSold($listing, $transaction));
+        $this->notifySafely($listing->user, new ListingSold($listing, $transaction));
 
-        return redirect()->route('dashboard')->with('success', 'Purchase completed successfully!');
+        return redirect()->route('transactions.show', $transaction)->with('success', 'Purchase completed successfully!');
     }
+
     public function show(Transaction $transaction)
     {
         $transaction->load(['listing', 'seller', 'buyer', 'ratings.rater']);
@@ -73,8 +75,7 @@ class TransactionController extends Controller
             'paid_at' => now(),
         ]);
 
-        // Notify the seller
-        $transaction->seller->notify(new TransactionUpdated($transaction, Transaction::STATUS_PAID, 'seller'));
+        $this->notifySafely($transaction->seller, new TransactionUpdated($transaction, Transaction::STATUS_PAID, 'seller'));
 
         return back()->with('success', 'Payment confirmed successfully!');
     }
@@ -82,7 +83,7 @@ class TransactionController extends Controller
     public function cancel(Transaction $transaction)
     {
         // Only buyer or seller can cancel
-        if (!in_array(auth()->id(), [$transaction->buyer_id, $transaction->seller_id])) {
+        if (! in_array(auth()->id(), [$transaction->buyer_id, $transaction->seller_id])) {
             abort(403);
         }
 
@@ -110,8 +111,8 @@ class TransactionController extends Controller
         $isCancelledByBuyer = auth()->id() === $transaction->buyer_id;
         $recipient = $isCancelledByBuyer ? $transaction->seller : $transaction->buyer;
         $recipientRole = $isCancelledByBuyer ? 'seller' : 'buyer';
-        
-        $recipient->notify(new TransactionUpdated($transaction, Transaction::STATUS_CANCELLED, $recipientRole));
+
+        $this->notifySafely($recipient, new TransactionUpdated($transaction, Transaction::STATUS_CANCELLED, $recipientRole));
 
         return back()->with('success', 'Transaction cancelled successfully.');
     }
@@ -138,8 +139,7 @@ class TransactionController extends Controller
             'shipped_at' => now(),
         ]);
 
-        // Notify the buyer
-        $transaction->buyer->notify(new TransactionUpdated($transaction, Transaction::STATUS_SHIPPED, 'buyer'));
+        $this->notifySafely($transaction->buyer, new TransactionUpdated($transaction, Transaction::STATUS_SHIPPED, 'buyer'));
 
         return back()->with('success', 'Item marked as shipped!');
     }
@@ -160,9 +160,17 @@ class TransactionController extends Controller
             'completed_at' => now(),
         ]);
 
-        // Notify the seller
-        $transaction->seller->notify(new TransactionUpdated($transaction, Transaction::STATUS_RECEIVED, 'seller'));
+        $this->notifySafely($transaction->seller, new TransactionUpdated($transaction, Transaction::STATUS_RECEIVED, 'seller'));
 
         return back()->with('success', 'Item received! Transaction completed.');
+    }
+
+    private function notifySafely($notifiable, $notification): void
+    {
+        try {
+            $notifiable->notify($notification);
+        } catch (Throwable $exception) {
+            report($exception);
+        }
     }
 }

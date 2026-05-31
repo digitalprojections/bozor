@@ -183,7 +183,6 @@ buyNow33687d065ad1c1ef54d9a0573f623903.post = (args: { listing: number | { id: n
 
 export const buyNow = {
     '/listings/{listing}/buy-now': buyNow33687d065ad1c1ef54d9a0573f623903,
-    '/listings/{listing}/buy-now': buyNow33687d065ad1c1ef54d9a0573f623903,
 }
 
 /**
