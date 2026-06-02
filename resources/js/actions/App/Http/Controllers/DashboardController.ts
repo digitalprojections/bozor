@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\DashboardController::index
- * @see app/Http/Controllers/DashboardController.php:10
+ * @see app/Http/Controllers/DashboardController.php:12
  * @route '/dashboard'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\DashboardController::index
- * @see app/Http/Controllers/DashboardController.php:10
+ * @see app/Http/Controllers/DashboardController.php:12
  * @route '/dashboard'
  */
 index.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\DashboardController::index
- * @see app/Http/Controllers/DashboardController.php:10
+ * @see app/Http/Controllers/DashboardController.php:12
  * @route '/dashboard'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -34,7 +34,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\DashboardController::index
- * @see app/Http/Controllers/DashboardController.php:10
+ * @see app/Http/Controllers/DashboardController.php:12
  * @route '/dashboard'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -44,7 +44,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\DashboardController::index
- * @see app/Http/Controllers/DashboardController.php:10
+ * @see app/Http/Controllers/DashboardController.php:12
  * @route '/dashboard'
  */
     const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -54,7 +54,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\DashboardController::index
- * @see app/Http/Controllers/DashboardController.php:10
+ * @see app/Http/Controllers/DashboardController.php:12
  * @route '/dashboard'
  */
         indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -63,7 +63,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\DashboardController::index
- * @see app/Http/Controllers/DashboardController.php:10
+ * @see app/Http/Controllers/DashboardController.php:12
  * @route '/dashboard'
  */
         indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -79,7 +79,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     index.form = indexForm
 /**
 * @see \App\Http\Controllers\DashboardController::wonItems
- * @see app/Http/Controllers/DashboardController.php:57
+ * @see app/Http/Controllers/DashboardController.php:74
  * @route '/dashboard/won-items'
  */
 export const wonItems = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -94,7 +94,7 @@ wonItems.definition = {
 
 /**
 * @see \App\Http\Controllers\DashboardController::wonItems
- * @see app/Http/Controllers/DashboardController.php:57
+ * @see app/Http/Controllers/DashboardController.php:74
  * @route '/dashboard/won-items'
  */
 wonItems.url = (options?: RouteQueryOptions) => {
@@ -103,7 +103,7 @@ wonItems.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\DashboardController::wonItems
- * @see app/Http/Controllers/DashboardController.php:57
+ * @see app/Http/Controllers/DashboardController.php:74
  * @route '/dashboard/won-items'
  */
 wonItems.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -112,7 +112,7 @@ wonItems.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\DashboardController::wonItems
- * @see app/Http/Controllers/DashboardController.php:57
+ * @see app/Http/Controllers/DashboardController.php:74
  * @route '/dashboard/won-items'
  */
 wonItems.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -122,7 +122,7 @@ wonItems.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\DashboardController::wonItems
- * @see app/Http/Controllers/DashboardController.php:57
+ * @see app/Http/Controllers/DashboardController.php:74
  * @route '/dashboard/won-items'
  */
     const wonItemsForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -132,7 +132,7 @@ wonItems.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\DashboardController::wonItems
- * @see app/Http/Controllers/DashboardController.php:57
+ * @see app/Http/Controllers/DashboardController.php:74
  * @route '/dashboard/won-items'
  */
         wonItemsForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -141,7 +141,7 @@ wonItems.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\DashboardController::wonItems
- * @see app/Http/Controllers/DashboardController.php:57
+ * @see app/Http/Controllers/DashboardController.php:74
  * @route '/dashboard/won-items'
  */
         wonItemsForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -157,7 +157,7 @@ wonItems.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     wonItems.form = wonItemsForm
 /**
 * @see \App\Http\Controllers\DashboardController::soldItems
- * @see app/Http/Controllers/DashboardController.php:120
+ * @see app/Http/Controllers/DashboardController.php:142
  * @route '/dashboard/sold-items'
  */
 export const soldItems = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -172,7 +172,7 @@ soldItems.definition = {
 
 /**
 * @see \App\Http\Controllers\DashboardController::soldItems
- * @see app/Http/Controllers/DashboardController.php:120
+ * @see app/Http/Controllers/DashboardController.php:142
  * @route '/dashboard/sold-items'
  */
 soldItems.url = (options?: RouteQueryOptions) => {
@@ -181,7 +181,7 @@ soldItems.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\DashboardController::soldItems
- * @see app/Http/Controllers/DashboardController.php:120
+ * @see app/Http/Controllers/DashboardController.php:142
  * @route '/dashboard/sold-items'
  */
 soldItems.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -190,7 +190,7 @@ soldItems.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\DashboardController::soldItems
- * @see app/Http/Controllers/DashboardController.php:120
+ * @see app/Http/Controllers/DashboardController.php:142
  * @route '/dashboard/sold-items'
  */
 soldItems.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -200,7 +200,7 @@ soldItems.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\DashboardController::soldItems
- * @see app/Http/Controllers/DashboardController.php:120
+ * @see app/Http/Controllers/DashboardController.php:142
  * @route '/dashboard/sold-items'
  */
     const soldItemsForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -210,7 +210,7 @@ soldItems.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\DashboardController::soldItems
- * @see app/Http/Controllers/DashboardController.php:120
+ * @see app/Http/Controllers/DashboardController.php:142
  * @route '/dashboard/sold-items'
  */
         soldItemsForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -219,7 +219,7 @@ soldItems.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\DashboardController::soldItems
- * @see app/Http/Controllers/DashboardController.php:120
+ * @see app/Http/Controllers/DashboardController.php:142
  * @route '/dashboard/sold-items'
  */
         soldItemsForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

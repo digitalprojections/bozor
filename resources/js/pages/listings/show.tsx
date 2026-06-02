@@ -51,12 +51,20 @@ interface ListingProps {
     };
     recommendations?: any[];
     is_watched?: boolean;
+    seo?: {
+        title?: string;
+        description?: string;
+        canonical?: string;
+        url?: string;
+        og_image?: string;
+    };
 }
 
 export default function Show({
     listing,
     recommendations = [],
     is_watched = false,
+    seo,
 }: ListingProps) {
     const { t } = useTranslations();
     const { auth } = usePage().props as any;
@@ -69,6 +77,10 @@ export default function Show({
     const activeImageFailed = failedImages.has(activeImage);
     const displayPrice =
         listing.display_price ?? listing.current_price ?? listing.price;
+    const listingUrl = seo?.canonical ?? seo?.url ?? `/listings/${listing.id}`;
+    const seoDescription =
+        seo?.description ?? listing.description.substring(0, 160);
+    const seoImage = seo?.og_image ?? imageUrls[0];
     const hasBids = (listing.bids_count ?? 0) > 0;
     const markImageFailed = (index: number) => {
         setFailedImages((current) => new Set(current).add(index));
@@ -83,40 +95,39 @@ export default function Show({
         <BazaarLayout
             title={t('listing.show.title')}
             breadcrumbs={breadcrumbs}
-            sidebar={<ListingSidebar listing={listing} />}
+            sidebar={<ListingSidebar listing={listing} shareUrl={listingUrl} />}
         >
             <Head title={`${listing.title} - ${t('marketplace.title')}`}>
-                <link
-                    rel="canonical"
-                    href={`${window.location.origin}/listings/${listing.id}`}
-                />
-                <meta
-                    name="description"
-                    content={listing.description.substring(0, 160)}
-                />
+                <link rel="canonical" href={listingUrl} />
+                <meta name="description" content={seoDescription} />
 
                 <meta property="og:title" content={listing.title} />
-                <meta
-                    property="og:description"
-                    content={listing.description.substring(0, 160)}
-                />
+                <meta property="og:description" content={seoDescription} />
                 <meta property="og:type" content="product" />
-                {imageUrls.length > 0 && (
-                    <meta property="og:image" content={imageUrls[0]} />
+                <meta property="og:url" content={listingUrl} />
+                {seoImage && (
+                    <>
+                        <meta property="og:image" content={seoImage} />
+                        <meta name="twitter:image" content={seoImage} />
+                    </>
                 )}
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:title" content={listing.title} />
+                <meta name="twitter:description" content={seoDescription} />
                 <script type="application/ld+json">
                     {JSON.stringify({
                         '@context': 'https://schema.org/',
                         '@type': 'Product',
                         name: listing.title,
                         image: imageUrls,
-                        description: listing.description,
+                        description: seoDescription,
+                        url: listingUrl,
                         offers: {
                             '@type': 'Offer',
                             priceCurrency: 'JPY',
                             price: displayPrice,
                             availability: 'https://schema.org/InStock',
-                            url: `${window.location.origin}/listings/${listing.id}`,
+                            url: listingUrl,
                             areaServed: {
                                 '@type': 'Country',
                                 name: 'Japan',
@@ -139,13 +150,13 @@ export default function Show({
                                 '@type': 'ListItem',
                                 position: 1,
                                 name: t('marketplace.title'),
-                                item: `${window.location.origin}/marketplace`,
+                                item: '/marketplace',
                             },
                             {
                                 '@type': 'ListItem',
                                 position: 2,
                                 name: listing.title,
-                                item: `${window.location.origin}/listings/${listing.id}`,
+                                item: listingUrl,
                             },
                         ],
                     })}
@@ -286,9 +297,7 @@ export default function Show({
                                                 {auth?.user &&
                                                     !auth.user.is_guest &&
                                                     Number(listing.user.id) ===
-                                                        Number(
-                                                            auth.user.id,
-                                                        ) &&
+                                                        Number(auth.user.id) &&
                                                     !hasBids && (
                                                         <div className="flex w-full items-center gap-2 sm:w-auto">
                                                             <Link
@@ -377,15 +386,18 @@ export default function Show({
                 </Card>
 
                 {/* Item Information Grid */}
-                <Card className="rounded-[16px] border-[#edf2f9] shadow-sm sm:rounded-[24px]">
-                    <CardHeader className="px-5 pt-5 pb-2 sm:px-8 sm:pt-8">
-                        <h2 className="flex flex-row items-center gap-2 text-lg font-bold text-[#0b1b32]">
-                            <Info size={20} className="text-[#0d9488]" />
+                <Card className="rounded-[14px] border-[#edf2f9] shadow-sm sm:rounded-[24px]">
+                    <CardHeader className="px-4 pt-4 pb-1 sm:px-8 sm:pt-8 sm:pb-2">
+                        <h2 className="flex flex-row items-center gap-2 text-base font-bold text-[#0b1b32] sm:text-lg">
+                            <Info
+                                size={18}
+                                className="text-[#0d9488] sm:size-5"
+                            />
                             {t('listing.show.details_title')}
                         </h2>
                     </CardHeader>
-                    <CardContent className="p-5 pt-4 sm:p-8 sm:pt-4">
-                        <div className="grid grid-cols-1 gap-x-12 gap-y-6 sm:grid-cols-2">
+                    <CardContent className="p-4 pt-3 sm:p-8 sm:pt-4">
+                        <div className="grid grid-cols-2 gap-x-4 gap-y-3 rounded-[12px] border border-[#eef5fd] bg-[#f8fbfe] p-3 sm:gap-x-12 sm:gap-y-6 sm:rounded-none sm:border-0 sm:bg-transparent sm:p-0">
                             <InfoRow
                                 label={t('listing.show.auction_id')}
                                 value={`k${listing.id.toString().padStart(9, '0')}`}
@@ -469,11 +481,13 @@ export default function Show({
 
 function InfoRow({ label, value }: { label: string; value: string }) {
     return (
-        <div className="flex flex-col gap-1.5">
-            <span className="text-[0.75rem] font-bold tracking-[0.05em] text-[#6f7d98] uppercase">
+        <div className="flex min-w-0 flex-col gap-0.5 sm:gap-1.5">
+            <span className="text-[0.625rem] leading-tight font-bold tracking-[0.04em] text-[#6f7d98] uppercase sm:text-[0.75rem] sm:tracking-[0.05em]">
                 {label}
             </span>
-            <span className="font-semibold text-[#1a263b]">{value}</span>
+            <span className="text-sm leading-snug font-semibold break-words text-[#1a263b] sm:text-base">
+                {value}
+            </span>
         </div>
     );
 }

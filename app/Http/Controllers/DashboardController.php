@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Listing;
 use App\Models\Transaction;
+use App\Services\ListingService;
+use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    public function index(Request $request, \App\Services\ListingService $listingService)
+    public function index(Request $request, ListingService $listingService)
     {
         $user = $request->user();
 
@@ -17,17 +19,32 @@ class DashboardController extends Controller
             'active_listings' => $user->listings()->where('status', 'active')->count(),
             'total_sales' => $user->soldListings()->count(),
             'pending_transactions' => Transaction::where('seller_id', $user->id)
-            ->where('status', 'pending')
-            ->count(),
+                ->where('status', 'pending')
+                ->count(),
             'total_views' => $user->listings()->sum('views'),
             'total_revenue' => Transaction::where('seller_id', $user->id)
-            ->where('status', 'completed')
-            ->sum('amount'),
+                ->where('status', 'completed')
+                ->sum('amount'),
         ];
 
         // Get user's listings with categories
         $listings = $user->listings()
-            ->with('categories')
+            ->with([
+                'categories',
+                'transactions' => function ($query) use ($user) {
+                    $query->where('seller_id', $user->id)
+                        ->latest()
+                        ->select([
+                            'id',
+                            'listing_id',
+                            'buyer_id',
+                            'seller_id',
+                            'amount',
+                            'status',
+                            'created_at',
+                        ]);
+                },
+            ])
             ->withCount('bids')
             ->withMax('bids', 'amount')
             ->latest()
@@ -63,49 +80,54 @@ class DashboardController extends Controller
             ->with(['listing.categories', 'seller'])
             ->latest()
             ->get()
+            ->filter(fn ($transaction) => $transaction->listing !== null)
             ->map(function ($transaction) {
-            return [
-            'id' => $transaction->listing->id,
-            'transaction_id' => $transaction->id,
-            'title' => $transaction->listing->title,
-            'price' => $transaction->amount,
-            'seller' => $transaction->seller,
-            'images' => $transaction->listing->images,
-            'won_at' => $transaction->created_at,
-            'status' => $transaction->status,
-            'type' => 'purchase',
-            ];
-        });
+                return [
+                    'id' => $transaction->listing->id,
+                    'transaction_id' => $transaction->id,
+                    'title' => $transaction->listing->title,
+                    'price' => $transaction->amount,
+                    'seller' => $transaction->seller,
+                    'images' => $transaction->listing->images,
+                    'main_image_url' => $transaction->listing->main_image_url,
+                    'won_at' => $transaction->created_at,
+                    'status' => $transaction->status,
+                    'type' => 'purchase',
+                ];
+            });
 
         // 2. Get items won via Auction
         // An auction is won if it's ended and the user has the highest bid
-        $wonAuctions = \App\Models\Listing::where('is_auction', true)
+        $wonAuctions = Listing::where('is_auction', true)
             ->where('auction_end_date', '<', now())
             ->whereHas('bids', function ($query) use ($user) {
-            $query->where('user_id', $user->id);
-        })
+                $query->where('user_id', $user->id);
+            })
             ->with(['bids', 'user', 'transactions' => function ($query) use ($user) {
-            $query->where('buyer_id', $user->id);
-        }])
+                $query->where('buyer_id', $user->id);
+            }])
             ->get()
             ->filter(function ($listing) use ($user) {
-            $highestBid = $listing->bids->first();
-            return $highestBid && $highestBid->user_id === $user->id;
-        })
+                $highestBid = $listing->bids->first();
+
+                return $highestBid && $highestBid->user_id === $user->id;
+            })
             ->map(function ($listing) {
-            $transaction = $listing->transactions->first();
-            return [
-            'id' => $listing->id,
-            'transaction_id' => $transaction ? $transaction->id : null,
-            'title' => $listing->title,
-            'price' => $listing->display_price,
-            'seller' => $listing->user,
-            'images' => $listing->images,
-            'won_at' => $listing->auction_end_date,
-            'status' => $transaction ? $transaction->status : Transaction::STATUS_PENDING_PAYMENT,
-            'type' => 'auction',
-            ];
-        });
+                $transaction = $listing->transactions->first();
+
+                return [
+                    'id' => $listing->id,
+                    'transaction_id' => $transaction ? $transaction->id : null,
+                    'title' => $listing->title,
+                    'price' => $listing->display_price,
+                    'seller' => $listing->user,
+                    'images' => $listing->images,
+                    'main_image_url' => $listing->main_image_url,
+                    'won_at' => $listing->auction_end_date,
+                    'status' => $transaction ? $transaction->status : Transaction::STATUS_PENDING_PAYMENT,
+                    'type' => 'auction',
+                ];
+            });
 
         // Merge and sort by date
         $allWonItems = $purchasedItems->concat($wonAuctions)
@@ -125,19 +147,21 @@ class DashboardController extends Controller
             ->with(['listing.categories', 'buyer'])
             ->latest()
             ->get()
+            ->filter(fn ($transaction) => $transaction->listing !== null)
             ->map(function ($transaction) {
-            return [
-            'id' => $transaction->listing->id,
-            'transaction_id' => $transaction->id,
-            'title' => $transaction->listing->title,
-            'price' => $transaction->amount,
-            'buyer' => $transaction->buyer,
-            'images' => $transaction->listing->images,
-            'sold_at' => $transaction->created_at,
-            'status' => $transaction->status,
-            'type' => $transaction->listing->is_auction ? 'auction' : 'purchase',
-            ];
-        });
+                return [
+                    'id' => $transaction->listing->id,
+                    'transaction_id' => $transaction->id,
+                    'title' => $transaction->listing->title,
+                    'price' => $transaction->amount,
+                    'buyer' => $transaction->buyer,
+                    'images' => $transaction->listing->images,
+                    'main_image_url' => $transaction->listing->main_image_url,
+                    'sold_at' => $transaction->created_at,
+                    'status' => $transaction->status,
+                    'type' => $transaction->listing->is_auction ? 'auction' : 'purchase',
+                ];
+            });
 
         return inertia('dashboard/sold-items', [
             'items' => $soldItems,

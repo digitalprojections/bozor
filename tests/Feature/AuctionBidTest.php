@@ -151,7 +151,7 @@ class AuctionBidTest extends TestCase
         $this->travelBack();
     }
 
-    public function test_listing_with_bids_cannot_be_edited_or_updated_by_seller(): void
+    public function test_listing_with_bids_can_be_edited_and_updated_by_seller(): void
     {
         $seller = User::factory()->create();
         $buyer = User::factory()->create();
@@ -167,7 +167,11 @@ class AuctionBidTest extends TestCase
 
         $this->actingAs($seller)
             ->get(route('listings.edit', $listing))
-            ->assertForbidden();
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('hasBids', true)
+                ->where('listing.bids_count', 1)
+            );
 
         $this->actingAs($seller)
             ->patch(route('listings.update', $listing), [
@@ -182,10 +186,10 @@ class AuctionBidTest extends TestCase
                 'is_auction' => true,
                 'auction_end_date' => now()->addDay()->toDateTimeString(),
             ])
-            ->assertForbidden();
+            ->assertRedirect(route('listings.show', $listing));
 
-        $this->assertSame($listing->title, $listing->fresh()->title);
-        $this->assertSame(1000, $listing->fresh()->price);
+        $this->assertSame('Updated title', $listing->fresh()->title);
+        $this->assertSame(900, $listing->fresh()->price);
     }
 
     public function test_listing_with_bids_cannot_be_deleted_by_seller(): void

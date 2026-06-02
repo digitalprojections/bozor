@@ -1,7 +1,6 @@
 import React from 'react';
-import { Link, Head, router } from '@inertiajs/react';
-import { ShoppingBag, Truck } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Link } from '@inertiajs/react';
+import { Check, Share2, ShoppingBag, Truck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslations } from '@/hooks/use-translations';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -15,6 +14,7 @@ import { WatchButton } from '@/components/listings/watch-button';
 import { PriceDisplay } from '@/components/listings/price-display';
 import { UserRatingBadge } from '@/components/user-rating-badge';
 import { LoginRequiredDialog } from '@/components/login-required-dialog';
+import { useClipboard } from '@/hooks/use-clipboard';
 
 interface ListingSidebarProps {
     listing: {
@@ -44,9 +44,10 @@ interface ListingSidebarProps {
             ratings_count?: number;
         };
     };
+    shareUrl?: string;
 }
 
-export function ListingSidebar({ listing }: ListingSidebarProps) {
+export function ListingSidebar({ listing, shareUrl }: ListingSidebarProps) {
     const { t } = useTranslations();
     const { auth, is_watched } = usePage().props as any;
     const purchasePrice =
@@ -73,6 +74,26 @@ export function ListingSidebar({ listing }: ListingSidebarProps) {
         null | (() => void)
     >(null);
     const [loginRequiredOpen, setLoginRequiredOpen] = React.useState(false);
+    const [copiedText, copy] = useClipboard();
+    const [shareStatus, setShareStatus] = React.useState<
+        'idle' | 'copied' | 'failed'
+    >('idle');
+    const listingShareUrl = React.useMemo(() => {
+        if (shareUrl?.startsWith('http')) {
+            return shareUrl;
+        }
+
+        if (typeof window === 'undefined') {
+            return shareUrl ?? `/listings/${listing.id}`;
+        }
+
+        return new URL(
+            shareUrl ?? `/listings/${listing.id}`,
+            window.location.origin,
+        ).toString();
+    }, [listing.id, shareUrl]);
+    const shareCopied =
+        shareStatus === 'copied' || copiedText === listingShareUrl;
 
     const checkTermsAndExecute = (action: () => void) => {
         if (auth?.user && !auth.user.has_accepted_terms) {
@@ -93,6 +114,32 @@ export function ListingSidebar({ listing }: ListingSidebarProps) {
                 },
             });
         });
+    };
+
+    const shareListing = async () => {
+        const shareData = {
+            title: listing.title,
+            text: listing.description,
+            url: listingShareUrl,
+        };
+
+        if (navigator.share) {
+            try {
+                await navigator.share(shareData);
+                return;
+            } catch (error) {
+                if ((error as DOMException).name === 'AbortError') {
+                    return;
+                }
+            }
+        }
+
+        const copied = await copy(listingShareUrl);
+        setShareStatus(copied ? 'copied' : 'failed');
+
+        if (copied) {
+            window.setTimeout(() => setShareStatus('idle'), 2200);
+        }
     };
 
     const buyNow = () => {
@@ -246,6 +293,27 @@ export function ListingSidebar({ listing }: ListingSidebarProps) {
                         isWatched={is_watched}
                         className="h-10 w-full text-sm sm:h-12"
                     />
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={shareListing}
+                        className="h-10 w-full rounded-full border-[#cbd5e1] text-sm font-semibold text-[#475569] sm:h-12"
+                        aria-label={t('listing.sidebar.share')}
+                    >
+                        {shareCopied ? (
+                            <Check size={16} className="text-emerald-600" />
+                        ) : (
+                            <Share2 size={16} />
+                        )}
+                        {shareCopied
+                            ? t('listing.sidebar.link_copied')
+                            : t('listing.sidebar.share')}
+                    </Button>
+                    {shareStatus === 'failed' && (
+                        <p className="text-center text-xs text-red-500">
+                            {t('listing.sidebar.link_copy_failed')}
+                        </p>
+                    )}
                 </CardContent>
             </Card>
 

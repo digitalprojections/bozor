@@ -32,10 +32,33 @@
 
         <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
-        <meta name="description" content="Free registration and no sales fees! The ultimate marketplace for individuals and small businesses in Japan. Buy and sell items easily without hidden costs.">
-        <meta property="og:type" content="website">
+        @php
+            $seo = $page['props']['seo'] ?? [];
+            $seoTitle = $seo['title'] ?? config('app.name', 'Bozor Japan');
+            $seoDescription = $seo['description'] ?? 'Free registration and no sales fees! The ultimate marketplace for individuals and small businesses in Japan. Buy and sell items easily without hidden costs.';
+            $seoUrl = $seo['url'] ?? $seo['canonical'] ?? request()->url();
+            $seoImage = $seo['og_image'] ?? asset('favicon.png');
+            $seoType = $seo['og_type'] ?? 'website';
+            $twitterCard = $seo['twitter_card'] ?? 'summary_large_image';
+        @endphp
+
+        <meta name="description" content="{{ $seoDescription }}">
+        <link rel="canonical" href="{{ $seoUrl }}">
+        <meta property="og:title" content="{{ $seoTitle }}">
+        <meta property="og:description" content="{{ $seoDescription }}">
+        <meta property="og:type" content="{{ $seoType }}">
+        <meta property="og:url" content="{{ $seoUrl }}">
         <meta property="og:site_name" content="{{ config('app.name', 'Bozor Japan') }}">
-        <meta name="twitter:card" content="summary_large_image">
+        <meta property="og:image" content="{{ $seoImage }}">
+        <meta property="og:image:secure_url" content="{{ $seoImage }}">
+        <meta name="twitter:card" content="{{ $twitterCard }}">
+        <meta name="twitter:title" content="{{ $seoTitle }}">
+        <meta name="twitter:description" content="{{ $seoDescription }}">
+        <meta name="twitter:image" content="{{ $seoImage }}">
+
+        @if(!empty($seo['json_ld']))
+            <script type="application/ld+json">@json($seo['json_ld'], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)</script>
+        @endif
 
         {{-- hreflang tags for SEO visibility across regions --}}
         @if(isset($request) || request())

@@ -111,20 +111,29 @@ class ListingController extends Controller
             10
         );
 
+        $description = str($listing->description)->squish()->limit(160)->toString();
+        $canonicalUrl = route('listings.show', $listing);
+        $previewImageUrl = $listing->main_image_url ?: asset('favicon.png');
+
         return Inertia::render('listings/show', [
             'listing' => $listing,
             'is_watched' => auth()->check() ? auth()->user()->watchedListings()->where('listing_id', $listing->id)->exists() : false,
             'recommendations' => $recommendations,
             'seo' => [
                 'title' => $listing->title.' | '.config('app.name'),
-                'description' => str($listing->description)->limit(160),
-                'og_image' => $listing->main_image_url ?: asset('favicon.png'),
+                'description' => $description,
+                'canonical' => $canonicalUrl,
+                'url' => $canonicalUrl,
+                'og_type' => 'product',
+                'og_image' => $previewImageUrl,
+                'twitter_card' => 'summary_large_image',
                 'json_ld' => [
                     '@context' => 'https://schema.org/',
                     '@type' => 'Product',
                     'name' => $listing->title,
                     'image' => $listing->all_image_urls,
-                    'description' => $listing->description,
+                    'description' => $description,
+                    'url' => $canonicalUrl,
                     'offers' => [
                         '@type' => 'Offer',
                         'price' => $listing->display_price,
@@ -141,14 +150,15 @@ class ListingController extends Controller
      */
     public function edit(Listing $listing): Response
     {
-        $this->ensureListingCanBeChanged($listing);
+        $this->ensureListingIsOwnedByCurrentUser($listing);
 
         $categories = Category::with('children')->whereNull('parent_id')->get();
-        $listing->load('categories');
+        $listing->load('categories')->loadCount('bids');
 
         return Inertia::render('listings/edit', [
             'listing' => $listing,
             'categories' => $categories,
+            'hasBids' => $listing->hasBids(),
         ]);
     }
 
@@ -157,7 +167,7 @@ class ListingController extends Controller
      */
     public function update(Request $request, Listing $listing)
     {
-        $this->ensureListingCanBeChanged($listing);
+        $this->ensureListingIsOwnedByCurrentUser($listing);
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -171,7 +181,38 @@ class ListingController extends Controller
             'buy_now_price' => 'nullable|integer|min:1',
             'is_auction' => 'required|boolean',
             'auction_end_date' => 'required_if:is_auction,1|nullable|date|after:now',
+            'existing_images' => 'nullable|array|max:5',
+            'existing_images.*' => 'string',
+            'images' => 'nullable|array|max:5',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
+
+        $currentImages = array_values($listing->images ?? []);
+        $existingImages = array_values(array_intersect(
+            $validated['existing_images'] ?? $currentImages,
+            $currentImages
+        ));
+
+        $newImagePaths = [];
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('listings', 'public');
+
+                if (! $path) {
+                    throw ValidationException::withMessages([
+                        'images' => __('One or more images could not be saved. Please try again.'),
+                    ]);
+                }
+
+                $newImagePaths[] = $path;
+            }
+        }
+
+        $imagePaths = array_values(array_slice([...$existingImages, ...$newImagePaths], 0, 5));
+
+        foreach (array_diff($currentImages, $existingImages) as $removedImagePath) {
+            Storage::disk('public')->delete($removedImagePath);
+        }
 
         // Capture relevant changes before updating
         $changes = [];
@@ -192,6 +233,7 @@ class ListingController extends Controller
             'buy_now_price' => $validated['buy_now_price'] ?? null,
             'is_auction' => $validated['is_auction'],
             'auction_end_date' => $validated['auction_end_date'] ?? null,
+            'images' => $imagePaths,
         ]);
 
         // Update categories
@@ -212,7 +254,11 @@ class ListingController extends Controller
      */
     public function destroy(Listing $listing)
     {
-        $this->ensureListingCanBeChanged($listing);
+        $this->ensureListingIsOwnedByCurrentUser($listing);
+
+        if ($listing->hasBids()) {
+            abort(403, __('listing.bid_locked'));
+        }
 
         // Delete images from storage
         foreach ($listing->images ?? [] as $imagePath) {
@@ -224,14 +270,10 @@ class ListingController extends Controller
         return redirect()->route('dashboard')->with('success', 'Listing deleted successfully.');
     }
 
-    private function ensureListingCanBeChanged(Listing $listing): void
+    private function ensureListingIsOwnedByCurrentUser(Listing $listing): void
     {
         if ((int) $listing->user_id !== (int) auth()->id()) {
             abort(403);
-        }
-
-        if ($listing->hasBids()) {
-            abort(403, __('listing.bid_locked'));
         }
     }
 }
