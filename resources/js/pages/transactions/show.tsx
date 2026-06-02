@@ -291,16 +291,27 @@ export default function Show({ transaction }: { transaction: Transaction }) {
                     transaction.status !== TRANSACTION_STATUS.SHIPPED &&
                     transaction.status !== TRANSACTION_STATUS.DELIVERED &&
                     transaction.status !== TRANSACTION_STATUS.RECEIVED && (
-                        <div className="flex justify-end mt-4">
-                            <Button
-                                onClick={handleCancel}
-                                variant="ghost"
-                                disabled={processing}
-                                className="text-red-600 hover:text-red-700 hover:bg-red-50 rounded-xl px-6"
-                            >
-                                {t('transaction.cancel') || t('common.cancel')} {t('common.transaction')}
-                            </Button>
-                        </div>
+                        <details className="group mt-2 rounded-2xl border border-slate-200 bg-slate-50/70 px-4 py-3">
+                            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-slate-500 transition-colors hover:text-slate-700 [&::-webkit-details-marker]:hidden">
+                                <span>{t('transaction.cancel') || t('common.cancel')}</span>
+                                <span className="text-xs font-medium text-slate-400 group-open:hidden">
+                                    {t('common.transaction')}
+                                </span>
+                            </summary>
+                            <div className="mt-3 flex flex-col gap-3 border-t border-slate-200 pt-3 sm:flex-row sm:items-center sm:justify-between">
+                                <p className="text-xs leading-relaxed text-slate-500">
+                                    {t('transaction.cancel_confirm') || 'Cancelling returns the listing to the marketplace.'}
+                                </p>
+                                <Button
+                                    onClick={handleCancel}
+                                    variant="outline"
+                                    disabled={processing}
+                                    className="h-9 rounded-lg border-red-200 bg-white px-4 text-xs font-bold text-red-600 hover:border-red-300 hover:bg-red-50 hover:text-red-700 sm:w-auto"
+                                >
+                                    {t('transaction.cancel') || t('common.cancel')} {t('common.transaction')}
+                                </Button>
+                            </div>
+                        </details>
                     )}
 
                 {transaction.status === TRANSACTION_STATUS.CANCELLED && (

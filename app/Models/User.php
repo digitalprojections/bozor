@@ -76,12 +76,14 @@ class User extends Authenticatable
 
     public function listings()
     {
-        return $this->hasMany(Listing::class);
+        return $this->hasMany(Listing::class)->where('listing_type', 'item');
     }
 
     public function soldListings()
     {
-        return $this->hasMany(Listing::class)->where('status', 'sold');
+        return $this->hasMany(Listing::class)
+            ->where('listing_type', 'item')
+            ->where('status', 'sold');
     }
 
     public function verificationRequests()
@@ -129,7 +131,9 @@ class User extends Authenticatable
 
     public function watchedListings()
     {
-        return $this->belongsToMany(Listing::class , 'watchlists')->withTimestamps();
+        return $this->belongsToMany(Listing::class , 'watchlists')
+            ->where('listing_type', 'item')
+            ->withTimestamps();
     }
 
     /**

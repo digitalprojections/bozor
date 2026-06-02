@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, Head, router } from '@inertiajs/react';
-import { MessageCircle, Info, Truck, CreditCard } from 'lucide-react';
+import { ShoppingBag, Truck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useTranslations } from '@/hooks/use-translations';
@@ -139,13 +139,19 @@ export function ListingSidebar({ listing }: ListingSidebarProps) {
                                 </form>
                             )}
                             {canBuyNow && (
-                                <Button
-                                    onClick={buyNow}
-                                    disabled={processing}
-                                    className="w-full h-10 sm:h-12 rounded-full bg-[#2b4b8f] hover:bg-[#1e3a7a] text-white font-bold text-sm sm:text-lg"
-                                >
-                                    {t('listing.show.buy_now')} (¥{purchasePrice.toLocaleString()})
-                                </Button>
+                                <div className="rounded-[18px] border border-amber-200 bg-amber-50 p-2 shadow-sm">
+                                    <Button
+                                        onClick={buyNow}
+                                        disabled={processing}
+                                        className="h-14 w-full rounded-[14px] bg-[#d97706] text-base font-extrabold text-white shadow-lg shadow-amber-200 transition-all hover:-translate-y-0.5 hover:bg-[#b45309] hover:shadow-amber-300 active:translate-y-0 sm:h-16 sm:text-lg"
+                                    >
+                                        <ShoppingBag size={20} className="shrink-0" />
+                                        <span>{t('listing.show.buy_now')}</span>
+                                        <span className="rounded-full bg-white/20 px-2.5 py-1 text-sm font-bold sm:text-base">
+                                            ¥{purchasePrice.toLocaleString()}
+                                        </span>
+                                    </Button>
+                                </div>
                             )}
                         </div>
                     ) : auth?.user && !auth.user.is_guest && isOwner ? (
@@ -154,12 +160,18 @@ export function ListingSidebar({ listing }: ListingSidebarProps) {
                         </div>
                     ) : canBuyNow ? (
                         <div className="flex flex-col gap-3">
-                            <Button
-                                onClick={() => setLoginRequiredOpen(true)}
-                                className="w-full h-10 sm:h-12 rounded-full bg-[#2b4b8f] hover:bg-[#1e3a7a] text-white font-bold text-sm sm:text-lg"
-                            >
-                                {t('listing.show.buy_now')} (¥{purchasePrice.toLocaleString()})
-                            </Button>
+                            <div className="rounded-[18px] border border-amber-200 bg-amber-50 p-2 shadow-sm">
+                                <Button
+                                    onClick={() => setLoginRequiredOpen(true)}
+                                    className="h-14 w-full rounded-[14px] bg-[#d97706] text-base font-extrabold text-white shadow-lg shadow-amber-200 transition-all hover:-translate-y-0.5 hover:bg-[#b45309] hover:shadow-amber-300 active:translate-y-0 sm:h-16 sm:text-lg"
+                                >
+                                    <ShoppingBag size={20} className="shrink-0" />
+                                    <span>{t('listing.show.buy_now')}</span>
+                                    <span className="rounded-full bg-white/20 px-2.5 py-1 text-sm font-bold sm:text-base">
+                                        ¥{purchasePrice.toLocaleString()}
+                                    </span>
+                                </Button>
+                            </div>
                             <div className="text-center text-xs sm:text-sm text-[#5f6c84] bg-muted/50 p-3 sm:p-4 rounded-[16px] sm:rounded-2xl border border-dashed">
                                 {t('listing.sidebar.login_prefix')}{' '}
                                 <Link href="/login" className="text-[#0d9488] font-semibold underline underline-offset-4">

@@ -34,6 +34,7 @@ class MarketplaceController extends Controller
 
         // Build listings query with filters
         $listingsQuery = Listing::with(['user', 'categories'])
+            ->items()
             ->where('status', '!=', 'disabled')
             ->where('status', '!=', 'draft');
 

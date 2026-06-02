@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Services\AdService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\File;
@@ -50,6 +51,7 @@ class HandleInertiaRequests extends Middleware
             'locale' => $locale,
             'translations' => $this->loadTranslationsForLocale($locale, $fallback),
             'supportedLocales' => config('locales.supported', ['en' => ['name' => 'English', 'native' => 'English']]),
+            'layoutAds' => fn () => app(AdService::class)->layoutAds(),
             'seo' => [
                 'title' => config('app.name', 'Bozor Japan'),
                 'description' => __('Free registration and no sales fees! A marketplace for individuals and small businesses in Japan.'),

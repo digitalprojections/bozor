@@ -14,7 +14,7 @@ class SitemapController extends Controller
     public function index(): Response
     {
         $locales = array_keys(config('locales.supported', ['en' => []]));
-        $listings = Listing::where('status', 'active')->orderBy('updated_at', 'desc')->get();
+        $listings = Listing::items()->where('status', 'active')->orderBy('updated_at', 'desc')->get();
 
         $urls = [];
 

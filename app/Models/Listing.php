@@ -17,6 +17,16 @@ class Listing extends Model
         'description',
         'price',
         'status',
+        'listing_type',
+        'ad_placement',
+        'ad_target_url',
+        'ad_starts_at',
+        'ad_ends_at',
+        'ad_priority',
+        'ad_price_jpy',
+        'ad_budget_jpy',
+        'ad_impressions',
+        'ad_clicks',
         'images',
         'location',
         'views',
@@ -34,6 +44,13 @@ class Listing extends Model
         'is_auction' => 'boolean',
         'auction_end_date' => 'datetime',
         'current_high_bid' => 'integer',
+        'ad_starts_at' => 'datetime',
+        'ad_ends_at' => 'datetime',
+        'ad_priority' => 'integer',
+        'ad_price_jpy' => 'integer',
+        'ad_budget_jpy' => 'integer',
+        'ad_impressions' => 'integer',
+        'ad_clicks' => 'integer',
         'views' => 'integer',
     ];
 
@@ -109,5 +126,40 @@ class Listing extends Model
     public function watchedBy()
     {
         return $this->belongsToMany(User::class, 'watchlists')->withTimestamps();
+    }
+
+    public function scopeItems($query)
+    {
+        return $query->where('listing_type', 'item');
+    }
+
+    public function scopeAdvertisements($query)
+    {
+        return $query->where('listing_type', 'advertisement');
+    }
+
+    public function scopeActiveAdvertisements($query, ?string $placement = null)
+    {
+        $query->advertisements()
+            ->where('status', 'active')
+            ->where(function ($query) {
+                $query->whereNull('ad_starts_at')
+                    ->orWhere('ad_starts_at', '<=', now());
+            })
+            ->where(function ($query) {
+                $query->whereNull('ad_ends_at')
+                    ->orWhere('ad_ends_at', '>=', now());
+            });
+
+        if ($placement) {
+            $query->where('ad_placement', $placement);
+        }
+
+        return $query;
+    }
+
+    public function isAdvertisement(): bool
+    {
+        return $this->listing_type === 'advertisement';
     }
 }

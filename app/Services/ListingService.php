@@ -19,6 +19,7 @@ class ListingService
     public function getRecommendations(?User $currentUser = null, ?int $excludeListingId = null, int $limit = 10): Collection
     {
         $query = Listing::with(['user', 'categories'])
+            ->items()
             ->where('status', 'active');
 
         if ($currentUser) {
