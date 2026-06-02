@@ -22,6 +22,9 @@ interface ListingProps {
         title: string;
         description: string;
         price: number;
+        display_price?: number;
+        current_price?: number;
+        highest_bid_amount?: number;
         status: string;
         created_at: string;
         location: string | null;
@@ -50,14 +53,23 @@ interface ListingProps {
     is_watched?: boolean;
 }
 
-export default function Show({ listing, recommendations = [], is_watched = false }: ListingProps) {
+export default function Show({
+    listing,
+    recommendations = [],
+    is_watched = false,
+}: ListingProps) {
     const { t } = useTranslations();
     const { auth } = usePage().props as any;
     const [activeImage, setActiveImage] = useState(0);
-    const [failedImages, setFailedImages] = useState<Set<number>>(() => new Set());
+    const [failedImages, setFailedImages] = useState<Set<number>>(
+        () => new Set(),
+    );
     const imageUrls = listing.all_image_urls ?? [];
     const activeImageUrl = imageUrls[activeImage];
     const activeImageFailed = failedImages.has(activeImage);
+    const displayPrice =
+        listing.display_price ?? listing.current_price ?? listing.price;
+    const hasBids = (listing.bids_count ?? 0) > 0;
     const markImageFailed = (index: number) => {
         setFailedImages((current) => new Set(current).add(index));
     };
@@ -74,113 +86,138 @@ export default function Show({ listing, recommendations = [], is_watched = false
             sidebar={<ListingSidebar listing={listing} />}
         >
             <Head title={`${listing.title} - ${t('marketplace.title')}`}>
-                <link rel="canonical" href={`${window.location.origin}/listings/${listing.id}`} />
-                <meta name="description" content={listing.description.substring(0, 160)} />
+                <link
+                    rel="canonical"
+                    href={`${window.location.origin}/listings/${listing.id}`}
+                />
+                <meta
+                    name="description"
+                    content={listing.description.substring(0, 160)}
+                />
 
                 <meta property="og:title" content={listing.title} />
-                <meta property="og:description" content={listing.description.substring(0, 160)} />
+                <meta
+                    property="og:description"
+                    content={listing.description.substring(0, 160)}
+                />
                 <meta property="og:type" content="product" />
                 {imageUrls.length > 0 && (
                     <meta property="og:image" content={imageUrls[0]} />
                 )}
                 <script type="application/ld+json">
                     {JSON.stringify({
-                        "@context": "https://schema.org/",
-                        "@type": "Product",
-                        "name": listing.title,
-                        "image": imageUrls,
-                        "description": listing.description,
-                        "offers": {
-                            "@type": "Offer",
-                            "priceCurrency": "JPY",
-                            "price": listing.price,
-                            "availability": "https://schema.org/InStock",
-                            "url": `${window.location.origin}/listings/${listing.id}`,
-                            "areaServed": {
-                                "@type": "Country",
-                                "name": "Japan"
+                        '@context': 'https://schema.org/',
+                        '@type': 'Product',
+                        name: listing.title,
+                        image: imageUrls,
+                        description: listing.description,
+                        offers: {
+                            '@type': 'Offer',
+                            priceCurrency: 'JPY',
+                            price: displayPrice,
+                            availability: 'https://schema.org/InStock',
+                            url: `${window.location.origin}/listings/${listing.id}`,
+                            areaServed: {
+                                '@type': 'Country',
+                                name: 'Japan',
                             },
-                            "eligibleRegion": listing.location ? {
-                                "@type": "State",
-                                "name": listing.location
-                            } : undefined
-                        }
+                            eligibleRegion: listing.location
+                                ? {
+                                      '@type': 'State',
+                                      name: listing.location,
+                                  }
+                                : undefined,
+                        },
                     })}
                 </script>
                 <script type="application/ld+json">
                     {JSON.stringify({
-                        "@context": "https://schema.org",
-                        "@type": "BreadcrumbList",
-                        "itemListElement": [
+                        '@context': 'https://schema.org',
+                        '@type': 'BreadcrumbList',
+                        itemListElement: [
                             {
-                                "@type": "ListItem",
-                                "position": 1,
-                                "name": t('marketplace.title'),
-                                "item": `${window.location.origin}/marketplace`
+                                '@type': 'ListItem',
+                                position: 1,
+                                name: t('marketplace.title'),
+                                item: `${window.location.origin}/marketplace`,
                             },
                             {
-                                "@type": "ListItem",
-                                "position": 2,
-                                "name": listing.title,
-                                "item": `${window.location.origin}/listings/${listing.id}`
-                            }
-                        ]
+                                '@type': 'ListItem',
+                                position: 2,
+                                name: listing.title,
+                                item: `${window.location.origin}/listings/${listing.id}`,
+                            },
+                        ],
                     })}
                 </script>
             </Head>
 
-
-
             <div className="flex flex-col gap-8">
                 {/* Images Section */}
-                <Card className="rounded-[16px] sm:rounded-[24px] border-[#edf2f9] shadow-sm overflow-hidden">
+                <Card className="overflow-hidden rounded-[16px] border-[#edf2f9] shadow-sm sm:rounded-[24px]">
                     <CardContent className="p-3 sm:p-6">
                         <div className="flex flex-col gap-3 sm:gap-4">
-                            <div className="main-image-placeholder relative aspect-[4/3] w-full bg-[#d9e2ef] rounded-[12px] sm:rounded-[20px] overflow-hidden flex items-center justify-center border border-[#e1e9f2]">
+                            <div className="main-image-placeholder relative flex aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-[12px] border border-[#e1e9f2] bg-[#d9e2ef] sm:rounded-[20px]">
                                 {activeImageUrl && !activeImageFailed ? (
                                     <>
                                         <img
                                             src={activeImageUrl}
                                             alt={listing.title}
-                                            className="w-full h-full object-cover"
-                                            onError={() => markImageFailed(activeImage)}
+                                            className="h-full w-full object-cover"
+                                            onError={() =>
+                                                markImageFailed(activeImage)
+                                            }
                                         />
-                                        {listing.status === 'sold' && <SoldBadge variant="overlay" />}
-                                        <WatchButton 
-                                            listingId={listing.id} 
-                                            isWatched={is_watched} 
-                                            variant="overlay" 
+                                        {listing.status === 'sold' && (
+                                            <SoldBadge variant="overlay" />
+                                        )}
+                                        <WatchButton
+                                            listingId={listing.id}
+                                            isWatched={is_watched}
+                                            variant="overlay"
                                         />
                                     </>
                                 ) : (
-                                    <div className="flex flex-col items-center gap-2 sm:gap-3 text-[#4d627a]">
-                                        <Package size={48} className="opacity-20 sm:w-16 sm:h-16" />
-                                        <span className="font-medium text-sm sm:text-base">{t('listing.show.no_images')}</span>
+                                    <div className="flex flex-col items-center gap-2 text-[#4d627a] sm:gap-3">
+                                        <Package
+                                            size={48}
+                                            className="opacity-20 sm:h-16 sm:w-16"
+                                        />
+                                        <span className="text-sm font-medium sm:text-base">
+                                            {t('listing.show.no_images')}
+                                        </span>
                                     </div>
                                 )}
                             </div>
 
                             {imageUrls.length > 1 && (
-                                <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                                <div className="scrollbar-hide flex gap-2 overflow-x-auto pb-2 sm:gap-3">
                                     {imageUrls.map((img, idx) => (
                                         <button
                                             key={idx}
                                             onClick={() => setActiveImage(idx)}
                                             className={cn(
-                                                "h-16 w-16 sm:h-20 sm:w-20 shrink-0 rounded-[10px] sm:rounded-[14px] overflow-hidden border-2 transition-all",
-                                                activeImage === idx ? 'border-[#0d9488]' : 'border-transparent bg-[#e6ecf5] hover:border-[#ccd6e5]'
+                                                'h-16 w-16 shrink-0 overflow-hidden rounded-[10px] border-2 transition-all sm:h-20 sm:w-20 sm:rounded-[14px]',
+                                                activeImage === idx
+                                                    ? 'border-[#0d9488]'
+                                                    : 'border-transparent bg-[#e6ecf5] hover:border-[#ccd6e5]',
                                             )}
                                         >
                                             {failedImages.has(idx) ? (
-                                                <div className="w-full h-full flex items-center justify-center text-[#4d627a]">
-                                                    <Package size={24} className="opacity-30" />
+                                                <div className="flex h-full w-full items-center justify-center text-[#4d627a]">
+                                                    <Package
+                                                        size={24}
+                                                        className="opacity-30"
+                                                    />
                                                 </div>
                                             ) : (
                                                 <img
                                                     src={img}
                                                     alt={`Thumbnail ${idx + 1}`}
-                                                    className="w-full h-full object-cover"
-                                                    onError={() => markImageFailed(idx)}
+                                                    className="h-full w-full object-cover"
+                                                    onError={() =>
+                                                        markImageFailed(idx)
+                                                    }
                                                 />
                                             )}
                                         </button>
@@ -192,64 +229,114 @@ export default function Show({ listing, recommendations = [], is_watched = false
                 </Card>
 
                 {/* Title and Price Info */}
-                <Card className="rounded-[16px] sm:rounded-[24px] border-[#edf2f9] shadow-sm">
+                <Card className="rounded-[16px] border-[#edf2f9] shadow-sm sm:rounded-[24px]">
                     <CardContent className="p-4 sm:p-8">
                         <div className="flex flex-col gap-4 sm:gap-6">
                             <div className="flex flex-col gap-3">
-                                <div className="flex flex-wrap gap-2 items-center">
-                                    <Badge variant="outline" className="bg-[#f1f5f9] text-[#475569] border-[#e2e8f0] rounded-full px-3 h-6 sm:h-7 font-medium text-[10px] sm:text-xs">
-                                        {listing.is_auction ? t('listing.show.auction') : t('listing.show.buy_now')}
+                                <div className="flex flex-wrap items-center gap-2">
+                                    <Badge
+                                        variant="outline"
+                                        className="h-6 rounded-full border-[#e2e8f0] bg-[#f1f5f9] px-3 text-[10px] font-medium text-[#475569] sm:h-7 sm:text-xs"
+                                    >
+                                        {listing.is_auction
+                                            ? t('listing.show.auction')
+                                            : t('listing.show.buy_now')}
                                     </Badge>
-                                    {listing.status === 'sold' && <SoldBadge className="rounded-full px-3 h-6 sm:h-7 text-[10px] sm:text-xs tracking-wider" />}
+                                    {listing.status === 'sold' && (
+                                        <SoldBadge className="h-6 rounded-full px-3 text-[10px] tracking-wider sm:h-7 sm:text-xs" />
+                                    )}
                                 </div>
-                                <h1 className="text-xl sm:text-[1.8rem] font-bold tracking-tight text-[#0b1b32] leading-tight">
+                                <h1 className="text-xl leading-tight font-bold tracking-tight text-[#0b1b32] sm:text-[1.8rem]">
                                     {listing.title}
                                 </h1>
                             </div>
 
-                            <div className="bg-[#f8fbfe] border border-[#eef5fd] rounded-[16px] sm:rounded-[20px] p-4 sm:p-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                            <div className="flex flex-col justify-between gap-6 rounded-[16px] border border-[#eef5fd] bg-[#f8fbfe] p-4 sm:rounded-[20px] sm:p-6 md:flex-row md:items-center">
                                 <div className="flex flex-col gap-1">
-                                    <span className="text-[#64748b] text-[10px] sm:text-sm font-medium uppercase tracking-wider">
-                                        {listing.is_auction ? t('listing.show.current_price') : t('listing.create.price')}
+                                    <span className="text-[10px] font-medium tracking-wider text-[#64748b] uppercase sm:text-sm">
+                                        {listing.is_auction
+                                            ? t('listing.show.current_price')
+                                            : t('listing.create.price')}
                                     </span>
-                                    <PriceDisplay price={listing.price} size="xl" />
+                                    <PriceDisplay
+                                        price={displayPrice}
+                                        size="xl"
+                                    />
                                 </div>
 
-                                <div className="flex flex-col sm:flex-row md:flex-col md:items-end gap-4 sm:gap-6 md:gap-3">
+                                <div className="flex flex-col gap-4 sm:flex-row sm:gap-6 md:flex-col md:items-end md:gap-3">
                                     <div className="flex items-center gap-2">
                                         {listing.status !== 'sold' ? (
                                             <div className="flex items-center gap-2">
-                                                {(auth?.user && !auth.user.is_guest && Number(listing.user.id) !== Number(auth.user.id)) && (
-                                                    <WatchButton 
-                                                        listingId={listing.id} 
-                                                        isWatched={is_watched} 
-                                                    />
-                                                )}
-                                                {auth?.user && !auth.user.is_guest && Number(listing.user.id) === Number(auth.user.id) && (
-                                                    <div className="flex items-center gap-2 w-full sm:w-auto">
-                                                        <Link href={`/listings/${listing.id}/edit`} className="flex-1 sm:flex-none">
-                                                            <Button variant="outline" size="sm" className="rounded-full w-full h-9 sm:h-10 px-5 border-[#cbd5e1] text-[#475569]">
-                                                                {t('common.edit')}
+                                                {auth?.user &&
+                                                    !auth.user.is_guest &&
+                                                    Number(listing.user.id) !==
+                                                        Number(
+                                                            auth.user.id,
+                                                        ) && (
+                                                        <WatchButton
+                                                            listingId={
+                                                                listing.id
+                                                            }
+                                                            isWatched={
+                                                                is_watched
+                                                            }
+                                                        />
+                                                    )}
+                                                {auth?.user &&
+                                                    !auth.user.is_guest &&
+                                                    Number(listing.user.id) ===
+                                                        Number(
+                                                            auth.user.id,
+                                                        ) &&
+                                                    !hasBids && (
+                                                        <div className="flex w-full items-center gap-2 sm:w-auto">
+                                                            <Link
+                                                                href={`/listings/${listing.id}/edit`}
+                                                                className="flex-1 sm:flex-none"
+                                                            >
+                                                                <Button
+                                                                    variant="outline"
+                                                                    size="sm"
+                                                                    className="h-9 w-full rounded-full border-[#cbd5e1] px-5 text-[#475569] sm:h-10"
+                                                                >
+                                                                    {t(
+                                                                        'common.edit',
+                                                                    )}
+                                                                </Button>
+                                                            </Link>
+                                                            <Button
+                                                                variant="outline"
+                                                                size="sm"
+                                                                className="h-9 flex-1 rounded-full border-red-200 px-5 text-red-500 hover:bg-red-50 sm:h-10 sm:flex-none"
+                                                                onClick={() => {
+                                                                    if (
+                                                                        confirm(
+                                                                            t(
+                                                                                'listing.delete_confirm',
+                                                                            ),
+                                                                        )
+                                                                    ) {
+                                                                        router.delete(
+                                                                            `/listings/${listing.id}`,
+                                                                        );
+                                                                    }
+                                                                }}
+                                                            >
+                                                                <Trash2
+                                                                    size={14}
+                                                                    className="mr-1"
+                                                                />
+                                                                {t(
+                                                                    'common.delete',
+                                                                )}
                                                             </Button>
-                                                        </Link>
-                                                        <Button
-                                                            variant="outline"
-                                                            size="sm"
-                                                            className="rounded-full h-9 sm:h-10 px-5 border-red-200 text-red-500 hover:bg-red-50 flex-1 sm:flex-none"
-                                                            onClick={() => {
-                                                                if (confirm(t('listing.delete_confirm'))) {
-                                                                    router.delete(`/listings/${listing.id}`);
-                                                                }
-                                                            }}
-                                                        >
-                                                            <Trash2 size={14} className="mr-1" />
-                                                            {t('common.delete')}
-                                                        </Button>
-                                                    </div>
-                                                )}
-                                                {(!auth?.user || auth.user.is_guest) && (
-                                                    <WatchButton 
-                                                        listingId={listing.id} 
+                                                        </div>
+                                                    )}
+                                                {(!auth?.user ||
+                                                    auth.user.is_guest) && (
+                                                    <WatchButton
+                                                        listingId={listing.id}
                                                         isWatched={is_watched}
                                                     />
                                                 )}
@@ -259,15 +346,27 @@ export default function Show({ listing, recommendations = [], is_watched = false
                                         )}
                                     </div>
 
-                                    <div className="flex flex-wrap md:flex-col md:items-end gap-3 text-[#64748b] text-[11px] font-medium uppercase tracking-wider">
+                                    <div className="flex flex-wrap gap-3 text-[11px] font-medium tracking-wider text-[#64748b] uppercase md:flex-col md:items-end">
                                         <div className="flex items-center gap-2">
-                                            <span>{t('listing.show.published')}:</span>
-                                            <span className="text-[#0f172a]">{new Date(listing.created_at).toLocaleDateString()}</span>
+                                            <span>
+                                                {t('listing.show.published')}:
+                                            </span>
+                                            <span className="text-[#0f172a]">
+                                                {new Date(
+                                                    listing.created_at,
+                                                ).toLocaleDateString()}
+                                            </span>
                                         </div>
                                         {listing.auction_end_date && (
                                             <div className="flex items-center gap-2">
-                                                <span>{t('listing.show.ends')}:</span>
-                                                <span className="text-[#0f172a]">{new Date(listing.auction_end_date).toLocaleDateString()}</span>
+                                                <span>
+                                                    {t('listing.show.ends')}:
+                                                </span>
+                                                <span className="text-[#0f172a]">
+                                                    {new Date(
+                                                        listing.auction_end_date,
+                                                    ).toLocaleDateString()}
+                                                </span>
                                             </div>
                                         )}
                                     </div>
@@ -278,39 +377,84 @@ export default function Show({ listing, recommendations = [], is_watched = false
                 </Card>
 
                 {/* Item Information Grid */}
-                <Card className="rounded-[16px] sm:rounded-[24px] border-[#edf2f9] shadow-sm">
-                    <CardHeader className="px-5 sm:px-8 pt-5 sm:pt-8 pb-2">
-                        <h2 className="font-bold text-lg text-[#0b1b32] flex flex-row items-center gap-2">
+                <Card className="rounded-[16px] border-[#edf2f9] shadow-sm sm:rounded-[24px]">
+                    <CardHeader className="px-5 pt-5 pb-2 sm:px-8 sm:pt-8">
+                        <h2 className="flex flex-row items-center gap-2 text-lg font-bold text-[#0b1b32]">
                             <Info size={20} className="text-[#0d9488]" />
                             {t('listing.show.details_title')}
                         </h2>
                     </CardHeader>
-                    <CardContent className="p-5 sm:p-8 pt-4 sm:pt-4">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-12">
-                            <InfoRow label={t('listing.show.auction_id')} value={`k${listing.id.toString().padStart(9, '0')}`} />
-                            <InfoRow label={t('listing.show.start_price')} value={`¥${listing.price.toLocaleString()}`} />
-                            <InfoRow label={t('listing.show.published')} value={new Date(listing.created_at).toLocaleDateString()} />
-                            <InfoRow label={t('listing.show.ends')} value={listing.auction_end_date ? new Date(listing.auction_end_date).toLocaleDateString() : t('common.n_a')} />
-                            <InfoRow label={t('listing.show.location')} value={listing.location || t('common.not_specified')} />
-                            <InfoRow label={t('listing.show.auto_extension')} value={t('common.yes')} />
-                            <InfoRow label={t('listing.show.early_termination')} value={t('common.permitted')} />
-                            <InfoRow label={t('listing.show.returns')} value={t('common.not_accepted')} />
-                            <InfoRow label={t('listing.show.bid_restriction')} value={t('common.none')} />
-                            <InfoRow label={t('listing.show.condition')} value={t(ITEM_CONDITIONS.find(c => c.value === listing.condition)?.labelKey || 'common.not_specified')} />
+                    <CardContent className="p-5 pt-4 sm:p-8 sm:pt-4">
+                        <div className="grid grid-cols-1 gap-x-12 gap-y-6 sm:grid-cols-2">
+                            <InfoRow
+                                label={t('listing.show.auction_id')}
+                                value={`k${listing.id.toString().padStart(9, '0')}`}
+                            />
+                            <InfoRow
+                                label={t('listing.show.start_price')}
+                                value={`¥${listing.price.toLocaleString()}`}
+                            />
+                            <InfoRow
+                                label={t('listing.show.published')}
+                                value={new Date(
+                                    listing.created_at,
+                                ).toLocaleDateString()}
+                            />
+                            <InfoRow
+                                label={t('listing.show.ends')}
+                                value={
+                                    listing.auction_end_date
+                                        ? new Date(
+                                              listing.auction_end_date,
+                                          ).toLocaleDateString()
+                                        : t('common.n_a')
+                                }
+                            />
+                            <InfoRow
+                                label={t('listing.show.location')}
+                                value={
+                                    listing.location ||
+                                    t('common.not_specified')
+                                }
+                            />
+                            <InfoRow
+                                label={t('listing.show.auto_extension')}
+                                value={t('common.yes')}
+                            />
+                            <InfoRow
+                                label={t('listing.show.early_termination')}
+                                value={t('common.permitted')}
+                            />
+                            <InfoRow
+                                label={t('listing.show.returns')}
+                                value={t('common.not_accepted')}
+                            />
+                            <InfoRow
+                                label={t('listing.show.bid_restriction')}
+                                value={t('common.none')}
+                            />
+                            <InfoRow
+                                label={t('listing.show.condition')}
+                                value={t(
+                                    ITEM_CONDITIONS.find(
+                                        (c) => c.value === listing.condition,
+                                    )?.labelKey || 'common.not_specified',
+                                )}
+                            />
                         </div>
                     </CardContent>
                 </Card>
 
                 {/* DescriptionSection */}
-                <Card className="rounded-[16px] sm:rounded-[24px] border-[#edf2f9] shadow-sm">
-                    <CardHeader className="px-5 sm:px-8 pt-6 sm:pt-8 pb-2">
-                        <h2 className="font-bold text-lg text-[#0b1b32] flex flex-row items-center gap-2">
+                <Card className="rounded-[16px] border-[#edf2f9] shadow-sm sm:rounded-[24px]">
+                    <CardHeader className="px-5 pt-6 pb-2 sm:px-8 sm:pt-8">
+                        <h2 className="flex flex-row items-center gap-2 text-lg font-bold text-[#0b1b32]">
                             <FileText size={20} className="text-[#0d9488]" />
                             {t('listing.show.description_title')}
                         </h2>
                     </CardHeader>
-                    <CardContent className="p-5 sm:p-8 pt-2 sm:pt-4">
-                        <div className="bg-[#f9fcff] border border-[#f0f5fa] rounded-[14px] sm:rounded-[18px] p-4 sm:p-6 text-[#1d2b41] text-sm sm:text-base leading-relaxed whitespace-pre-wrap">
+                    <CardContent className="p-5 pt-2 sm:p-8 sm:pt-4">
+                        <div className="rounded-[14px] border border-[#f0f5fa] bg-[#f9fcff] p-4 text-sm leading-relaxed whitespace-pre-wrap text-[#1d2b41] sm:rounded-[18px] sm:p-6 sm:text-base">
                             {listing.description}
                         </div>
                     </CardContent>
@@ -319,14 +463,16 @@ export default function Show({ listing, recommendations = [], is_watched = false
                 {/* Recommendations Section */}
                 <RecommendationsSection recommendations={recommendations} />
             </div>
-        </BazaarLayout >
+        </BazaarLayout>
     );
 }
 
-function InfoRow({ label, value }: { label: string, value: string }) {
+function InfoRow({ label, value }: { label: string; value: string }) {
     return (
         <div className="flex flex-col gap-1.5">
-            <span className="text-[0.75rem] font-bold text-[#6f7d98] uppercase tracking-[0.05em]">{label}</span>
+            <span className="text-[0.75rem] font-bold tracking-[0.05em] text-[#6f7d98] uppercase">
+                {label}
+            </span>
             <span className="font-semibold text-[#1a263b]">{value}</span>
         </div>
     );

@@ -16,6 +16,8 @@ class WatchlistController extends Controller
     {
         $listings = $request->user()->watchedListings()
             ->with(['categories', 'user'])
+            ->withCount('bids')
+            ->withMax('bids', 'amount')
             ->latest('watchlists.created_at')
             ->get();
 

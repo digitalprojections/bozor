@@ -10,6 +10,8 @@ class Listing extends Model
 {
     use HasFactory, SoftDeletes;
 
+    public const BID_INCREMENT_PERCENT = 0.05;
+
     protected $fillable = [
         'user_id',
         'category_id',
@@ -54,7 +56,13 @@ class Listing extends Model
         'views' => 'integer',
     ];
 
-    protected $appends = ['main_image_url', 'all_image_urls'];
+    protected $appends = [
+        'main_image_url',
+        'all_image_urls',
+        'highest_bid_amount',
+        'current_price',
+        'display_price',
+    ];
 
     /**
      * Get the URL for the first image
@@ -121,6 +129,64 @@ class Listing extends Model
     public function bids()
     {
         return $this->hasMany(Bid::class)->orderBy('amount', 'desc');
+    }
+
+    public function hasBids(): bool
+    {
+        if ($this->relationLoaded('bids')) {
+            return $this->bids->isNotEmpty();
+        }
+
+        if (array_key_exists('bids_count', $this->attributes)) {
+            return (int) $this->attributes['bids_count'] > 0;
+        }
+
+        return $this->bids()->exists();
+    }
+
+    public function highestBidAmount(): int
+    {
+        if ($this->relationLoaded('bids')) {
+            return (int) ($this->bids->max('amount') ?? 0);
+        }
+
+        if (array_key_exists('bids_max_amount', $this->attributes)) {
+            return (int) ($this->attributes['bids_max_amount'] ?? 0);
+        }
+
+        return (int) ($this->bids()->max('amount') ?? 0);
+    }
+
+    public function currentPrice(): int
+    {
+        if (! $this->is_auction) {
+            return (int) $this->price;
+        }
+
+        return max((int) $this->price, $this->highestBidAmount());
+    }
+
+    public function getHighestBidAmountAttribute(): int
+    {
+        return $this->highestBidAmount();
+    }
+
+    public function getCurrentPriceAttribute(): int
+    {
+        return $this->currentPrice();
+    }
+
+    public function getDisplayPriceAttribute(): int
+    {
+        return $this->currentPrice();
+    }
+
+    public function minimumBidAmount(): int
+    {
+        $currentPrice = $this->currentPrice();
+        $increment = max(1, (int) ceil($currentPrice * self::BID_INCREMENT_PERCENT));
+
+        return $currentPrice + $increment;
     }
 
     public function watchedBy()

@@ -16,6 +16,7 @@ interface Listing {
     title: string;
     description: string;
     price: number;
+    display_price?: number;
     status: string;
     created_at: string;
     main_image_url: string | null;
@@ -96,6 +97,7 @@ export function ListingsGrid({
             >
                 {listings.map((listing) => {
                     const isSold = listing.status === 'sold';
+                    const displayPrice = listing.display_price ?? listing.price;
 
                     if (viewMode === 'grid') {
                         return (
@@ -129,7 +131,7 @@ export function ListingsGrid({
                                         variant="overlay"
                                     />
                                     <span className="absolute bottom-0 left-0 rounded-tr-sm bg-black/75 px-2 py-0.5 text-sm font-bold text-white">
-                                        ¥{listing.price.toLocaleString()}
+                                        ¥{displayPrice.toLocaleString()}
                                     </span>
                                 </div>
 
@@ -211,7 +213,7 @@ export function ListingsGrid({
                                     <div className="mt-auto flex items-end justify-between gap-3">
                                         <div>
                                             <PriceDisplay
-                                                price={listing.price}
+                                                price={displayPrice}
                                                 size="md"
                                                 className="text-[#e62017]"
                                             />

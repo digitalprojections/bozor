@@ -99,8 +99,11 @@ class ListingController extends Controller
      */
     public function show(Listing $listing, ListingService $listingService): Response
     {
-        $listing->load(['user', 'categories'])->loadCount('bids');
+        $listing->load(['user', 'categories'])->loadCount('bids')->loadMax('bids', 'amount');
         $listing->user->append(['average_rating', 'ratings_count']);
+        $highestBid = $listing->bids()->orderBy('amount', 'desc')->first();
+        $listing->setAttribute('minimum_bid', $listing->minimumBidAmount());
+        $listing->setAttribute('is_highest_bidder', auth()->check() && $highestBid?->user_id === auth()->id());
 
         $recommendations = $listingService->getRecommendations(
             auth()->user(),
@@ -124,7 +127,7 @@ class ListingController extends Controller
                     'description' => $listing->description,
                     'offers' => [
                         '@type' => 'Offer',
-                        'price' => $listing->price,
+                        'price' => $listing->display_price,
                         'priceCurrency' => 'JPY',
                         'availability' => $listing->status === 'active' ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
                     ],
@@ -138,9 +141,7 @@ class ListingController extends Controller
      */
     public function edit(Listing $listing): Response
     {
-        if ((int) $listing->user_id !== (int) auth()->id()) {
-            abort(403);
-        }
+        $this->ensureListingCanBeChanged($listing);
 
         $categories = Category::with('children')->whereNull('parent_id')->get();
         $listing->load('categories');
@@ -156,9 +157,7 @@ class ListingController extends Controller
      */
     public function update(Request $request, Listing $listing)
     {
-        if ((int) $listing->user_id !== (int) auth()->id()) {
-            abort(403);
-        }
+        $this->ensureListingCanBeChanged($listing);
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -213,9 +212,7 @@ class ListingController extends Controller
      */
     public function destroy(Listing $listing)
     {
-        if ((int) $listing->user_id !== (int) auth()->id()) {
-            abort(403);
-        }
+        $this->ensureListingCanBeChanged($listing);
 
         // Delete images from storage
         foreach ($listing->images ?? [] as $imagePath) {
@@ -225,5 +222,16 @@ class ListingController extends Controller
         $listing->delete();
 
         return redirect()->route('dashboard')->with('success', 'Listing deleted successfully.');
+    }
+
+    private function ensureListingCanBeChanged(Listing $listing): void
+    {
+        if ((int) $listing->user_id !== (int) auth()->id()) {
+            abort(403);
+        }
+
+        if ($listing->hasBids()) {
+            abort(403, __('listing.bid_locked'));
+        }
     }
 }

@@ -28,6 +28,8 @@ class DashboardController extends Controller
         // Get user's listings with categories
         $listings = $user->listings()
             ->with('categories')
+            ->withCount('bids')
+            ->withMax('bids', 'amount')
             ->latest()
             ->get();
 
@@ -96,7 +98,7 @@ class DashboardController extends Controller
             'id' => $listing->id,
             'transaction_id' => $transaction ? $transaction->id : null,
             'title' => $listing->title,
-            'price' => $listing->current_high_bid,
+            'price' => $listing->display_price,
             'seller' => $listing->user,
             'images' => $listing->images,
             'won_at' => $listing->auction_end_date,

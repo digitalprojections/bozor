@@ -11,7 +11,7 @@ export default function Dashboard({
     isVerified = false,
     stats,
     listings = [],
-    recommendations = []
+    recommendations = [],
 }: {
     isVerified?: boolean;
     stats?: any;
@@ -40,15 +40,22 @@ export default function Dashboard({
 
             {/* Your Listings Section */}
             <div className="flex flex-col gap-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between px-2 gap-3">
+                <div className="flex flex-col justify-between gap-3 px-2 sm:flex-row sm:items-center">
                     <h2 className="text-xl font-bold tracking-tight text-[#0b1a31]">
                         {t('dashboard.listings.title')}
                     </h2>
                     <div className="flex flex-wrap items-center gap-3 sm:gap-4">
-                        <Link href="/dashboard/won-items" className="text-sm font-semibold text-[#2b4b8f] hover:underline flex items-center gap-1">
-                            <ShoppingBag size={14} /> {t('dashboard.won_items.title')}
+                        <Link
+                            href="/dashboard/won-items"
+                            className="flex items-center gap-1 text-sm font-semibold text-[#2b4b8f] hover:underline"
+                        >
+                            <ShoppingBag size={14} />{' '}
+                            {t('dashboard.won_items.title')}
                         </Link>
-                        <Link href="/listings/create" className="text-sm font-semibold text-[#0d9488] hover:underline">
+                        <Link
+                            href="/listings/create"
+                            className="text-sm font-semibold text-[#0d9488] hover:underline"
+                        >
                             + {t('dashboard.listings.create_new')}
                         </Link>
                     </div>
@@ -56,43 +63,73 @@ export default function Dashboard({
 
                 <div className="flex flex-col gap-3">
                     {listings.length > 0 ? (
-                        listings.map((listing) => (
-                            <Card key={listing.id} className="rounded-[4px] border-[#f0f2f5] shadow-sm overflow-hidden hover:border-[#ced9e5] transition-colors">
-                                <CardContent className="p-4 flex flex-col xs:flex-row items-start xs:items-center gap-4">
-                                    <div className="h-16 w-16 rounded bg-[#f0f5fd] flex items-center justify-center shrink-0 border border-[#e1e9f2]">
-                                        {listing.main_image_url ? (
-                                            <img src={listing.main_image_url} alt="" className="h-full w-full object-cover rounded" />
-                                        ) : (
-                                            <Package className="text-[#a3b6cc]" size={24} />
-                                        )}
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <h3 className="font-semibold text-[#1a263b] truncate">{listing.title}</h3>
-                                        <div className="flex flex-wrap items-center gap-2 mt-1 text-sm text-[#5f6c84]">
-                                            <span className="font-bold text-[#0e1d38]">¥{listing.price.toLocaleString()}</span>
-                                            <span className="hidden xs:inline">•</span>
-                                            <span className="capitalize">{t('dashboard.status.' + listing.status)}</span>
+                        listings.map((listing) => {
+                            const displayPrice =
+                                listing.display_price ?? listing.price;
+                            const hasBids = (listing.bids_count ?? 0) > 0;
+
+                            return (
+                                <Card
+                                    key={listing.id}
+                                    className="overflow-hidden rounded-[4px] border-[#f0f2f5] shadow-sm transition-colors hover:border-[#ced9e5]"
+                                >
+                                    <CardContent className="xs:flex-row xs:items-center flex flex-col items-start gap-4 p-4">
+                                        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded border border-[#e1e9f2] bg-[#f0f5fd]">
+                                            {listing.main_image_url ? (
+                                                <img
+                                                    src={listing.main_image_url}
+                                                    alt=""
+                                                    className="h-full w-full rounded object-cover"
+                                                />
+                                            ) : (
+                                                <Package
+                                                    className="text-[#a3b6cc]"
+                                                    size={24}
+                                                />
+                                            )}
                                         </div>
-                                    </div>
-                                    <div className="flex gap-2 w-full xs:w-auto justify-end mt-2 xs:mt-0">
-                                        <Link
-                                            href={`/listings/${listing.id}/edit`}
-                                            className="px-4 py-2 text-sm font-semibold bg-[#f3f9ff] text-[#2b4b8f] rounded-full hover:bg-[#e1f0ff] flex-1 xs:flex-none text-center"
-                                        >
-                                            {t('common.edit')}
-                                        </Link>
-                                        <Link
-                                            href={`/listings/${listing.id}`}
-                                            className="px-4 py-2 text-sm font-semibold bg-[#f0f5fd] text-[#2b4b8f] rounded-full hover:bg-[#e1ecfb] flex-1 xs:flex-none text-center"
-                                        >
-                                            {t('common.view')}
-                                        </Link>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        ))
+                                        <div className="min-w-0 flex-1">
+                                            <h3 className="truncate font-semibold text-[#1a263b]">
+                                                {listing.title}
+                                            </h3>
+                                            <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-[#5f6c84]">
+                                                <span className="font-bold text-[#0e1d38]">
+                                                    ¥
+                                                    {displayPrice.toLocaleString()}
+                                                </span>
+                                                <span className="xs:inline hidden">
+                                                    •
+                                                </span>
+                                                <span className="capitalize">
+                                                    {t(
+                                                        'dashboard.status.' +
+                                                            listing.status,
+                                                    )}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className="xs:w-auto xs:mt-0 mt-2 flex w-full justify-end gap-2">
+                                            {!hasBids && (
+                                                <Link
+                                                    href={`/listings/${listing.id}/edit`}
+                                                    className="xs:flex-none flex-1 rounded-full bg-[#f3f9ff] px-4 py-2 text-center text-sm font-semibold text-[#2b4b8f] hover:bg-[#e1f0ff]"
+                                                >
+                                                    {t('common.edit')}
+                                                </Link>
+                                            )}
+                                            <Link
+                                                href={`/listings/${listing.id}`}
+                                                className="xs:flex-none flex-1 rounded-full bg-[#f0f5fd] px-4 py-2 text-center text-sm font-semibold text-[#2b4b8f] hover:bg-[#e1ecfb]"
+                                            >
+                                                {t('common.view')}
+                                            </Link>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            );
+                        })
                     ) : (
-                        <Card className="rounded-[4px] border-[#f0f2f5] shadow-sm p-12 text-center text-[#5f6c84]">
+                        <Card className="rounded-[4px] border-[#f0f2f5] p-12 text-center text-[#5f6c84] shadow-sm">
                             <p>{t('dashboard.listings.no_results')}</p>
                         </Card>
                     )}

@@ -79,10 +79,10 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     index.form = indexForm
 /**
 * @see \App\Http\Controllers\WatchlistController::toggle
- * @see app/Http/Controllers/WatchlistController.php:30
+ * @see app/Http/Controllers/WatchlistController.php:32
  * @route '/watchlist/{listing}/toggle'
  */
-export const toggle = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+export const toggle = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: toggle.url(args, options),
     method: 'post',
 })
@@ -94,10 +94,10 @@ toggle.definition = {
 
 /**
 * @see \App\Http\Controllers\WatchlistController::toggle
- * @see app/Http/Controllers/WatchlistController.php:30
+ * @see app/Http/Controllers/WatchlistController.php:32
  * @route '/watchlist/{listing}/toggle'
  */
-toggle.url = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+toggle.url = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { listing: args }
     }
@@ -127,30 +127,30 @@ toggle.url = (args: { listing: number | { id: number } } | [listing: number | { 
 
 /**
 * @see \App\Http\Controllers\WatchlistController::toggle
- * @see app/Http/Controllers/WatchlistController.php:30
+ * @see app/Http/Controllers/WatchlistController.php:32
  * @route '/watchlist/{listing}/toggle'
  */
-toggle.post = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+toggle.post = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: toggle.url(args, options),
     method: 'post',
 })
 
     /**
 * @see \App\Http\Controllers\WatchlistController::toggle
- * @see app/Http/Controllers/WatchlistController.php:30
+ * @see app/Http/Controllers/WatchlistController.php:32
  * @route '/watchlist/{listing}/toggle'
  */
-    const toggleForm = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    const toggleForm = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
         action: toggle.url(args, options),
         method: 'post',
     })
 
             /**
 * @see \App\Http\Controllers\WatchlistController::toggle
- * @see app/Http/Controllers/WatchlistController.php:30
+ * @see app/Http/Controllers/WatchlistController.php:32
  * @route '/watchlist/{listing}/toggle'
  */
-        toggleForm.post = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        toggleForm.post = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
             action: toggle.url(args, options),
             method: 'post',
         })

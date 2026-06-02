@@ -6,6 +6,7 @@ interface Listing {
     id: number;
     title: string;
     price: number;
+    display_price?: number;
     status: string;
     images?: string[];
     main_image_url?: string;
@@ -37,6 +38,7 @@ export function RecommendationsSection({
             <div className="flex gap-3 overflow-x-auto pb-1">
                 {recommendations.map((item) => {
                     const imageUrl = item.main_image_url || null;
+                    const displayPrice = item.display_price ?? item.price;
 
                     return (
                         <Link
@@ -60,7 +62,7 @@ export function RecommendationsSection({
                                     </div>
                                 )}
                                 <span className="absolute bottom-0 left-0 rounded-tr-sm bg-black/70 px-1.5 py-0.5 text-[11px] font-bold text-white">
-                                    ¥{item.price.toLocaleString()}
+                                    ¥{displayPrice.toLocaleString()}
                                 </span>
                             </div>
                             <span className="line-clamp-2 text-xs leading-snug text-[#333333] group-hover:text-[#e62017]">

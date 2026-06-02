@@ -66,7 +66,7 @@ Visit **http://127.0.0.1:8000**
 ## Key Features
 
 - **Marketplace** — Browse, search, and filter active listings
-- **Auctions** — Place bids with real-time high-bid tracking
+- **Auctions** — Place bids with dynamic highest-bid pricing that reverts automatically if the top bid is removed
 - **Buy Now** — Instant purchase at a fixed price
 - **Watchlist** — Heart icon on every listing card; manage from `/watchlist`
 - **Email Notifications** — Queued SES emails on price drops, status changes, and new bids for watched listings

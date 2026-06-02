@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../wayfinder'
 /**
 * @see \App\Http\Controllers\ListingController::create
- * @see app/Http/Controllers/ListingController.php:25
+ * @see app/Http/Controllers/ListingController.php:28
  * @route '/listings/create'
  */
 export const create = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ create.definition = {
 
 /**
 * @see \App\Http\Controllers\ListingController::create
- * @see app/Http/Controllers/ListingController.php:25
+ * @see app/Http/Controllers/ListingController.php:28
  * @route '/listings/create'
  */
 create.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ create.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\ListingController::create
- * @see app/Http/Controllers/ListingController.php:25
+ * @see app/Http/Controllers/ListingController.php:28
  * @route '/listings/create'
  */
 create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -34,7 +34,7 @@ create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\ListingController::create
- * @see app/Http/Controllers/ListingController.php:25
+ * @see app/Http/Controllers/ListingController.php:28
  * @route '/listings/create'
  */
 create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -44,7 +44,7 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\ListingController::create
- * @see app/Http/Controllers/ListingController.php:25
+ * @see app/Http/Controllers/ListingController.php:28
  * @route '/listings/create'
  */
     const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -54,7 +54,7 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\ListingController::create
- * @see app/Http/Controllers/ListingController.php:25
+ * @see app/Http/Controllers/ListingController.php:28
  * @route '/listings/create'
  */
         createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -63,7 +63,7 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\ListingController::create
- * @see app/Http/Controllers/ListingController.php:25
+ * @see app/Http/Controllers/ListingController.php:28
  * @route '/listings/create'
  */
         createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -79,7 +79,7 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     create.form = createForm
 /**
 * @see \App\Http\Controllers\ListingController::store
- * @see app/Http/Controllers/ListingController.php:37
+ * @see app/Http/Controllers/ListingController.php:40
  * @route '/listings'
  */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -94,7 +94,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\ListingController::store
- * @see app/Http/Controllers/ListingController.php:37
+ * @see app/Http/Controllers/ListingController.php:40
  * @route '/listings'
  */
 store.url = (options?: RouteQueryOptions) => {
@@ -103,7 +103,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\ListingController::store
- * @see app/Http/Controllers/ListingController.php:37
+ * @see app/Http/Controllers/ListingController.php:40
  * @route '/listings'
  */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -113,7 +113,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\ListingController::store
- * @see app/Http/Controllers/ListingController.php:37
+ * @see app/Http/Controllers/ListingController.php:40
  * @route '/listings'
  */
     const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -123,7 +123,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\ListingController::store
- * @see app/Http/Controllers/ListingController.php:37
+ * @see app/Http/Controllers/ListingController.php:40
  * @route '/listings'
  */
         storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -133,82 +133,11 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     
     store.form = storeForm
 /**
- * @see routes/web.php:50
- * @route '/listings'
- */
-export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: index.url(options),
-    method: 'get',
-})
-
-index.definition = {
-    methods: ["get","head"],
-    url: '/listings',
-} satisfies RouteDefinition<["get","head"]>
-
-/**
- * @see routes/web.php:50
- * @route '/listings'
- */
-index.url = (options?: RouteQueryOptions) => {
-    return index.definition.url + queryParams(options)
-}
-
-/**
- * @see routes/web.php:50
- * @route '/listings'
- */
-index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: index.url(options),
-    method: 'get',
-})
-/**
- * @see routes/web.php:50
- * @route '/listings'
- */
-index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: index.url(options),
-    method: 'head',
-})
-
-    /**
- * @see routes/web.php:50
- * @route '/listings'
- */
-    const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: index.url(options),
-        method: 'get',
-    })
-
-            /**
- * @see routes/web.php:50
- * @route '/listings'
- */
-        indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: index.url(options),
-            method: 'get',
-        })
-            /**
- * @see routes/web.php:50
- * @route '/listings'
- */
-        indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: index.url({
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    index.form = indexForm
-/**
 * @see \App\Http\Controllers\ListingController::edit
- * @see app/Http/Controllers/ListingController.php:111
+ * @see app/Http/Controllers/ListingController.php:142
  * @route '/listings/{listing}/edit'
  */
-export const edit = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+export const edit = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: edit.url(args, options),
     method: 'get',
 })
@@ -220,10 +149,10 @@ edit.definition = {
 
 /**
 * @see \App\Http\Controllers\ListingController::edit
- * @see app/Http/Controllers/ListingController.php:111
+ * @see app/Http/Controllers/ListingController.php:142
  * @route '/listings/{listing}/edit'
  */
-edit.url = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+edit.url = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { listing: args }
     }
@@ -253,48 +182,48 @@ edit.url = (args: { listing: number | { id: number } } | [listing: number | { id
 
 /**
 * @see \App\Http\Controllers\ListingController::edit
- * @see app/Http/Controllers/ListingController.php:111
+ * @see app/Http/Controllers/ListingController.php:142
  * @route '/listings/{listing}/edit'
  */
-edit.get = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+edit.get = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: edit.url(args, options),
     method: 'get',
 })
 /**
 * @see \App\Http\Controllers\ListingController::edit
- * @see app/Http/Controllers/ListingController.php:111
+ * @see app/Http/Controllers/ListingController.php:142
  * @route '/listings/{listing}/edit'
  */
-edit.head = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+edit.head = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: edit.url(args, options),
     method: 'head',
 })
 
     /**
 * @see \App\Http\Controllers\ListingController::edit
- * @see app/Http/Controllers/ListingController.php:111
+ * @see app/Http/Controllers/ListingController.php:142
  * @route '/listings/{listing}/edit'
  */
-    const editForm = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    const editForm = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
         action: edit.url(args, options),
         method: 'get',
     })
 
             /**
 * @see \App\Http\Controllers\ListingController::edit
- * @see app/Http/Controllers/ListingController.php:111
+ * @see app/Http/Controllers/ListingController.php:142
  * @route '/listings/{listing}/edit'
  */
-        editForm.get = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        editForm.get = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: edit.url(args, options),
             method: 'get',
         })
             /**
 * @see \App\Http\Controllers\ListingController::edit
- * @see app/Http/Controllers/ListingController.php:111
+ * @see app/Http/Controllers/ListingController.php:142
  * @route '/listings/{listing}/edit'
  */
-        editForm.head = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        editForm.head = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: edit.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
@@ -307,10 +236,10 @@ edit.head = (args: { listing: number | { id: number } } | [listing: number | { i
     edit.form = editForm
 /**
 * @see \App\Http\Controllers\ListingController::update
- * @see app/Http/Controllers/ListingController.php:129
+ * @see app/Http/Controllers/ListingController.php:158
  * @route '/listings/{listing}'
  */
-export const update = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
+export const update = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
     url: update.url(args, options),
     method: 'patch',
 })
@@ -322,10 +251,10 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\ListingController::update
- * @see app/Http/Controllers/ListingController.php:129
+ * @see app/Http/Controllers/ListingController.php:158
  * @route '/listings/{listing}'
  */
-update.url = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+update.url = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { listing: args }
     }
@@ -355,20 +284,20 @@ update.url = (args: { listing: number | { id: number } } | [listing: number | { 
 
 /**
 * @see \App\Http\Controllers\ListingController::update
- * @see app/Http/Controllers/ListingController.php:129
+ * @see app/Http/Controllers/ListingController.php:158
  * @route '/listings/{listing}'
  */
-update.patch = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
+update.patch = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
     url: update.url(args, options),
     method: 'patch',
 })
 
     /**
 * @see \App\Http\Controllers\ListingController::update
- * @see app/Http/Controllers/ListingController.php:129
+ * @see app/Http/Controllers/ListingController.php:158
  * @route '/listings/{listing}'
  */
-    const updateForm = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    const updateForm = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
         action: update.url(args, {
                     [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                         _method: 'PATCH',
@@ -380,10 +309,10 @@ update.patch = (args: { listing: number | { id: number } } | [listing: number | 
 
             /**
 * @see \App\Http\Controllers\ListingController::update
- * @see app/Http/Controllers/ListingController.php:129
+ * @see app/Http/Controllers/ListingController.php:158
  * @route '/listings/{listing}'
  */
-        updateForm.patch = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        updateForm.patch = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
             action: update.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'PATCH',
@@ -396,10 +325,10 @@ update.patch = (args: { listing: number | { id: number } } | [listing: number | 
     update.form = updateForm
 /**
 * @see \App\Http\Controllers\ListingController::destroy
- * @see app/Http/Controllers/ListingController.php:186
+ * @see app/Http/Controllers/ListingController.php:213
  * @route '/listings/{listing}'
  */
-export const destroy = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+export const destroy = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
     method: 'delete',
 })
@@ -411,10 +340,10 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\ListingController::destroy
- * @see app/Http/Controllers/ListingController.php:186
+ * @see app/Http/Controllers/ListingController.php:213
  * @route '/listings/{listing}'
  */
-destroy.url = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+destroy.url = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { listing: args }
     }
@@ -444,20 +373,20 @@ destroy.url = (args: { listing: number | { id: number } } | [listing: number | {
 
 /**
 * @see \App\Http\Controllers\ListingController::destroy
- * @see app/Http/Controllers/ListingController.php:186
+ * @see app/Http/Controllers/ListingController.php:213
  * @route '/listings/{listing}'
  */
-destroy.delete = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+destroy.delete = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
     method: 'delete',
 })
 
     /**
 * @see \App\Http\Controllers\ListingController::destroy
- * @see app/Http/Controllers/ListingController.php:186
+ * @see app/Http/Controllers/ListingController.php:213
  * @route '/listings/{listing}'
  */
-    const destroyForm = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    const destroyForm = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
         action: destroy.url(args, {
                     [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                         _method: 'DELETE',
@@ -469,10 +398,10 @@ destroy.delete = (args: { listing: number | { id: number } } | [listing: number 
 
             /**
 * @see \App\Http\Controllers\ListingController::destroy
- * @see app/Http/Controllers/ListingController.php:186
+ * @see app/Http/Controllers/ListingController.php:213
  * @route '/listings/{listing}'
  */
-        destroyForm.delete = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        destroyForm.delete = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
             action: destroy.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'DELETE',
@@ -485,10 +414,10 @@ destroy.delete = (args: { listing: number | { id: number } } | [listing: number 
     destroy.form = destroyForm
 /**
 * @see \App\Http\Controllers\BidController::bid
- * @see app/Http/Controllers/BidController.php:14
+ * @see app/Http/Controllers/BidController.php:15
  * @route '/listings/{listing}/bid'
  */
-export const bid = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+export const bid = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: bid.url(args, options),
     method: 'post',
 })
@@ -500,10 +429,10 @@ bid.definition = {
 
 /**
 * @see \App\Http\Controllers\BidController::bid
- * @see app/Http/Controllers/BidController.php:14
+ * @see app/Http/Controllers/BidController.php:15
  * @route '/listings/{listing}/bid'
  */
-bid.url = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+bid.url = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { listing: args }
     }
@@ -533,30 +462,30 @@ bid.url = (args: { listing: number | { id: number } } | [listing: number | { id:
 
 /**
 * @see \App\Http\Controllers\BidController::bid
- * @see app/Http/Controllers/BidController.php:14
+ * @see app/Http/Controllers/BidController.php:15
  * @route '/listings/{listing}/bid'
  */
-bid.post = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+bid.post = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: bid.url(args, options),
     method: 'post',
 })
 
     /**
 * @see \App\Http\Controllers\BidController::bid
- * @see app/Http/Controllers/BidController.php:14
+ * @see app/Http/Controllers/BidController.php:15
  * @route '/listings/{listing}/bid'
  */
-    const bidForm = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    const bidForm = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
         action: bid.url(args, options),
         method: 'post',
     })
 
             /**
 * @see \App\Http\Controllers\BidController::bid
- * @see app/Http/Controllers/BidController.php:14
+ * @see app/Http/Controllers/BidController.php:15
  * @route '/listings/{listing}/bid'
  */
-        bidForm.post = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        bidForm.post = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
             action: bid.url(args, options),
             method: 'post',
         })
@@ -564,112 +493,10 @@ bid.post = (args: { listing: number | { id: number } } | [listing: number | { id
     bid.form = bidForm
 /**
 * @see \App\Http\Controllers\TransactionController::buyNow
- * @see app/Http/Controllers/TransactionController.php:14
+ * @see app/Http/Controllers/TransactionController.php:15
  * @route '/listings/{listing}/buy-now'
  */
-export const buyNow = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: buyNow.url(args, options),
-    method: 'get',
-})
-
-buyNow.definition = {
-    methods: ["get","head"],
-    url: '/listings/{listing}/buy-now',
-} satisfies RouteDefinition<["get","head"]>
-
-/**
-* @see \App\Http\Controllers\TransactionController::buyNow
- * @see app/Http/Controllers/TransactionController.php:14
- * @route '/listings/{listing}/buy-now'
- */
-buyNow.url = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
-    if (typeof args === 'string' || typeof args === 'number') {
-        args = { listing: args }
-    }
-
-            if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
-            args = { listing: args.id }
-        }
-    
-    if (Array.isArray(args)) {
-        args = {
-                    listing: args[0],
-                }
-    }
-
-    args = applyUrlDefaults(args)
-
-    const parsedArgs = {
-                        listing: typeof args.listing === 'object'
-                ? args.listing.id
-                : args.listing,
-                }
-
-    return buyNow.definition.url
-            .replace('{listing}', parsedArgs.listing.toString())
-            .replace(/\/+$/, '') + queryParams(options)
-}
-
-/**
-* @see \App\Http\Controllers\TransactionController::buyNow
- * @see app/Http/Controllers/TransactionController.php:14
- * @route '/listings/{listing}/buy-now'
- */
-buyNow.get = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: buyNow.url(args, options),
-    method: 'get',
-})
-/**
-* @see \App\Http\Controllers\TransactionController::buyNow
- * @see app/Http/Controllers/TransactionController.php:14
- * @route '/listings/{listing}/buy-now'
- */
-buyNow.head = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: buyNow.url(args, options),
-    method: 'head',
-})
-
-    /**
-* @see \App\Http\Controllers\TransactionController::buyNow
- * @see app/Http/Controllers/TransactionController.php:14
- * @route '/listings/{listing}/buy-now'
- */
-    const buyNowForm = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-        action: buyNow.url(args, options),
-        method: 'get',
-    })
-
-            /**
-* @see \App\Http\Controllers\TransactionController::buyNow
- * @see app/Http/Controllers/TransactionController.php:14
- * @route '/listings/{listing}/buy-now'
- */
-        buyNowForm.get = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: buyNow.url(args, options),
-            method: 'get',
-        })
-            /**
-* @see \App\Http\Controllers\TransactionController::buyNow
- * @see app/Http/Controllers/TransactionController.php:14
- * @route '/listings/{listing}/buy-now'
- */
-        buyNowForm.head = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-            action: buyNow.url(args, {
-                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-                            _method: 'HEAD',
-                            ...(options?.query ?? options?.mergeQuery ?? {}),
-                        }
-                    }),
-            method: 'get',
-        })
-    
-    buyNow.form = buyNowForm
-/**
-* @see \App\Http\Controllers\TransactionController::buyNow
- * @see app/Http/Controllers/TransactionController.php:14
- * @route '/listings/{listing}/buy-now'
- */
-export const buyNow = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+export const buyNow = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: buyNow.url(args, options),
     method: 'post',
 })
@@ -681,10 +508,10 @@ buyNow.definition = {
 
 /**
 * @see \App\Http\Controllers\TransactionController::buyNow
- * @see app/Http/Controllers/TransactionController.php:14
+ * @see app/Http/Controllers/TransactionController.php:15
  * @route '/listings/{listing}/buy-now'
  */
-buyNow.url = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+buyNow.url = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { listing: args }
     }
@@ -714,41 +541,112 @@ buyNow.url = (args: { listing: number | { id: number } } | [listing: number | { 
 
 /**
 * @see \App\Http\Controllers\TransactionController::buyNow
- * @see app/Http/Controllers/TransactionController.php:14
+ * @see app/Http/Controllers/TransactionController.php:15
  * @route '/listings/{listing}/buy-now'
  */
-buyNow.post = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+buyNow.post = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: buyNow.url(args, options),
     method: 'post',
 })
 
     /**
 * @see \App\Http\Controllers\TransactionController::buyNow
- * @see app/Http/Controllers/TransactionController.php:14
+ * @see app/Http/Controllers/TransactionController.php:15
  * @route '/listings/{listing}/buy-now'
  */
-    const buyNowForm = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    const buyNowForm = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
         action: buyNow.url(args, options),
         method: 'post',
     })
 
             /**
 * @see \App\Http\Controllers\TransactionController::buyNow
- * @see app/Http/Controllers/TransactionController.php:14
+ * @see app/Http/Controllers/TransactionController.php:15
  * @route '/listings/{listing}/buy-now'
  */
-        buyNowForm.post = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        buyNowForm.post = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
             action: buyNow.url(args, options),
             method: 'post',
         })
     
     buyNow.form = buyNowForm
 /**
+ * @see routes/web.php:74
+ * @route '/listings'
+ */
+export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: index.url(options),
+    method: 'get',
+})
+
+index.definition = {
+    methods: ["get","head"],
+    url: '/listings',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+ * @see routes/web.php:74
+ * @route '/listings'
+ */
+index.url = (options?: RouteQueryOptions) => {
+    return index.definition.url + queryParams(options)
+}
+
+/**
+ * @see routes/web.php:74
+ * @route '/listings'
+ */
+index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: index.url(options),
+    method: 'get',
+})
+/**
+ * @see routes/web.php:74
+ * @route '/listings'
+ */
+index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: index.url(options),
+    method: 'head',
+})
+
+    /**
+ * @see routes/web.php:74
+ * @route '/listings'
+ */
+    const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: index.url(options),
+        method: 'get',
+    })
+
+            /**
+ * @see routes/web.php:74
+ * @route '/listings'
+ */
+        indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: index.url(options),
+            method: 'get',
+        })
+            /**
+ * @see routes/web.php:74
+ * @route '/listings'
+ */
+        indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: index.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    index.form = indexForm
+/**
 * @see \App\Http\Controllers\ListingController::show
- * @see app/Http/Controllers/ListingController.php:90
+ * @see app/Http/Controllers/ListingController.php:100
  * @route '/listings/{listing}'
  */
-export const show = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+export const show = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: show.url(args, options),
     method: 'get',
 })
@@ -760,10 +658,10 @@ show.definition = {
 
 /**
 * @see \App\Http\Controllers\ListingController::show
- * @see app/Http/Controllers/ListingController.php:90
+ * @see app/Http/Controllers/ListingController.php:100
  * @route '/listings/{listing}'
  */
-show.url = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+show.url = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { listing: args }
     }
@@ -793,48 +691,48 @@ show.url = (args: { listing: number | { id: number } } | [listing: number | { id
 
 /**
 * @see \App\Http\Controllers\ListingController::show
- * @see app/Http/Controllers/ListingController.php:90
+ * @see app/Http/Controllers/ListingController.php:100
  * @route '/listings/{listing}'
  */
-show.get = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+show.get = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: show.url(args, options),
     method: 'get',
 })
 /**
 * @see \App\Http\Controllers\ListingController::show
- * @see app/Http/Controllers/ListingController.php:90
+ * @see app/Http/Controllers/ListingController.php:100
  * @route '/listings/{listing}'
  */
-show.head = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+show.head = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: show.url(args, options),
     method: 'head',
 })
 
     /**
 * @see \App\Http\Controllers\ListingController::show
- * @see app/Http/Controllers/ListingController.php:90
+ * @see app/Http/Controllers/ListingController.php:100
  * @route '/listings/{listing}'
  */
-    const showForm = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    const showForm = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
         action: show.url(args, options),
         method: 'get',
     })
 
             /**
 * @see \App\Http\Controllers\ListingController::show
- * @see app/Http/Controllers/ListingController.php:90
+ * @see app/Http/Controllers/ListingController.php:100
  * @route '/listings/{listing}'
  */
-        showForm.get = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        showForm.get = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: show.url(args, options),
             method: 'get',
         })
             /**
 * @see \App\Http\Controllers\ListingController::show
- * @see app/Http/Controllers/ListingController.php:90
+ * @see app/Http/Controllers/ListingController.php:100
  * @route '/listings/{listing}'
  */
-        showForm.head = (args: { listing: number | { id: number } } | [listing: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        showForm.head = (args: { listing: string | number | { id: string | number } } | [listing: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: show.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
@@ -848,12 +746,12 @@ show.head = (args: { listing: number | { id: number } } | [listing: number | { i
 const listings = {
     create: Object.assign(create, create),
 store: Object.assign(store, store),
-index: Object.assign(index, index),
 edit: Object.assign(edit, edit),
 update: Object.assign(update, update),
 destroy: Object.assign(destroy, destroy),
 bid: Object.assign(bid, bid),
 buyNow: Object.assign(buyNow, buyNow),
+index: Object.assign(index, index),
 show: Object.assign(show, show),
 }
 

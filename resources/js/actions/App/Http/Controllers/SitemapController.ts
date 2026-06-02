@@ -1,8 +1,8 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
 /**
-* @see \App\Http\Controllers\MarketplaceController::index
- * @see app/Http/Controllers/MarketplaceController.php:17
- * @route '/marketplace'
+* @see \App\Http\Controllers\SitemapController::index
+ * @see app/Http/Controllers/SitemapController.php:14
+ * @route '/sitemap.xml'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: index.url(options),
@@ -11,31 +11,31 @@ export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 index.definition = {
     methods: ["get","head"],
-    url: '/marketplace',
+    url: '/sitemap.xml',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
-* @see \App\Http\Controllers\MarketplaceController::index
- * @see app/Http/Controllers/MarketplaceController.php:17
- * @route '/marketplace'
+* @see \App\Http\Controllers\SitemapController::index
+ * @see app/Http/Controllers/SitemapController.php:14
+ * @route '/sitemap.xml'
  */
 index.url = (options?: RouteQueryOptions) => {
     return index.definition.url + queryParams(options)
 }
 
 /**
-* @see \App\Http\Controllers\MarketplaceController::index
- * @see app/Http/Controllers/MarketplaceController.php:17
- * @route '/marketplace'
+* @see \App\Http\Controllers\SitemapController::index
+ * @see app/Http/Controllers/SitemapController.php:14
+ * @route '/sitemap.xml'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: index.url(options),
     method: 'get',
 })
 /**
-* @see \App\Http\Controllers\MarketplaceController::index
- * @see app/Http/Controllers/MarketplaceController.php:17
- * @route '/marketplace'
+* @see \App\Http\Controllers\SitemapController::index
+ * @see app/Http/Controllers/SitemapController.php:14
+ * @route '/sitemap.xml'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: index.url(options),
@@ -43,9 +43,9 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
     /**
-* @see \App\Http\Controllers\MarketplaceController::index
- * @see app/Http/Controllers/MarketplaceController.php:17
- * @route '/marketplace'
+* @see \App\Http\Controllers\SitemapController::index
+ * @see app/Http/Controllers/SitemapController.php:14
+ * @route '/sitemap.xml'
  */
     const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
         action: index.url(options),
@@ -53,18 +53,18 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     })
 
             /**
-* @see \App\Http\Controllers\MarketplaceController::index
- * @see app/Http/Controllers/MarketplaceController.php:17
- * @route '/marketplace'
+* @see \App\Http\Controllers\SitemapController::index
+ * @see app/Http/Controllers/SitemapController.php:14
+ * @route '/sitemap.xml'
  */
         indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: index.url(options),
             method: 'get',
         })
             /**
-* @see \App\Http\Controllers\MarketplaceController::index
- * @see app/Http/Controllers/MarketplaceController.php:17
- * @route '/marketplace'
+* @see \App\Http\Controllers\SitemapController::index
+ * @see app/Http/Controllers/SitemapController.php:14
+ * @route '/sitemap.xml'
  */
         indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: index.url({
@@ -77,6 +77,6 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
     
     index.form = indexForm
-const MarketplaceController = { index }
+const SitemapController = { index }
 
-export default MarketplaceController
+export default SitemapController

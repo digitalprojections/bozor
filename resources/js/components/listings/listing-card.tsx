@@ -10,6 +10,7 @@ interface Listing {
     id: number;
     title: string;
     price: number;
+    display_price?: number;
     images: string[];
     main_image_url?: string | null;
     status: string;
@@ -24,41 +25,45 @@ export function ListingCard({ listing, className }: ListingCardProps) {
     const isSold = listing.status === 'sold';
     const [imageFailed, setImageFailed] = useState(false);
     const imageUrl = listing.main_image_url ?? null;
+    const displayPrice = listing.display_price ?? listing.price;
 
     return (
-        <Link href={`/listings/${listing.id}`} className={cn("block group", className)}>
-            <Card className="rounded-[20px] border-[#edf2f9] shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden bg-white">
-                <div className="aspect-[4/3] bg-[#f0f5fd] relative overflow-hidden">
+        <Link
+            href={`/listings/${listing.id}`}
+            className={cn('group block', className)}
+        >
+            <Card className="overflow-hidden rounded-[20px] border-[#edf2f9] bg-white shadow-sm transition-all duration-300 hover:shadow-md">
+                <div className="relative aspect-[4/3] overflow-hidden bg-[#f0f5fd]">
                     {imageUrl && !imageFailed ? (
                         <img
                             src={imageUrl}
                             alt={listing.title}
                             className={cn(
-                                "w-full h-full object-cover group-hover:scale-105 transition-transform duration-500",
-                                isSold && "grayscale-[0.2] opacity-90"
+                                'h-full w-full object-cover transition-transform duration-500 group-hover:scale-105',
+                                isSold && 'opacity-90 grayscale-[0.2]',
                             )}
                             onError={() => setImageFailed(true)}
                         />
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center opacity-20">
+                        <div className="flex h-full w-full items-center justify-center opacity-20">
                             <Package size={40} />
                         </div>
                     )}
-                    
+
                     {isSold && (
-                        <div className="absolute inset-0 bg-black/5 flex items-center justify-center">
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/5">
                             <SoldBadge variant="overlay" />
                         </div>
                     )}
 
                     <div className="absolute bottom-3 left-3">
-                        <Badge className="bg-white/95 text-[#0b1b32] hover:bg-white border-none font-bold shadow-sm px-3 py-1 text-sm">
-                            ¥{listing.price.toLocaleString()}
+                        <Badge className="border-none bg-white/95 px-3 py-1 text-sm font-bold text-[#0b1b32] shadow-sm hover:bg-white">
+                            ¥{displayPrice.toLocaleString()}
                         </Badge>
                     </div>
                 </div>
                 <CardContent className="p-4">
-                    <h3 className="font-bold text-[#0b1b32] truncate leading-tight group-hover:text-[#0d9488] transition-colors">
+                    <h3 className="truncate leading-tight font-bold text-[#0b1b32] transition-colors group-hover:text-[#0d9488]">
                         {listing.title}
                     </h3>
                 </CardContent>
