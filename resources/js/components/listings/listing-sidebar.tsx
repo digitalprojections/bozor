@@ -208,7 +208,9 @@ export function ListingSidebar({ listing }: ListingSidebarProps) {
                         </div>
                         <div className="flex justify-between pb-2 sm:pb-3 border-b border-dashed border-[#e4ecf5]">
                             <span className="text-[#5f6c84]">{t('listing.show.location')}</span>
-                            <span className="font-medium text-[#1a263b]">Tokyo, JP</span>
+                            <span className="font-medium text-[#1a263b] text-right">
+                                {listing.location || t('common.not_specified')}
+                            </span>
                         </div>
                         <div className="flex justify-between">
                             <span className="text-[#5f6c84]">{t('listing.sidebar.payment')}</span>
