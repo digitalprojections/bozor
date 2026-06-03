@@ -110,7 +110,9 @@ class DashboardController extends Controller
             ->filter(function ($listing) use ($user) {
                 $highestBid = $listing->bids->first();
 
-                return $highestBid && $highestBid->user_id === $user->id;
+                return $highestBid
+                    && $highestBid->user_id === $user->id
+                    && $listing->reserveMet();
             })
             ->map(function ($listing) {
                 $transaction = $listing->transactions->first();

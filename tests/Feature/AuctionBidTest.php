@@ -46,6 +46,62 @@ class AuctionBidTest extends TestCase
         $this->assertSame(1050, $listing->fresh()->display_price);
     }
 
+    public function test_auction_listing_can_be_created_without_secret_reserve_price(): void
+    {
+        $seller = User::factory()->create();
+        $category = Category::create([
+            'name' => 'Electronics',
+            'slug' => 'electronics-'.uniqid(),
+        ]);
+
+        $this->actingAs($seller)
+            ->from(route('listings.create'))
+            ->post(route('listings.store'), [
+                'title' => 'Auction without reserve',
+                'description' => 'A useful item with no reserve set.',
+                'price' => 1000,
+                'categories' => [$category->id],
+                'location' => 'Tokyo',
+                'status' => 'active',
+                'condition' => 'used_good',
+                'buy_now_price' => null,
+                'is_auction' => true,
+                'auction_end_date' => now()->addDay()->toDateTimeString(),
+            ])
+            ->assertRedirect(route('marketplace'));
+
+        $this->assertDatabaseHas('listings', [
+            'title' => 'Auction without reserve',
+            'reserve_price' => null,
+            'is_auction' => true,
+        ]);
+    }
+
+    public function test_secret_reserve_price_is_hidden_publicly_and_visible_to_owner_edit_form(): void
+    {
+        $seller = User::factory()->create();
+        $buyer = User::factory()->create();
+        $listing = $this->createAuction($seller, [
+            'price' => 1000,
+            'reserve_price' => 2500,
+        ]);
+
+        $this->actingAs($buyer)
+            ->get(route('listings.show', $listing))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->missing('listing.reserve_price')
+                ->where('listing.reserve_met', false)
+            );
+
+        $this->actingAs($seller)
+            ->get(route('listings.edit', $listing))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('listing.reserve_price', 2500)
+            );
+    }
+
     public function test_listing_show_marks_current_user_as_highest_bidder(): void
     {
         $buyer = User::factory()->create();
@@ -67,6 +123,64 @@ class AuctionBidTest extends TestCase
             ->assertInertia(fn (Assert $page) => $page
                 ->where('listing.is_highest_bidder', true)
                 ->where('listing.minimum_bid', 1575)
+            );
+    }
+
+    public function test_ended_auction_below_reserve_is_not_won_by_highest_bidder(): void
+    {
+        $buyer = User::factory()->create();
+        $seller = User::factory()->create();
+        $listing = $this->createAuction($seller, [
+            'price' => 1000,
+            'reserve_price' => 2000,
+            'auction_end_date' => now()->subMinute(),
+        ]);
+
+        Bid::create([
+            'listing_id' => $listing->id,
+            'user_id' => $buyer->id,
+            'amount' => 1500,
+        ]);
+
+        $this->actingAs($buyer)
+            ->get(route('dashboard.won-items'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('items', [])
+            );
+
+        $this->actingAs($buyer)
+            ->get(route('listings.show', $listing))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->missing('listing.reserve_price')
+                ->where('listing.reserve_met', false)
+                ->where('listing.auction_ended', true)
+            );
+    }
+
+    public function test_ended_auction_at_reserve_is_won_by_highest_bidder(): void
+    {
+        $buyer = User::factory()->create();
+        $seller = User::factory()->create();
+        $listing = $this->createAuction($seller, [
+            'price' => 1000,
+            'reserve_price' => 1500,
+            'auction_end_date' => now()->subMinute(),
+        ]);
+
+        Bid::create([
+            'listing_id' => $listing->id,
+            'user_id' => $buyer->id,
+            'amount' => 1500,
+        ]);
+
+        $this->actingAs($buyer)
+            ->get(route('dashboard.won-items'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->has('items', 1)
+                ->where('items.0.id', $listing->id)
             );
     }
 
@@ -184,6 +298,7 @@ class AuctionBidTest extends TestCase
                 'condition' => $listing->condition,
                 'buy_now_price' => null,
                 'is_auction' => true,
+                'reserve_price' => 1000,
                 'auction_end_date' => now()->addDay()->toDateTimeString(),
             ])
             ->assertRedirect(route('listings.show', $listing));
@@ -220,6 +335,7 @@ class AuctionBidTest extends TestCase
             'name' => 'Electronics',
             'slug' => 'electronics-'.uniqid(),
         ]);
+        $price = $attributes['price'] ?? 1000;
 
         return Listing::factory()->create(array_merge([
             'user_id' => $seller->id,
@@ -228,6 +344,7 @@ class AuctionBidTest extends TestCase
             'status' => 'active',
             'is_auction' => true,
             'auction_end_date' => now()->addHour(),
+            'reserve_price' => $price,
             'current_high_bid' => 0,
         ], $attributes));
     }

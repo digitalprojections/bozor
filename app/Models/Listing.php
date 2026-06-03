@@ -18,6 +18,7 @@ class Listing extends Model
         'title',
         'description',
         'price',
+        'reserve_price',
         'status',
         'listing_type',
         'ad_placement',
@@ -42,6 +43,7 @@ class Listing extends Model
     protected $casts = [
         'images' => 'array',
         'price' => 'integer',
+        'reserve_price' => 'integer',
         'buy_now_price' => 'integer',
         'is_auction' => 'boolean',
         'auction_end_date' => 'datetime',
@@ -62,6 +64,12 @@ class Listing extends Model
         'highest_bid_amount',
         'current_price',
         'display_price',
+        'reserve_met',
+        'auction_ended',
+    ];
+
+    protected $hidden = [
+        'reserve_price',
     ];
 
     /**
@@ -187,6 +195,46 @@ class Listing extends Model
         $increment = max(1, (int) ceil($currentPrice * self::BID_INCREMENT_PERCENT));
 
         return $currentPrice + $increment;
+    }
+
+    public function hasReservePrice(): bool
+    {
+        return $this->is_auction && $this->reserve_price !== null;
+    }
+
+    public function reserveMet(): bool
+    {
+        if (! $this->hasReservePrice()) {
+            return true;
+        }
+
+        return $this->highestBidAmount() >= (int) $this->reserve_price;
+    }
+
+    public function getReserveMetAttribute(): bool
+    {
+        return $this->reserveMet();
+    }
+
+    public function auctionCanSell(): bool
+    {
+        return $this->is_auction
+            && $this->auction_end_date !== null
+            && $this->auctionEnded()
+            && $this->highestBidAmount() > 0
+            && $this->reserveMet();
+    }
+
+    public function auctionEnded(): bool
+    {
+        return $this->is_auction
+            && $this->auction_end_date !== null
+            && $this->auction_end_date->lte(now());
+    }
+
+    public function getAuctionEndedAttribute(): bool
+    {
+        return $this->auctionEnded();
     }
 
     public function watchedBy()

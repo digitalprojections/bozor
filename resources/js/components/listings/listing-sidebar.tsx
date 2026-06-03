@@ -31,6 +31,8 @@ interface ListingSidebarProps {
         buy_now_price: number | null;
         is_auction: boolean;
         auction_end_date: string | null;
+        auction_ended?: boolean;
+        reserve_met?: boolean;
         current_high_bid: number;
         minimum_bid?: number;
         is_highest_bidder?: boolean;
@@ -56,6 +58,9 @@ export function ListingSidebar({ listing, shareUrl }: ListingSidebarProps) {
         auth?.user && Number(auth.user.id) === Number(listing.user.id);
     const canTransact = auth?.user && !auth.user.is_guest && !isOwner;
     const canBuyNow = listing.status === 'active' && purchasePrice !== null;
+    const auctionEnded = listing.is_auction && Boolean(listing.auction_ended);
+    const reserveNotMet =
+        auctionEnded && listing.reserve_met === false && listing.status === 'active';
     const currentPrice =
         listing.display_price ??
         listing.current_price ??
@@ -166,7 +171,10 @@ export function ListingSidebar({ listing, shareUrl }: ListingSidebarProps) {
                                 </strong>
                             </span>
                             <span className="text-right">
-                                {t('listing.sidebar.time_remaining')}:{' '}
+                                {auctionEnded
+                                    ? t('listing.sidebar.ended')
+                                    : t('listing.sidebar.time_remaining')}
+                                :{' '}
                                 <strong className="block text-[#0b1b32] sm:inline">
                                     {listing.auction_end_date
                                         ? new Date(
@@ -193,11 +201,17 @@ export function ListingSidebar({ listing, shareUrl }: ListingSidebarProps) {
                                 {t('listing.sidebar.highest_bidder')}
                             </div>
                         )}
+                        {reserveNotMet && (
+                            <div className="mt-3 rounded-[14px] border border-amber-200 bg-amber-50 p-3 text-sm font-medium text-amber-800">
+                                {t('listing.sidebar.reserve_not_met')}
+                            </div>
+                        )}
                     </div>
                     {canTransact ? (
                         <div className="flex flex-col gap-4">
                             {listing.is_auction &&
-                                listing.status === 'active' && (
+                                listing.status === 'active' &&
+                                !auctionEnded && (
                                     <form
                                         onSubmit={submitBid}
                                         className="space-y-3"

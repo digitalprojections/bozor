@@ -79,7 +79,7 @@ wonItems.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     wonItems.form = wonItemsForm
 /**
 * @see \App\Http\Controllers\DashboardController::soldItems
- * @see app/Http/Controllers/DashboardController.php:142
+ * @see app/Http/Controllers/DashboardController.php:144
  * @route '/dashboard/sold-items'
  */
 export const soldItems = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -94,7 +94,7 @@ soldItems.definition = {
 
 /**
 * @see \App\Http\Controllers\DashboardController::soldItems
- * @see app/Http/Controllers/DashboardController.php:142
+ * @see app/Http/Controllers/DashboardController.php:144
  * @route '/dashboard/sold-items'
  */
 soldItems.url = (options?: RouteQueryOptions) => {
@@ -103,7 +103,7 @@ soldItems.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\DashboardController::soldItems
- * @see app/Http/Controllers/DashboardController.php:142
+ * @see app/Http/Controllers/DashboardController.php:144
  * @route '/dashboard/sold-items'
  */
 soldItems.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -112,7 +112,7 @@ soldItems.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\DashboardController::soldItems
- * @see app/Http/Controllers/DashboardController.php:142
+ * @see app/Http/Controllers/DashboardController.php:144
  * @route '/dashboard/sold-items'
  */
 soldItems.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -122,7 +122,7 @@ soldItems.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\DashboardController::soldItems
- * @see app/Http/Controllers/DashboardController.php:142
+ * @see app/Http/Controllers/DashboardController.php:144
  * @route '/dashboard/sold-items'
  */
     const soldItemsForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -132,7 +132,7 @@ soldItems.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\DashboardController::soldItems
- * @see app/Http/Controllers/DashboardController.php:142
+ * @see app/Http/Controllers/DashboardController.php:144
  * @route '/dashboard/sold-items'
  */
         soldItemsForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -141,7 +141,7 @@ soldItems.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\DashboardController::soldItems
- * @see app/Http/Controllers/DashboardController.php:142
+ * @see app/Http/Controllers/DashboardController.php:144
  * @route '/dashboard/sold-items'
  */
         soldItemsForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

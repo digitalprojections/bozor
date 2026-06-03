@@ -49,6 +49,7 @@ export default function CreateListing({
         status: 'draft',
         condition: '' as ItemCondition | '',
         is_auction: false,
+        reserve_price: '',
         buy_now_price: '',
         auction_end_date: '',
         terms_accepted: false,
@@ -296,6 +297,39 @@ export default function CreateListing({
 
                                 {data.is_auction && (
                                     <div className="grid gap-4 md:grid-cols-2">
+                                        <div>
+                                            <Label htmlFor="reserve_price">
+                                                {t(
+                                                    'listing.create.reserve_price',
+                                                )}{' '}
+                                                (¥)
+                                            </Label>
+                                            <Input
+                                                id="reserve_price"
+                                                type="number"
+                                                step="1"
+                                                min="1"
+                                                value={data.reserve_price}
+                                                onChange={(e) =>
+                                                    setData(
+                                                        'reserve_price',
+                                                        e.target.value,
+                                                    )
+                                                }
+                                                placeholder="0"
+                                                className="mt-1"
+                                            />
+                                            <p className="mt-1 text-xs text-muted-foreground">
+                                                {t(
+                                                    'listing.create.reserve_price_help',
+                                                )}
+                                            </p>
+                                            {errors.reserve_price && (
+                                                <p className="mt-1 text-sm text-red-500">
+                                                    {errors.reserve_price}
+                                                </p>
+                                            )}
+                                        </div>
                                         <div>
                                                 <Label htmlFor="auction_end_date">{t('listing.create.auction_end_date')}</Label>
                                                 <Input

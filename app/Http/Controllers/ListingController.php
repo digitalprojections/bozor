@@ -43,6 +43,12 @@ class ListingController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'price' => 'required|integer|min:0',
+            'reserve_price' => [
+                'nullable',
+                'integer',
+                'min:1',
+                'gte:price',
+            ],
             'categories' => 'required|array|min:1|max:5',
             'categories.*' => 'exists:categories,id',
             'location' => 'nullable|string|max:255',
@@ -52,8 +58,19 @@ class ListingController extends Controller
             'condition' => 'required|in:new,like_new,used_good,used_fair,for_parts',
             'buy_now_price' => 'nullable|integer|min:1',
             'is_auction' => 'required|boolean',
-            'auction_end_date' => 'required_if:is_auction,1|nullable|date|after:now',
+            'auction_end_date' => 'nullable|date|after:now',
         ]);
+
+        $isAuction = $request->boolean('is_auction');
+        if (
+            $isAuction
+            && isset($validated['buy_now_price'], $validated['reserve_price'])
+            && (int) $validated['buy_now_price'] < (int) $validated['reserve_price']
+        ) {
+            throw ValidationException::withMessages([
+                'buy_now_price' => __('The Buy Now price must be at least the secret reserve price.'),
+            ]);
+        }
 
         // Handle image uploads
         $imagePaths = [];
@@ -71,20 +88,20 @@ class ListingController extends Controller
             }
         }
 
-        // Default auction_end_date to 30 days if not provided
-        $auctionEndDate = $validated['auction_end_date'] ?? now()->addDays(30);
+        $auctionEndDate = $isAuction ? ($validated['auction_end_date'] ?? now()->addDays(30)) : null;
 
         $listing = Listing::create([
             'user_id' => auth()->id(),
             'title' => $validated['title'],
             'description' => $validated['description'],
             'price' => $validated['price'],
+            'reserve_price' => $isAuction ? ($validated['reserve_price'] ?? null) : null,
             'location' => $validated['location'] ?? null,
             'images' => $imagePaths,
             'status' => $validated['status'] ?? 'draft',
             'condition' => $validated['condition'],
             'buy_now_price' => $validated['buy_now_price'] ?? null,
-            'is_auction' => $validated['is_auction'],
+            'is_auction' => $isAuction,
             'auction_end_date' => $auctionEndDate,
         ]);
 
@@ -154,6 +171,7 @@ class ListingController extends Controller
 
         $categories = Category::with('children')->whereNull('parent_id')->get();
         $listing->load('categories')->loadCount('bids');
+        $listing->makeVisible('reserve_price');
 
         return Inertia::render('listings/edit', [
             'listing' => $listing,
@@ -173,6 +191,12 @@ class ListingController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'price' => 'required|integer|min:0',
+            'reserve_price' => [
+                'nullable',
+                'integer',
+                'min:1',
+                'gte:price',
+            ],
             'categories' => 'required|array|min:1|max:5',
             'categories.*' => 'exists:categories,id',
             'location' => 'nullable|string|max:255',
@@ -180,12 +204,23 @@ class ListingController extends Controller
             'condition' => 'required|in:new,like_new,used_good,used_fair,for_parts',
             'buy_now_price' => 'nullable|integer|min:1',
             'is_auction' => 'required|boolean',
-            'auction_end_date' => 'required_if:is_auction,1|nullable|date|after:now',
+            'auction_end_date' => 'nullable|date|after:now',
             'existing_images' => 'nullable|array|max:5',
             'existing_images.*' => 'string',
             'images' => 'nullable|array|max:5',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
+
+        $isAuction = $request->boolean('is_auction');
+        if (
+            $isAuction
+            && isset($validated['buy_now_price'], $validated['reserve_price'])
+            && (int) $validated['buy_now_price'] < (int) $validated['reserve_price']
+        ) {
+            throw ValidationException::withMessages([
+                'buy_now_price' => __('The Buy Now price must be at least the secret reserve price.'),
+            ]);
+        }
 
         $currentImages = array_values($listing->images ?? []);
         $existingImages = array_values(array_intersect(
@@ -227,12 +262,13 @@ class ListingController extends Controller
             'title' => $validated['title'],
             'description' => $validated['description'],
             'price' => $validated['price'],
+            'reserve_price' => $isAuction ? ($validated['reserve_price'] ?? null) : null,
             'location' => $validated['location'] ?? null,
             'status' => $validated['status'] ?? 'draft',
             'condition' => $validated['condition'],
             'buy_now_price' => $validated['buy_now_price'] ?? null,
-            'is_auction' => $validated['is_auction'],
-            'auction_end_date' => $validated['auction_end_date'] ?? null,
+            'is_auction' => $isAuction,
+            'auction_end_date' => $isAuction ? ($validated['auction_end_date'] ?? $listing->auction_end_date ?? now()->addDays(30)) : null,
             'images' => $imagePaths,
         ]);
 

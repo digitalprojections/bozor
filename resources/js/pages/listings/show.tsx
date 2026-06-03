@@ -46,6 +46,8 @@ interface ListingProps {
         buy_now_price: number | null;
         is_auction: boolean;
         auction_end_date: string | null;
+        auction_ended?: boolean;
+        reserve_met?: boolean;
         current_high_bid: number;
         bids_count?: number;
     };
@@ -82,6 +84,11 @@ export default function Show({
         seo?.description ?? listing.description.substring(0, 160);
     const seoImage = seo?.og_image ?? imageUrls[0];
     const hasBids = (listing.bids_count ?? 0) > 0;
+    const reserveNotMet =
+        listing.is_auction &&
+        Boolean(listing.auction_ended) &&
+        listing.reserve_met === false &&
+        listing.status === 'active';
     const markImageFailed = (index: number) => {
         setFailedImages((current) => new Set(current).add(index));
     };
@@ -260,6 +267,11 @@ export default function Show({
                                 <h1 className="text-xl leading-tight font-bold tracking-tight text-[#0b1b32] sm:text-[1.8rem]">
                                     {listing.title}
                                 </h1>
+                                {reserveNotMet && (
+                                    <div className="rounded-[14px] border border-amber-200 bg-amber-50 p-3 text-sm font-medium text-amber-800 sm:text-base">
+                                        {t('listing.show.reserve_not_met')}
+                                    </div>
+                                )}
                             </div>
 
                             <div className="flex flex-col justify-between gap-6 rounded-[16px] border border-[#eef5fd] bg-[#f8fbfe] p-4 sm:rounded-[20px] sm:p-6 md:flex-row md:items-center">
