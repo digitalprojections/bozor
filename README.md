@@ -10,16 +10,16 @@ Users can list items for auction or direct sale, place bids, buy now, manage the
 
 | Layer | Technology |
 |---|---|
-| Backend | Laravel 11, PHP 8.4 |
+| Backend | Laravel, PHP 8.4 |
 | Frontend | React 18, TypeScript, Inertia.js |
 | Styling | Tailwind CSS, shadcn/ui |
 | Auth | Laravel Fortify |
-| Database | SQLite |
+| Database | PostgreSQL |
 | File Storage | AWS S3 |
 | Email | AWS SES |
-| Queue | Database-backed (Laravel queues) |
+| Queue | Redis-backed Laravel queues |
 | Build | Vite |
-| Deploy | GitHub Actions → EC2 via SSH |
+| Deploy | DockerHub image → EC2 Docker Compose |
 
 ---
 
@@ -67,11 +67,12 @@ Visit **http://127.0.0.1:8000**
 
 - **Marketplace** — Browse, search, and filter active listings
 - **Auctions** — Place bids with dynamic highest-bid pricing that reverts automatically if the top bid is removed
+- **Auction End Times** — Listing forms submit browser-local auction end times with the browser timezone offset, and the database stores the calculated UTC time
 - **Buy Now** — Instant purchase at a fixed price
 - **Watchlist** — Heart icon on every listing card; manage from `/watchlist`
 - **Email Notifications** — Queued SES emails on price drops, status changes, and new bids for watched listings
 - **Profile** — Public seller profile with ratings and verification badge
-- **Settings** — Profile edit, password change, two-factor auth, appearance
+- **Settings** — Profile edit with required personal address fields, password change, two-factor auth, appearance
 
 ---
 
@@ -94,7 +95,7 @@ Visit **http://127.0.0.1:8000**
 
 ### Architecture
 ```
-GitHub → Actions CI → EC2 (Nginx + PHP-FPM + SQLite)
+DockerHub image → EC2 Docker Compose (app + PostgreSQL + Redis + Caddy)
                    ↘ S3 (file uploads)
                        SES (transactional email)
 ```
