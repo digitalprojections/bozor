@@ -50,6 +50,10 @@ interface ListingProps {
         reserve_met?: boolean;
         current_high_bid: number;
         bids_count?: number;
+        shipping_payer?: 'seller' | 'buyer';
+        shipping_method?: 'kuroneko_yamato';
+        shipping_cost_type?: 'free' | 'fixed' | 'location_based' | 'chakubarai';
+        shipping_cost?: number | null;
     };
     recommendations?: any[];
     is_watched?: boolean;

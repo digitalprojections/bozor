@@ -29,6 +29,10 @@ class ListingSeeder extends Seeder
                 'price' => rand(1000, 50000),
                 'status' => 'active',
                 'location' => 'Tokyo, Japan',
+                'shipping_payer' => 'seller',
+                'shipping_method' => 'kuroneko_yamato',
+                'shipping_cost_type' => 'free',
+                'shipping_cost' => 0,
                 'condition' => 'used_good',
                 'images' => [],
             ])->categories()->attach(

@@ -22,6 +22,7 @@ import {
     ImageCompressor,
     type CompressionResult,
 } from '@/lib/image-compressor';
+import { ShippingSettingsCard } from '@/components/listings/shipping-settings-card';
 import type { BreadcrumbItem } from '@/types';
 
 interface Category {
@@ -42,6 +43,10 @@ interface Listing {
     reserve_price: number | null;
     buy_now_price: number | null;
     auction_end_date: string | null;
+    shipping_payer: 'seller' | 'buyer';
+    shipping_method: 'kuroneko_yamato';
+    shipping_cost_type: 'free' | 'fixed' | 'location_based' | 'chakubarai';
+    shipping_cost: number | null;
     images: string[] | null;
     all_image_urls: string[];
     categories: Array<{ id: number; name: string }>;
@@ -121,6 +126,10 @@ export default function EditListing({
         auction_end_date: listing.auction_end_date
             ? listing.auction_end_date.slice(0, 16)
             : '',
+        shipping_payer: listing.shipping_payer ?? 'seller',
+        shipping_method: listing.shipping_method ?? 'kuroneko_yamato',
+        shipping_cost_type: listing.shipping_cost_type ?? 'free',
+        shipping_cost: listing.shipping_cost?.toString() || '',
         existing_images: initialImageSlots
             .filter(isKeptExistingImageSlot)
             .map((slot) => slot.path),
@@ -548,6 +557,17 @@ export default function EditListing({
                             </div>
                         </div>
                     </Card>
+
+                    <ShippingSettingsCard
+                        data={{
+                            shipping_payer: data.shipping_payer,
+                            shipping_method: data.shipping_method,
+                            shipping_cost_type: data.shipping_cost_type,
+                            shipping_cost: data.shipping_cost,
+                        }}
+                        errors={errors}
+                        setData={setData}
+                    />
 
                     <Card className="p-4 sm:p-6">
                         <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">

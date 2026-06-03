@@ -14,6 +14,7 @@ import { ImageCompressor, type CompressionResult } from '@/lib/image-compressor'
 import { synth } from '@/lib/synth-service';
 import { ITEM_CONDITIONS, type ItemCondition } from '@/types/item-conditions';
 import { useTranslations } from '@/hooks/use-translations';
+import { ShippingSettingsCard } from '@/components/listings/shipping-settings-card';
 import type { BreadcrumbItem } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -52,6 +53,14 @@ export default function CreateListing({
         reserve_price: '',
         buy_now_price: '',
         auction_end_date: '',
+        shipping_payer: 'seller' as 'seller' | 'buyer',
+        shipping_method: 'kuroneko_yamato' as const,
+        shipping_cost_type: 'free' as
+            | 'free'
+            | 'fixed'
+            | 'location_based'
+            | 'chakubarai',
+        shipping_cost: '',
         terms_accepted: false,
     });
 
@@ -364,6 +373,17 @@ export default function CreateListing({
                             </div>
                         </div>
                     </Card>
+
+                    <ShippingSettingsCard
+                        data={{
+                            shipping_payer: data.shipping_payer,
+                            shipping_method: data.shipping_method,
+                            shipping_cost_type: data.shipping_cost_type,
+                            shipping_cost: data.shipping_cost,
+                        }}
+                        errors={errors}
+                        setData={setData}
+                    />
 
                     {/* Images */}
                     <Card className="p-4 sm:p-6">

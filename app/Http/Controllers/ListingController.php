@@ -39,6 +39,8 @@ class ListingController extends Controller
      */
     public function store(Request $request)
     {
+        $this->mergeDefaultShippingInput($request);
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
@@ -59,6 +61,10 @@ class ListingController extends Controller
             'buy_now_price' => 'nullable|integer|min:1',
             'is_auction' => 'required|boolean',
             'auction_end_date' => 'nullable|date|after:now',
+            'shipping_payer' => 'required|in:seller,buyer',
+            'shipping_method' => 'required|in:kuroneko_yamato',
+            'shipping_cost_type' => 'required|in:free,fixed,location_based,chakubarai',
+            'shipping_cost' => 'nullable|integer|min:0|required_if:shipping_cost_type,fixed',
         ]);
 
         $isAuction = $request->boolean('is_auction');
@@ -89,6 +95,7 @@ class ListingController extends Controller
         }
 
         $auctionEndDate = $isAuction ? ($validated['auction_end_date'] ?? now()->addDays(30)) : null;
+        $shipping = $this->normalizeShipping($validated);
 
         $listing = Listing::create([
             'user_id' => auth()->id(),
@@ -103,6 +110,7 @@ class ListingController extends Controller
             'buy_now_price' => $validated['buy_now_price'] ?? null,
             'is_auction' => $isAuction,
             'auction_end_date' => $auctionEndDate,
+            ...$shipping,
         ]);
 
         // Attach categories to listing
@@ -186,6 +194,7 @@ class ListingController extends Controller
     public function update(Request $request, Listing $listing)
     {
         $this->ensureListingIsOwnedByCurrentUser($listing);
+        $this->mergeDefaultShippingInput($request, $listing);
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -209,6 +218,10 @@ class ListingController extends Controller
             'existing_images.*' => 'string',
             'images' => 'nullable|array|max:5',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'shipping_payer' => 'required|in:seller,buyer',
+            'shipping_method' => 'required|in:kuroneko_yamato',
+            'shipping_cost_type' => 'required|in:free,fixed,location_based,chakubarai',
+            'shipping_cost' => 'nullable|integer|min:0|required_if:shipping_cost_type,fixed',
         ]);
 
         $isAuction = $request->boolean('is_auction');
@@ -257,6 +270,7 @@ class ListingController extends Controller
         if (isset($validated['status']) && $listing->status !== $validated['status']) {
             $changes['status'] = ['old' => $listing->status, 'new' => $validated['status']];
         }
+        $shipping = $this->normalizeShipping($validated);
 
         $listing->update([
             'title' => $validated['title'],
@@ -270,6 +284,7 @@ class ListingController extends Controller
             'is_auction' => $isAuction,
             'auction_end_date' => $isAuction ? ($validated['auction_end_date'] ?? $listing->auction_end_date ?? now()->addDays(30)) : null,
             'images' => $imagePaths,
+            ...$shipping,
         ]);
 
         // Update categories
@@ -311,5 +326,47 @@ class ListingController extends Controller
         if ((int) $listing->user_id !== (int) auth()->id()) {
             abort(403);
         }
+    }
+
+    private function mergeDefaultShippingInput(Request $request, ?Listing $listing = null): void
+    {
+        $request->merge([
+            'shipping_payer' => $request->input('shipping_payer', $listing?->shipping_payer ?? 'seller'),
+            'shipping_method' => $request->input('shipping_method', $listing?->shipping_method ?? 'kuroneko_yamato'),
+            'shipping_cost_type' => $request->input('shipping_cost_type', $listing?->shipping_cost_type ?? 'free'),
+            'shipping_cost' => $request->input('shipping_cost', $listing?->shipping_cost),
+        ]);
+    }
+
+    /**
+     * @param  array<string, mixed>  $validated
+     * @return array<string, mixed>
+     */
+    private function normalizeShipping(array $validated): array
+    {
+        $payer = $validated['shipping_payer'];
+        $costType = $validated['shipping_cost_type'];
+
+        if ($payer === 'seller') {
+            return [
+                'shipping_payer' => 'seller',
+                'shipping_method' => 'kuroneko_yamato',
+                'shipping_cost_type' => 'free',
+                'shipping_cost' => 0,
+            ];
+        }
+
+        if ($costType === 'free') {
+            throw ValidationException::withMessages([
+                'shipping_cost_type' => __('Choose a buyer shipping cost option.'),
+            ]);
+        }
+
+        return [
+            'shipping_payer' => 'buyer',
+            'shipping_method' => 'kuroneko_yamato',
+            'shipping_cost_type' => $costType,
+            'shipping_cost' => $costType === 'fixed' ? (int) $validated['shipping_cost'] : null,
+        ];
     }
 }

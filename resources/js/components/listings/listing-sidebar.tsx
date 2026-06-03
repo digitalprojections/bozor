@@ -15,6 +15,7 @@ import { PriceDisplay } from '@/components/listings/price-display';
 import { UserRatingBadge } from '@/components/user-rating-badge';
 import { LoginRequiredDialog } from '@/components/login-required-dialog';
 import { useClipboard } from '@/hooks/use-clipboard';
+import { YAMATO_RATE_TABLE_URL } from '@/components/listings/shipping-settings-card';
 
 interface ListingSidebarProps {
     listing: {
@@ -37,6 +38,10 @@ interface ListingSidebarProps {
         minimum_bid?: number;
         is_highest_bidder?: boolean;
         bids_count?: number;
+        shipping_payer?: 'seller' | 'buyer';
+        shipping_method?: 'kuroneko_yamato';
+        shipping_cost_type?: 'free' | 'fixed' | 'location_based' | 'chakubarai';
+        shipping_cost?: number | null;
         user: {
             id: number;
             name: string;
@@ -69,6 +74,7 @@ export function ListingSidebar({ listing, shareUrl }: ListingSidebarProps) {
             : listing.price);
     const suggestedBidAmount =
         listing.minimum_bid ?? getSuggestedBidAmount(currentPrice);
+    const shippingSummary = getShippingSummary(listing);
 
     const { data, setData, post, processing, errors, reset } = useForm({
         amount: suggestedBidAmount,
@@ -344,15 +350,23 @@ export function ListingSidebar({ listing, shareUrl }: ListingSidebarProps) {
                                 {t('listing.sidebar.shipping')}
                             </span>
                             <span className="font-medium text-[#1a263b]">
-                                {t('listing.sidebar.buyer_pays')}
+                                {shippingSummary.payer}
                             </span>
                         </div>
                         <div className="flex justify-between border-b border-dashed border-[#e4ecf5] pb-2 sm:pb-3">
                             <span className="text-[#5f6c84]">
                                 {t('listing.sidebar.shipping_method')}
                             </span>
-                            <span className="font-medium text-[#1a263b]">
-                                {t('listing.sidebar.domestic_delivery')}
+                            <span className="text-right font-medium text-[#1a263b]">
+                                {shippingSummary.method}
+                            </span>
+                        </div>
+                        <div className="flex justify-between border-b border-dashed border-[#e4ecf5] pb-2 sm:pb-3">
+                            <span className="text-[#5f6c84]">
+                                Cost
+                            </span>
+                            <span className="text-right font-medium text-[#1a263b]">
+                                {shippingSummary.cost}
                             </span>
                         </div>
                         <div className="flex justify-between border-b border-dashed border-[#e4ecf5] pb-2 sm:pb-3">
@@ -372,6 +386,14 @@ export function ListingSidebar({ listing, shareUrl }: ListingSidebarProps) {
                                 {t('transaction.payment.cod')}
                             </span>
                         </div>
+                        <a
+                            href={YAMATO_RATE_TABLE_URL}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="mt-1 inline-flex w-fit text-xs font-semibold text-[#0f766e] underline underline-offset-4"
+                        >
+                            Check Yamato prices
+                        </a>
                     </div>
                 </CardContent>
             </Card>
@@ -428,4 +450,42 @@ function getSuggestedBidAmount(currentPrice: number): number {
     const increment = Math.max(1, Math.ceil(currentPrice * 0.05));
 
     return currentPrice + increment;
+}
+
+function getShippingSummary(listing: ListingSidebarProps['listing']): {
+    payer: string;
+    method: string;
+    cost: string;
+} {
+    const method = 'Kuroneko Yamato TA-Q-BIN';
+
+    if ((listing.shipping_payer ?? 'seller') === 'seller') {
+        return {
+            payer: 'Seller pays',
+            method,
+            cost: 'Free shipping',
+        };
+    }
+
+    if (listing.shipping_cost_type === 'fixed') {
+        return {
+            payer: 'Buyer pays',
+            method,
+            cost: `¥${(listing.shipping_cost ?? 0).toLocaleString()}`,
+        };
+    }
+
+    if (listing.shipping_cost_type === 'chakubarai') {
+        return {
+            payer: 'Buyer pays on delivery',
+            method,
+            cost: 'Chakubarai',
+        };
+    }
+
+    return {
+        payer: 'Buyer pays',
+        method,
+        cost: "Decided by buyer's location",
+    };
 }
