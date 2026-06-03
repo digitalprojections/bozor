@@ -270,6 +270,89 @@ export default function Profile({
                                         <InputError message={errors.store_description} />
                                     </div>
 
+                                    <Separator className="my-8" />
+
+                                    <Heading
+                                        variant="small"
+                                        title={t('Personal Address') || 'Personal Address'}
+                                        description={t('Personal Address Description') || 'Required before publishing listings.'}
+                                    />
+
+                                    <div className="grid gap-4 sm:grid-cols-2">
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="postal_code">{t('Postal Code') || 'Postal Code'}</Label>
+                                            <Input
+                                                id="postal_code"
+                                                name="postal_code"
+                                                defaultValue={auth.user.postal_code}
+                                                required
+                                                autoComplete="postal-code"
+                                            />
+                                            <InputError message={errors.postal_code} />
+                                        </div>
+
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="prefecture">{t('Prefecture') || 'Prefecture'}</Label>
+                                            <Input
+                                                id="prefecture"
+                                                name="prefecture"
+                                                defaultValue={auth.user.prefecture}
+                                                required
+                                                autoComplete="address-level1"
+                                            />
+                                            <InputError message={errors.prefecture} />
+                                        </div>
+                                    </div>
+
+                                    <div className="grid gap-4 sm:grid-cols-2">
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="city">{t('City') || 'City'}</Label>
+                                            <Input
+                                                id="city"
+                                                name="city"
+                                                defaultValue={auth.user.city}
+                                                required
+                                                autoComplete="address-level2"
+                                            />
+                                            <InputError message={errors.city} />
+                                        </div>
+
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="phone">{t('Phone') || 'Phone'}</Label>
+                                            <Input
+                                                id="phone"
+                                                name="phone"
+                                                defaultValue={auth.user.phone}
+                                                required
+                                                autoComplete="tel"
+                                            />
+                                            <InputError message={errors.phone} />
+                                        </div>
+                                    </div>
+
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="address_line1">{t('Address Line 1') || 'Address Line 1'}</Label>
+                                        <Input
+                                            id="address_line1"
+                                            name="address_line1"
+                                            defaultValue={auth.user.address_line1}
+                                            required
+                                            autoComplete="address-line1"
+                                        />
+                                        <InputError message={errors.address_line1} />
+                                    </div>
+
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="address_line2">{t('Address Line 2') || 'Address Line 2'}</Label>
+                                        <Input
+                                            id="address_line2"
+                                            name="address_line2"
+                                            defaultValue={auth.user.address_line2}
+                                            autoComplete="address-line2"
+                                        />
+                                        <InputError message={errors.address_line2} />
+                                    </div>
+
                                     <div className="grid gap-2">
                                         <Label>{t('Store Banner')}</Label>
                                         <BannerUpload

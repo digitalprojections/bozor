@@ -95,6 +95,12 @@ class ProfileController extends Controller
             'avatar_source',
             'store_name',
             'store_description',
+            'postal_code',
+            'prefecture',
+            'city',
+            'address_line1',
+            'address_line2',
+            'phone',
         ]));
 
         if ($request->hasFile('avatar')) {

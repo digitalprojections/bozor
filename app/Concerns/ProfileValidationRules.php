@@ -26,6 +26,12 @@ trait ProfileValidationRules
             'store_description' => ['nullable', 'string', 'max:1000'],
             'store_banner' => $this->storeBannerRules(),
             'remove_store_banner' => ['nullable', 'boolean'],
+            'postal_code' => ['required', 'string', 'max:20'],
+            'prefecture' => ['required', 'string', 'max:100'],
+            'city' => ['required', 'string', 'max:100'],
+            'address_line1' => ['required', 'string', 'max:255'],
+            'address_line2' => ['nullable', 'string', 'max:255'],
+            'phone' => ['required', 'string', 'max:30'],
         ];
     }
 

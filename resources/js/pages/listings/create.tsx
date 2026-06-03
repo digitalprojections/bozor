@@ -1,4 +1,4 @@
-import { Head, useForm, Link } from '@inertiajs/react';
+import { Head, useForm, Link, usePage } from '@inertiajs/react';
 import { useState, useRef } from 'react';
 import BazaarLayout from '@/layouts/bazaar-layout';
 import { Button } from '@/components/ui/button';
@@ -40,12 +40,16 @@ export default function CreateListing({
     categories: Category[];
 }) {
     const { t } = useTranslations();
+    const { auth } = usePage().props as any;
+    const defaultLocation = [auth.user?.prefecture, auth.user?.city]
+        .filter(Boolean)
+        .join(', ');
     const { data, setData, post, processing, errors, transform } = useForm({
         title: '',
         description: '',
         price: '',
         categories: [] as number[],
-        location: '',
+        location: defaultLocation,
         images: [] as File[],
         status: 'draft',
         condition: '' as ItemCondition | '',
@@ -53,6 +57,7 @@ export default function CreateListing({
         reserve_price: '',
         buy_now_price: '',
         auction_end_date: '',
+        auction_timezone_offset: new Date().getTimezoneOffset(),
         shipping_payer: 'seller' as 'seller' | 'buyer',
         shipping_method: 'kuroneko_yamato' as const,
         shipping_cost_type: 'free' as
@@ -125,6 +130,7 @@ export default function CreateListing({
         transform((data) => ({
             ...data,
             status: statusRef.current,
+            auction_timezone_offset: new Date().getTimezoneOffset(),
         }));
         post('/listings');
     };

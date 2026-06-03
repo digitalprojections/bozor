@@ -6,6 +6,7 @@ use App\Models\Bid;
 use App\Models\Category;
 use App\Models\Listing;
 use App\Models\User;
+use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -74,6 +75,73 @@ class AuctionBidTest extends TestCase
             'title' => 'Auction without reserve',
             'reserve_price' => null,
             'is_auction' => true,
+        ]);
+    }
+
+    public function test_auction_end_date_uses_submitted_timezone_offset(): void
+    {
+        $this->travelTo(CarbonImmutable::parse('2026-06-03 00:00:00', 'UTC'));
+
+        $seller = User::factory()->create();
+        $category = Category::create([
+            'name' => 'Electronics',
+            'slug' => 'electronics-'.uniqid(),
+        ]);
+
+        $this->actingAs($seller)
+            ->from(route('listings.create'))
+            ->post(route('listings.store'), [
+                'title' => 'Timezone aware auction',
+                'description' => 'A useful item with a local end time.',
+                'price' => 1000,
+                'categories' => [$category->id],
+                'location' => 'Tokyo',
+                'status' => 'active',
+                'condition' => 'used_good',
+                'buy_now_price' => null,
+                'is_auction' => true,
+                'auction_end_date' => '2026-06-04T18:30',
+                'auction_timezone_offset' => -540,
+            ])
+            ->assertRedirect(route('marketplace'));
+
+        $listing = Listing::where('title', 'Timezone aware auction')->firstOrFail();
+
+        $this->assertTrue(
+            $listing->auction_end_date->equalTo(CarbonImmutable::parse('2026-06-04 09:30:00', 'UTC'))
+        );
+
+        $this->travelBack();
+    }
+
+    public function test_seller_address_is_required_to_publish_listing(): void
+    {
+        $seller = User::factory()->create([
+            'postal_code' => null,
+        ]);
+        $category = Category::create([
+            'name' => 'Electronics',
+            'slug' => 'electronics-'.uniqid(),
+        ]);
+
+        $this->actingAs($seller)
+            ->from(route('listings.create'))
+            ->post(route('listings.store'), [
+                'title' => 'Listing without address',
+                'description' => 'A useful item that should not publish.',
+                'price' => 1000,
+                'categories' => [$category->id],
+                'location' => 'Tokyo',
+                'status' => 'active',
+                'condition' => 'used_good',
+                'buy_now_price' => null,
+                'is_auction' => false,
+            ])
+            ->assertRedirect(route('listings.create'))
+            ->assertSessionHasErrors('location');
+
+        $this->assertDatabaseMissing('listings', [
+            'title' => 'Listing without address',
         ]);
     }
 

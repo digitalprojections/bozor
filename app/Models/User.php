@@ -35,6 +35,12 @@ class User extends Authenticatable
         'store_name',
         'store_description',
         'store_banner',
+        'postal_code',
+        'prefecture',
+        'city',
+        'address_line1',
+        'address_line2',
+        'phone',
     ];
 
     /**

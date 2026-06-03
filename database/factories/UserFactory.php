@@ -32,6 +32,12 @@ class UserFactory extends Factory
             'two_factor_secret' => null,
             'two_factor_recovery_codes' => null,
             'two_factor_confirmed_at' => null,
+            'postal_code' => '150-0002',
+            'prefecture' => 'Tokyo',
+            'city' => 'Shibuya',
+            'address_line1' => '1-1-1 Shibuya',
+            'address_line2' => null,
+            'phone' => '03-1234-5678',
         ];
     }
 

@@ -100,6 +100,20 @@ const buildInitialImageSlots = (listing: Listing): ImageSlot[] => {
     ];
 };
 
+const toDatetimeLocal = (value: string | null): string => {
+    if (!value) {
+        return '';
+    }
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+        return value.slice(0, 16);
+    }
+
+    const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+    return localDate.toISOString().slice(0, 16);
+};
+
 export default function EditListing({
     listing,
     categories,
@@ -123,9 +137,8 @@ export default function EditListing({
         is_auction: listing.is_auction,
         reserve_price: listing.reserve_price?.toString() || '',
         buy_now_price: listing.buy_now_price?.toString() || '',
-        auction_end_date: listing.auction_end_date
-            ? listing.auction_end_date.slice(0, 16)
-            : '',
+        auction_end_date: toDatetimeLocal(listing.auction_end_date),
+        auction_timezone_offset: new Date().getTimezoneOffset(),
         shipping_payer: listing.shipping_payer ?? 'seller',
         shipping_method: listing.shipping_method ?? 'kuroneko_yamato',
         shipping_cost_type: listing.shipping_cost_type ?? 'free',
@@ -239,6 +252,7 @@ export default function EditListing({
             ...data,
             _method: 'PATCH',
             status: statusRef.current,
+            auction_timezone_offset: new Date().getTimezoneOffset(),
         }));
         post(`/listings/${listing.id}`, {
             forceFormData: true,

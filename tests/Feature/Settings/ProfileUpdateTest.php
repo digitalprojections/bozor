@@ -29,10 +29,10 @@ class ProfileUpdateTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->patch(route('profile.update'), [
+            ->patch(route('profile.update'), $this->validProfilePayload($user, [
                 'name' => 'Test User',
                 'email' => 'test@example.com',
-            ]);
+            ]));
 
         $response
             ->assertSessionHasNoErrors()
@@ -51,10 +51,10 @@ class ProfileUpdateTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->patch(route('profile.update'), [
+            ->patch(route('profile.update'), $this->validProfilePayload($user, [
                 'name' => 'Test User',
                 'email' => $user->email,
-            ]);
+            ]));
 
         $response
             ->assertSessionHasNoErrors()
@@ -75,11 +75,11 @@ class ProfileUpdateTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->patch(route('profile.update'), [
+            ->patch(route('profile.update'), $this->validProfilePayload($user, [
                 'name' => $user->name,
                 'email' => $user->email,
                 'avatar' => UploadedFile::fake()->image('avatar.png'),
-            ]);
+            ]));
 
         $response
             ->assertSessionHasNoErrors()
@@ -104,13 +104,13 @@ class ProfileUpdateTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->patch(route('profile.update'), [
+            ->patch(route('profile.update'), $this->validProfilePayload($user, [
                 'name' => $user->name,
                 'email' => $user->email,
                 'avatar_style' => 'mascot',
                 'avatar_seed' => '{"characterType":"blob"}',
                 'avatar_source' => 'mascot',
-            ]);
+            ]));
 
         $response
             ->assertSessionHasNoErrors()
@@ -135,12 +135,12 @@ class ProfileUpdateTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->patch(route('profile.update'), [
+            ->patch(route('profile.update'), $this->validProfilePayload($user, [
                 'name' => $user->name,
                 'email' => $user->email,
                 'remove_avatar' => '1',
                 'avatar_source' => 'google',
-            ]);
+            ]));
 
         $response
             ->assertSessionHasNoErrors()
@@ -152,6 +152,22 @@ class ProfileUpdateTest extends TestCase
         $this->assertSame('google', $user->avatar_source);
         $this->assertSame('https://example.com/google-avatar.jpg', $user->avatar_url);
         Storage::disk('public')->assertMissing('avatars/custom.png');
+    }
+
+    public function test_personal_address_is_required()
+    {
+        $user = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('profile.edit'))
+            ->patch(route('profile.update'), $this->validProfilePayload($user, [
+                'postal_code' => '',
+            ]));
+
+        $response
+            ->assertSessionHasErrors('postal_code')
+            ->assertRedirect(route('profile.edit'));
     }
 
     public function test_user_can_delete_their_account()
@@ -188,5 +204,23 @@ class ProfileUpdateTest extends TestCase
             ->assertRedirect(route('profile.edit'));
 
         $this->assertNotNull($user->fresh());
+    }
+
+    /**
+     * @param  array<string, mixed>  $overrides
+     * @return array<string, mixed>
+     */
+    private function validProfilePayload(User $user, array $overrides = []): array
+    {
+        return array_merge([
+            'name' => $user->name,
+            'email' => $user->email,
+            'postal_code' => $user->postal_code,
+            'prefecture' => $user->prefecture,
+            'city' => $user->city,
+            'address_line1' => $user->address_line1,
+            'address_line2' => $user->address_line2,
+            'phone' => $user->phone,
+        ], $overrides);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Listing;
+use Carbon\CarbonImmutable;
 use App\Notifications\WatchlistItemUpdated;
 use App\Services\ListingService;
 use Illuminate\Http\Request;
@@ -60,7 +61,8 @@ class ListingController extends Controller
             'condition' => 'required|in:new,like_new,used_good,used_fair,for_parts',
             'buy_now_price' => 'nullable|integer|min:1',
             'is_auction' => 'required|boolean',
-            'auction_end_date' => 'nullable|date|after:now',
+            'auction_end_date' => 'nullable|string',
+            'auction_timezone_offset' => 'nullable|integer|min:-840|max:840',
             'shipping_payer' => 'required|in:seller,buyer',
             'shipping_method' => 'required|in:kuroneko_yamato',
             'shipping_cost_type' => 'required|in:free,fixed,location_based,chakubarai',
@@ -68,6 +70,8 @@ class ListingController extends Controller
         ]);
 
         $isAuction = $request->boolean('is_auction');
+        $this->ensureSellerAddressIsComplete($request);
+
         if (
             $isAuction
             && isset($validated['buy_now_price'], $validated['reserve_price'])
@@ -94,7 +98,7 @@ class ListingController extends Controller
             }
         }
 
-        $auctionEndDate = $isAuction ? ($validated['auction_end_date'] ?? now()->addDays(30)) : null;
+        $auctionEndDate = $this->normalizeAuctionEndDate($request, $isAuction);
         $shipping = $this->normalizeShipping($validated);
 
         $listing = Listing::create([
@@ -213,7 +217,8 @@ class ListingController extends Controller
             'condition' => 'required|in:new,like_new,used_good,used_fair,for_parts',
             'buy_now_price' => 'nullable|integer|min:1',
             'is_auction' => 'required|boolean',
-            'auction_end_date' => 'nullable|date|after:now',
+            'auction_end_date' => 'nullable|string',
+            'auction_timezone_offset' => 'nullable|integer|min:-840|max:840',
             'existing_images' => 'nullable|array|max:5',
             'existing_images.*' => 'string',
             'images' => 'nullable|array|max:5',
@@ -225,6 +230,8 @@ class ListingController extends Controller
         ]);
 
         $isAuction = $request->boolean('is_auction');
+        $this->ensureSellerAddressIsComplete($request);
+
         if (
             $isAuction
             && isset($validated['buy_now_price'], $validated['reserve_price'])
@@ -282,7 +289,7 @@ class ListingController extends Controller
             'condition' => $validated['condition'],
             'buy_now_price' => $validated['buy_now_price'] ?? null,
             'is_auction' => $isAuction,
-            'auction_end_date' => $isAuction ? ($validated['auction_end_date'] ?? $listing->auction_end_date ?? now()->addDays(30)) : null,
+            'auction_end_date' => $this->normalizeAuctionEndDate($request, $isAuction, $listing),
             'images' => $imagePaths,
             ...$shipping,
         ]);
@@ -336,6 +343,68 @@ class ListingController extends Controller
             'shipping_cost_type' => $request->input('shipping_cost_type', $listing?->shipping_cost_type ?? 'free'),
             'shipping_cost' => $request->input('shipping_cost', $listing?->shipping_cost),
         ]);
+    }
+
+    private function ensureSellerAddressIsComplete(Request $request): void
+    {
+        if ($request->input('status', 'draft') !== 'active') {
+            return;
+        }
+
+        $user = $request->user();
+        $requiredAddressFields = [
+            'postal_code',
+            'prefecture',
+            'city',
+            'address_line1',
+            'phone',
+        ];
+
+        foreach ($requiredAddressFields as $field) {
+            if (blank($user?->{$field})) {
+                throw ValidationException::withMessages([
+                    'location' => __('Complete your personal address in profile settings before publishing a listing.'),
+                ]);
+            }
+        }
+    }
+
+    private function normalizeAuctionEndDate(Request $request, bool $isAuction, ?Listing $listing = null): ?CarbonImmutable
+    {
+        if (! $isAuction) {
+            return null;
+        }
+
+        $submittedDate = $request->input('auction_end_date');
+        if (blank($submittedDate)) {
+            return CarbonImmutable::instance($listing?->auction_end_date ?? now()->addDays(30))->utc();
+        }
+
+        try {
+            $localDate = str_contains($submittedDate, 'T')
+                ? CarbonImmutable::createFromFormat('Y-m-d\TH:i', $submittedDate, 'UTC')
+                : CarbonImmutable::parse($submittedDate, 'UTC');
+        } catch (\Throwable) {
+            throw ValidationException::withMessages([
+                'auction_end_date' => __('Enter a valid auction end time.'),
+            ]);
+        }
+
+        if (! $localDate) {
+            throw ValidationException::withMessages([
+                'auction_end_date' => __('Enter a valid auction end time.'),
+            ]);
+        }
+
+        $utcDate = $localDate->addMinutes((int) $request->input('auction_timezone_offset', 0))->utc();
+
+        if ($utcDate->lte(now())) {
+            throw ValidationException::withMessages([
+                'auction_end_date' => __('The auction end time must be in the future.'),
+            ]);
+        }
+
+        return $utcDate;
     }
 
     /**
