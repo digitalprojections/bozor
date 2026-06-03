@@ -18,6 +18,7 @@ trait ProfileValidationRules
             'name' => $this->nameRules(),
             'email' => $this->emailRules($userId),
             'avatar' => $this->avatarRules(),
+            'avatar_source' => $this->avatarSourceRules(),
             'avatar_style' => $this->avatarStyleRules(),
             'gender' => $this->genderRules(),
             'remove_avatar' => ['nullable', 'boolean'],
@@ -93,6 +94,20 @@ trait ProfileValidationRules
                 'adventurer',
                 'big-smile',
             ]),
+        ];
+    }
+
+    /**
+     * Get the validation rules used to select the active avatar source.
+     *
+     * @return array<int, \Illuminate\Contracts\Validation\Rule|array<mixed>|string>
+     */
+    protected function avatarSourceRules(): array
+    {
+        return [
+            'nullable',
+            'string',
+            Rule::in(['uploaded', 'mascot', 'generated', 'google']),
         ];
     }
 

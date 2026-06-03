@@ -69,6 +69,8 @@ class ProfileUpdateTest extends TestCase
 
         $user = User::factory()->create([
             'avatar' => 'https://example.com/google-avatar.jpg',
+            'google_avatar' => 'https://example.com/google-avatar.jpg',
+            'avatar_source' => 'google',
         ]);
 
         $response = $this
@@ -87,8 +89,69 @@ class ProfileUpdateTest extends TestCase
 
         $this->assertStringStartsWith('avatars/', $user->avatar);
         $this->assertStringEndsWith('.png', $user->avatar);
+        $this->assertSame('uploaded', $user->avatar_source);
         Storage::disk('public')->assertExists($user->avatar);
         $this->assertStringContainsString('/storage/avatars/', $user->avatar_url);
+    }
+
+    public function test_mascot_avatar_can_override_google_avatar()
+    {
+        $user = User::factory()->create([
+            'avatar' => 'https://example.com/google-avatar.jpg',
+            'google_avatar' => 'https://example.com/google-avatar.jpg',
+            'avatar_source' => 'google',
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->patch(route('profile.update'), [
+                'name' => $user->name,
+                'email' => $user->email,
+                'avatar_style' => 'mascot',
+                'avatar_seed' => '{"characterType":"blob"}',
+                'avatar_source' => 'mascot',
+            ]);
+
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('profile.edit'));
+
+        $user->refresh();
+
+        $this->assertSame('mascot', $user->avatar_source);
+        $this->assertSame('https://api.dicebear.com/7.x/bottts/svg?seed=%257B%2522characterType%2522%253A%2522blob%2522%257D', $user->avatar_url);
+    }
+
+    public function test_removing_uploaded_avatar_falls_back_to_google_avatar()
+    {
+        Storage::fake('public');
+        Storage::disk('public')->put('avatars/custom.png', 'avatar');
+
+        $user = User::factory()->create([
+            'avatar' => 'avatars/custom.png',
+            'google_avatar' => 'https://example.com/google-avatar.jpg',
+            'avatar_source' => 'uploaded',
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->patch(route('profile.update'), [
+                'name' => $user->name,
+                'email' => $user->email,
+                'remove_avatar' => '1',
+                'avatar_source' => 'google',
+            ]);
+
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('profile.edit'));
+
+        $user->refresh();
+
+        $this->assertNull($user->avatar);
+        $this->assertSame('google', $user->avatar_source);
+        $this->assertSame('https://example.com/google-avatar.jpg', $user->avatar_url);
+        Storage::disk('public')->assertMissing('avatars/custom.png');
     }
 
     public function test_user_can_delete_their_account()

@@ -30,21 +30,25 @@ import { useCallback, useEffect } from 'react';
 type AvatarUploadProps = {
     onFileChange: (file: File | null) => void;
     onStyleChange: (style: string) => void;
+    onSourceChange: (source: 'uploaded' | 'mascot' | 'generated' | 'google') => void;
     onGenderChange: (gender: string) => void;
     onSeedChange?: (seed: string) => void;
     onRemoveAvatar: (remove: boolean) => void;
     currentFile: File | null;
     removeAvatar: boolean;
+    avatarSource: string;
 };
 
 export function AvatarUpload({
     onFileChange,
     onStyleChange,
+    onSourceChange,
     onGenderChange,
     onSeedChange,
     onRemoveAvatar,
     currentFile,
     removeAvatar,
+    avatarSource,
 }: AvatarUploadProps) {
     const { auth } = usePage().props;
     const user = auth.user as User;
@@ -125,6 +129,7 @@ export function AvatarUpload({
         const file = e.target.files?.[0];
         if (file) {
             onFileChange(file);
+            onSourceChange('uploaded');
             onRemoveAvatar(false);
 
             // Create preview URL
@@ -138,6 +143,7 @@ export function AvatarUpload({
 
     const handleRemoveClick = () => {
         onRemoveAvatar(true);
+        onSourceChange(user.google_avatar ? 'google' : 'generated');
         onFileChange(null);
         setPreviewUrl(null);
         if (fileInputRef.current) {
@@ -150,8 +156,7 @@ export function AvatarUpload({
         : previewUrl || user.avatar_url;
 
     const hasCustomAvatar = user.avatar && !removeAvatar;
-    const hasUploadedAvatar = Boolean(user.avatar && !/^https?:\/\//.test(user.avatar));
-    const shouldShowMascot = selectedStyle === 'mascot' && !previewUrl && !hasUploadedAvatar;
+    const shouldShowMascot = avatarSource === 'mascot' && !previewUrl;
 
     return (
         <div className="space-y-4">
@@ -231,6 +236,7 @@ export function AvatarUpload({
                         onValueChange={(val) => {
                             setSelectedStyle(val);
                             onStyleChange(val);
+                            onSourceChange(val === 'mascot' ? 'mascot' : 'generated');
                         }}
                     >
                         <SelectTrigger id="avatar_style">

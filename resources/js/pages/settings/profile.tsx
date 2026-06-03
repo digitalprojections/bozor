@@ -38,6 +38,7 @@ export default function Profile({
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
     const [avatarStyle, setAvatarStyle] = useState<string>(auth.user.avatar_style || '');
     const [avatarSeed, setAvatarSeed] = useState<string>(auth.user.avatar_seed || '');
+    const [avatarSource, setAvatarSource] = useState<string>(auth.user.avatar_source || 'generated');
     const [gender, setGender] = useState<string>('');
     const [removeAvatar, setRemoveAvatar] = useState(false);
     
@@ -90,10 +91,12 @@ export default function Profile({
                                         onFileChange={setAvatarFile}
                                         onStyleChange={setAvatarStyle}
                                         onSeedChange={setAvatarSeed}
+                                        onSourceChange={setAvatarSource}
                                         onGenderChange={setGender}
                                         onRemoveAvatar={setRemoveAvatar}
                                         currentFile={avatarFile}
                                         removeAvatar={removeAvatar}
+                                        avatarSource={avatarSource}
                                     />
                                     {errors.avatar && (
                                         <InputError
@@ -123,6 +126,13 @@ export default function Profile({
                                         type="hidden"
                                         name="gender"
                                         value={gender}
+                                    />
+                                )}
+                                {avatarSource && (
+                                    <input
+                                        type="hidden"
+                                        name="avatar_source"
+                                        value={avatarSource}
                                     />
                                 )}
                                 {removeAvatar && (

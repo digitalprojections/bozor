@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('avatar')->nullable();
+            $table->text('google_avatar')->nullable();
+            $table->string('avatar_source')->default('generated');
             $table->string('avatar_style')->default('initials');
             $table->string('avatar_seed')->nullable();
             $table->enum('gender', ['male', 'female', 'other', 'unspecified'])->nullable();

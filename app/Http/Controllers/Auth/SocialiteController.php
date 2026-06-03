@@ -13,7 +13,8 @@ class SocialiteController extends Controller
 {
     private function shouldUseGoogleAvatar(User $user): bool
     {
-        return ! $user->avatar || str_starts_with($user->avatar, 'http://') || str_starts_with($user->avatar, 'https://');
+        return ! in_array($user->avatar_source, ['uploaded', 'mascot'], true)
+            && (! $user->avatar || str_starts_with($user->avatar, 'http://') || str_starts_with($user->avatar, 'https://'));
     }
 
     public function redirectToGoogle()
@@ -35,12 +36,14 @@ class SocialiteController extends Controller
         if ($user) {
             $updates = [
                 'name' => $googleUser->getName(),
+                'google_avatar' => $googleUser->getAvatar(),
                 'is_guest' => false,
                 'email_verified_at' => $user->email_verified_at ?? now(),
             ];
 
             if ($this->shouldUseGoogleAvatar($user)) {
                 $updates['avatar'] = $googleUser->getAvatar();
+                $updates['avatar_source'] = 'google';
             }
 
             $user->update($updates);
@@ -51,6 +54,8 @@ class SocialiteController extends Controller
                 'email' => $googleUser->getEmail(),
                 'password' => bcrypt(Str::random(24)),
                 'avatar' => $googleUser->getAvatar(),
+                'google_avatar' => $googleUser->getAvatar(),
+                'avatar_source' => 'google',
                 'is_guest' => false,
                 'email_verified_at' => now(),
             ]);

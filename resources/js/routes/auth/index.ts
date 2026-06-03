@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../wayfinder'
 /**
 * @see \App\Http\Controllers\Auth\SocialiteController::google
- * @see app/Http/Controllers/Auth/SocialiteController.php:19
+ * @see app/Http/Controllers/Auth/SocialiteController.php:20
  * @route '/auth/google'
  */
 export const google = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ google.definition = {
 
 /**
 * @see \App\Http\Controllers\Auth\SocialiteController::google
- * @see app/Http/Controllers/Auth/SocialiteController.php:19
+ * @see app/Http/Controllers/Auth/SocialiteController.php:20
  * @route '/auth/google'
  */
 google.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ google.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Auth\SocialiteController::google
- * @see app/Http/Controllers/Auth/SocialiteController.php:19
+ * @see app/Http/Controllers/Auth/SocialiteController.php:20
  * @route '/auth/google'
  */
 google.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -34,7 +34,7 @@ google.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\Auth\SocialiteController::google
- * @see app/Http/Controllers/Auth/SocialiteController.php:19
+ * @see app/Http/Controllers/Auth/SocialiteController.php:20
  * @route '/auth/google'
  */
 google.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -44,7 +44,7 @@ google.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\Auth\SocialiteController::google
- * @see app/Http/Controllers/Auth/SocialiteController.php:19
+ * @see app/Http/Controllers/Auth/SocialiteController.php:20
  * @route '/auth/google'
  */
     const googleForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -54,7 +54,7 @@ google.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\Auth\SocialiteController::google
- * @see app/Http/Controllers/Auth/SocialiteController.php:19
+ * @see app/Http/Controllers/Auth/SocialiteController.php:20
  * @route '/auth/google'
  */
         googleForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -63,7 +63,7 @@ google.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\Auth\SocialiteController::google
- * @see app/Http/Controllers/Auth/SocialiteController.php:19
+ * @see app/Http/Controllers/Auth/SocialiteController.php:20
  * @route '/auth/google'
  */
         googleForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

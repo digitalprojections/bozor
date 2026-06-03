@@ -24,6 +24,8 @@ class User extends Authenticatable
         'email_verified_at',
         'password',
         'avatar',
+        'google_avatar',
+        'avatar_source',
         'avatar_style',
         'avatar_seed',
         'gender',

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Settings;
 
+use App\Helpers\AvatarHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\ProfileDeleteRequest;
 use App\Http\Requests\Settings\ProfileUpdateRequest;
@@ -46,6 +47,7 @@ class ProfileController extends Controller
         if ($request->boolean('remove_avatar') && $user->avatar) {
             $this->deleteStoredFile($user->avatar);
             $user->avatar = null;
+            $user->avatar_source = $user->google_avatar ? 'google' : 'generated';
         }
 
         // Handle store banner removal
@@ -56,6 +58,10 @@ class ProfileController extends Controller
         
         // Handle avatar upload
         if ($request->hasFile('avatar')) {
+            if (! $user->google_avatar && AvatarHelper::isRemoteAvatar($user->avatar)) {
+                $user->google_avatar = $user->avatar;
+            }
+
             // Delete old avatar if exists
             if ($user->avatar) {
                 $this->deleteStoredFile($user->avatar);
@@ -64,6 +70,7 @@ class ProfileController extends Controller
             // Store new avatar
             $path = $request->file('avatar')->store('avatars', 'public');
             $user->avatar = $path;
+            $user->avatar_source = 'uploaded';
         }
 
         // Handle store banner upload
@@ -85,9 +92,16 @@ class ProfileController extends Controller
             'avatar_style', 
             'avatar_seed', 
             'gender',
+            'avatar_source',
             'store_name',
             'store_description',
         ]));
+
+        if ($request->hasFile('avatar')) {
+            $user->avatar_source = 'uploaded';
+        } elseif ($request->boolean('remove_avatar')) {
+            $user->avatar_source = $user->google_avatar ? 'google' : 'generated';
+        }
 
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;

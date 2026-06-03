@@ -4,7 +4,9 @@ export type User = {
     masked_name: string;
     email: string;
     avatar?: string;
+    google_avatar?: string;
     avatar_url?: string;
+    avatar_source?: 'uploaded' | 'mascot' | 'generated' | 'google';
     avatar_style?: string;
     avatar_seed?: string;
     gender?: 'male' | 'female' | 'other' | 'unspecified';

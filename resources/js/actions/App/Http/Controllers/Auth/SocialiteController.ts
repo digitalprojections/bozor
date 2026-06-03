@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Auth\SocialiteController::redirectToGoogle
- * @see app/Http/Controllers/Auth/SocialiteController.php:19
+ * @see app/Http/Controllers/Auth/SocialiteController.php:20
  * @route '/auth/google'
  */
 export const redirectToGoogle = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ redirectToGoogle.definition = {
 
 /**
 * @see \App\Http\Controllers\Auth\SocialiteController::redirectToGoogle
- * @see app/Http/Controllers/Auth/SocialiteController.php:19
+ * @see app/Http/Controllers/Auth/SocialiteController.php:20
  * @route '/auth/google'
  */
 redirectToGoogle.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ redirectToGoogle.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Auth\SocialiteController::redirectToGoogle
- * @see app/Http/Controllers/Auth/SocialiteController.php:19
+ * @see app/Http/Controllers/Auth/SocialiteController.php:20
  * @route '/auth/google'
  */
 redirectToGoogle.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -34,7 +34,7 @@ redirectToGoogle.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => 
 })
 /**
 * @see \App\Http\Controllers\Auth\SocialiteController::redirectToGoogle
- * @see app/Http/Controllers/Auth/SocialiteController.php:19
+ * @see app/Http/Controllers/Auth/SocialiteController.php:20
  * @route '/auth/google'
  */
 redirectToGoogle.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -44,7 +44,7 @@ redirectToGoogle.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
 
     /**
 * @see \App\Http\Controllers\Auth\SocialiteController::redirectToGoogle
- * @see app/Http/Controllers/Auth/SocialiteController.php:19
+ * @see app/Http/Controllers/Auth/SocialiteController.php:20
  * @route '/auth/google'
  */
     const redirectToGoogleForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -54,7 +54,7 @@ redirectToGoogle.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
 
             /**
 * @see \App\Http\Controllers\Auth\SocialiteController::redirectToGoogle
- * @see app/Http/Controllers/Auth/SocialiteController.php:19
+ * @see app/Http/Controllers/Auth/SocialiteController.php:20
  * @route '/auth/google'
  */
         redirectToGoogleForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -63,7 +63,7 @@ redirectToGoogle.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
         })
             /**
 * @see \App\Http\Controllers\Auth\SocialiteController::redirectToGoogle
- * @see app/Http/Controllers/Auth/SocialiteController.php:19
+ * @see app/Http/Controllers/Auth/SocialiteController.php:20
  * @route '/auth/google'
  */
         redirectToGoogleForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -79,7 +79,7 @@ redirectToGoogle.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
     redirectToGoogle.form = redirectToGoogleForm
 /**
 * @see \App\Http\Controllers\Auth\SocialiteController::handleGoogleCallback
- * @see app/Http/Controllers/Auth/SocialiteController.php:24
+ * @see app/Http/Controllers/Auth/SocialiteController.php:25
  * @route '/auth/google/callback'
  */
 export const handleGoogleCallback = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -94,7 +94,7 @@ handleGoogleCallback.definition = {
 
 /**
 * @see \App\Http\Controllers\Auth\SocialiteController::handleGoogleCallback
- * @see app/Http/Controllers/Auth/SocialiteController.php:24
+ * @see app/Http/Controllers/Auth/SocialiteController.php:25
  * @route '/auth/google/callback'
  */
 handleGoogleCallback.url = (options?: RouteQueryOptions) => {
@@ -103,7 +103,7 @@ handleGoogleCallback.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Auth\SocialiteController::handleGoogleCallback
- * @see app/Http/Controllers/Auth/SocialiteController.php:24
+ * @see app/Http/Controllers/Auth/SocialiteController.php:25
  * @route '/auth/google/callback'
  */
 handleGoogleCallback.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -112,7 +112,7 @@ handleGoogleCallback.get = (options?: RouteQueryOptions): RouteDefinition<'get'>
 })
 /**
 * @see \App\Http\Controllers\Auth\SocialiteController::handleGoogleCallback
- * @see app/Http/Controllers/Auth/SocialiteController.php:24
+ * @see app/Http/Controllers/Auth/SocialiteController.php:25
  * @route '/auth/google/callback'
  */
 handleGoogleCallback.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -122,7 +122,7 @@ handleGoogleCallback.head = (options?: RouteQueryOptions): RouteDefinition<'head
 
     /**
 * @see \App\Http\Controllers\Auth\SocialiteController::handleGoogleCallback
- * @see app/Http/Controllers/Auth/SocialiteController.php:24
+ * @see app/Http/Controllers/Auth/SocialiteController.php:25
  * @route '/auth/google/callback'
  */
     const handleGoogleCallbackForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -132,7 +132,7 @@ handleGoogleCallback.head = (options?: RouteQueryOptions): RouteDefinition<'head
 
             /**
 * @see \App\Http\Controllers\Auth\SocialiteController::handleGoogleCallback
- * @see app/Http/Controllers/Auth/SocialiteController.php:24
+ * @see app/Http/Controllers/Auth/SocialiteController.php:25
  * @route '/auth/google/callback'
  */
         handleGoogleCallbackForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -141,7 +141,7 @@ handleGoogleCallback.head = (options?: RouteQueryOptions): RouteDefinition<'head
         })
             /**
 * @see \App\Http\Controllers\Auth\SocialiteController::handleGoogleCallback
- * @see app/Http/Controllers/Auth/SocialiteController.php:24
+ * @see app/Http/Controllers/Auth/SocialiteController.php:25
  * @route '/auth/google/callback'
  */
         handleGoogleCallbackForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

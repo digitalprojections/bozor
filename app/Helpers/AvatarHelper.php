@@ -7,6 +7,11 @@ use Illuminate\Support\Facades\Storage;
 
 class AvatarHelper
 {
+    private static function isRemoteUrl(?string $value): bool
+    {
+        return $value && (str_starts_with($value, 'http://') || str_starts_with($value, 'https://'));
+    }
+
     /**
      * Generate avatar URL for a user using DiceBear API
      */
@@ -62,19 +67,48 @@ class AvatarHelper
      */
     public static function getAvatarUrl(User $user): string
     {
-        // If the avatar is already a full URL (e.g. from Google), return it directly
-        if ($user->avatar && (str_starts_with($user->avatar, 'http://') || str_starts_with($user->avatar, 'https://'))) {
-            return $user->avatar;
-        }
+        $uploadedAvatarUrl = function () use ($user): ?string {
+            if (! $user->avatar || self::isRemoteUrl($user->avatar) || ! Storage::disk('public')->exists($user->avatar)) {
+                return null;
+            }
 
-        // If user has uploaded avatar, use it
-        if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
             /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
             $disk = Storage::disk('public');
             return $disk->url($user->avatar);
-        }
-        
-        // Otherwise, generate avatar
-        return self::generateAvatarUrl($user);
+        };
+
+        return match ($user->avatar_source) {
+            'uploaded' => $uploadedAvatarUrl() ?? self::generateAvatarUrl($user),
+            'mascot', 'generated' => self::generateAvatarUrl($user),
+            'google' => $user->google_avatar ?: (self::isRemoteUrl($user->avatar) ? $user->avatar : self::generateAvatarUrl($user)),
+            default => $uploadedAvatarUrl()
+                ?? (self::isRemoteUrl($user->avatar) ? $user->avatar : null)
+                ?? $user->google_avatar
+                ?? self::generateAvatarUrl($user),
+        };
+    }
+
+    /**
+     * Check whether the stored avatar is a local upload.
+     */
+    public static function hasUploadedAvatar(User $user): bool
+    {
+        return (bool) ($user->avatar && ! self::isRemoteUrl($user->avatar));
+    }
+
+    /**
+     * Check whether the stored avatar is a remote URL.
+     */
+    public static function hasRemoteAvatar(User $user): bool
+    {
+        return self::isRemoteUrl($user->avatar);
+    }
+
+    /**
+     * Check whether a string is a remote URL.
+     */
+    public static function isRemoteAvatar(?string $value): bool
+    {
+        return self::isRemoteUrl($value);
     }
 }

@@ -38,6 +38,7 @@ class GoogleAuthenticationTest extends TestCase
         $user = User::factory()->create([
             'email' => 'seller@example.com',
             'avatar' => 'avatars/custom-avatar.png',
+            'avatar_source' => 'uploaded',
         ]);
 
         $this->fakeGoogleUser('seller@example.com', 'Seller Name', 'https://example.com/google-avatar.jpg');
@@ -50,6 +51,7 @@ class GoogleAuthenticationTest extends TestCase
         $this->assertAuthenticatedAs($user);
         $this->assertSame('Seller Name', $user->name);
         $this->assertSame('avatars/custom-avatar.png', $user->avatar);
+        $this->assertSame('uploaded', $user->avatar_source);
     }
 
     public function test_google_login_creates_verified_user(): void
