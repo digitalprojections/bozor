@@ -60,6 +60,7 @@ interface Filters {
     category?: number;
     sort?: string;
     hide_sold?: boolean;
+    free_shipping?: boolean;
 }
 
 export default function Marketplace({
@@ -111,6 +112,14 @@ export default function Marketplace({
         );
     };
 
+    const handleFreeShippingChange = (freeShipping: boolean) => {
+        router.get(
+            '/marketplace',
+            { ...filters, free_shipping: freeShipping ? 1 : undefined },
+            { preserveState: true, preserveScroll: true }
+        );
+    };
+
     return (
         <BazaarLayout title="Marketplace" breadcrumbs={breadcrumbs}>
             <Head title="Marketplace" />
@@ -124,11 +133,13 @@ export default function Marketplace({
                     currentSort={filters.sort || 'newest'}
                     currentSearch={filters.search || ''}
                     hideSold={filters.hide_sold || false}
+                    freeShipping={filters.free_shipping || false}
                     viewMode={viewMode}
                     onSearch={handleSearch}
                     onCategoryChange={handleCategoryChange}
                     onSortChange={handleSortChange}
                     onHideSoldChange={handleHideSoldChange}
+                    onFreeShippingChange={handleFreeShippingChange}
                     onViewModeChange={setViewMode}
                 />
 

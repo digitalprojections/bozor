@@ -10,6 +10,7 @@ import { SoldBadge } from '@/components/listings/sold-badge';
 import { WatchButton } from '@/components/listings/watch-button';
 import { PriceDisplay } from '@/components/listings/price-display';
 import { UserRatingBadge } from '@/components/user-rating-badge';
+import { FreeShippingBadge } from '@/components/listings/free-shipping-badge';
 
 interface Listing {
     id: number;
@@ -31,6 +32,7 @@ interface Listing {
         id: number;
         name: string;
     }>;
+    free_shipping?: boolean;
 }
 
 interface Pagination {
@@ -44,6 +46,7 @@ interface ListingFilters {
     category?: number;
     sort?: string;
     hide_sold?: boolean;
+    free_shipping?: boolean;
 }
 
 interface ListingsGridProps {
@@ -123,6 +126,9 @@ export function ListingsGrid({
                                         </div>
                                     )}
                                     {isSold && <SoldBadge variant="overlay" />}
+                                    {listing.free_shipping && (
+                                        <FreeShippingBadge className="absolute left-1.5 top-1.5" compact />
+                                    )}
                                     <WatchButton
                                         listingId={listing.id}
                                         isWatched={watchedIds.includes(
@@ -161,6 +167,9 @@ export function ListingsGrid({
                                                 listing.user.name}
                                         </span>
                                     </div>
+                                    {listing.free_shipping && (
+                                        <FreeShippingBadge className="mt-1" compact />
+                                    )}
                                 </div>
                             </Link>
                         );
@@ -190,6 +199,9 @@ export function ListingsGrid({
                                         </div>
                                     )}
                                     {isSold && <SoldBadge variant="overlay" />}
+                                    {listing.free_shipping && (
+                                        <FreeShippingBadge className="absolute left-1.5 top-1.5" compact />
+                                    )}
                                     <WatchButton
                                         listingId={listing.id}
                                         isWatched={watchedIds.includes(
@@ -219,6 +231,9 @@ export function ListingsGrid({
                                             />
                                             {isSold && (
                                                 <SoldBadge className="mt-1 w-fit text-[10px]" />
+                                            )}
+                                            {listing.free_shipping && (
+                                                <FreeShippingBadge className="mt-1" compact />
                                             )}
                                         </div>
                                         <UserRatingBadge

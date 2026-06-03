@@ -69,6 +69,7 @@ class Listing extends Model
         'highest_bid_amount',
         'current_price',
         'display_price',
+        'free_shipping',
         'reserve_met',
         'auction_ended',
     ];
@@ -194,6 +195,18 @@ class Listing extends Model
         return $this->currentPrice();
     }
 
+    public function hasFreeShipping(): bool
+    {
+        return $this->shipping_payer === 'seller'
+            || $this->shipping_cost_type === 'free'
+            || (int) ($this->shipping_cost ?? -1) === 0;
+    }
+
+    public function getFreeShippingAttribute(): bool
+    {
+        return $this->hasFreeShipping();
+    }
+
     public function minimumBidAmount(): int
     {
         $currentPrice = $this->currentPrice();
@@ -250,6 +263,15 @@ class Listing extends Model
     public function scopeItems($query)
     {
         return $query->where('listing_type', 'item');
+    }
+
+    public function scopeFreeShipping($query)
+    {
+        return $query->where(function ($query) {
+            $query->where('shipping_payer', 'seller')
+                ->orWhere('shipping_cost_type', 'free')
+                ->orWhere('shipping_cost', 0);
+        });
     }
 
     public function scopeAdvertisements($query)

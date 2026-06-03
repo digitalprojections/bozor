@@ -1,6 +1,7 @@
 import { Link } from '@inertiajs/react';
 import { Package } from 'lucide-react';
 import { useTranslations } from '@/hooks/use-translations';
+import { FreeShippingBadge } from '@/components/listings/free-shipping-badge';
 
 interface Listing {
     id: number;
@@ -10,6 +11,7 @@ interface Listing {
     status: string;
     images?: string[];
     main_image_url?: string;
+    free_shipping?: boolean;
 }
 
 interface RecommendationsSectionProps {
@@ -64,6 +66,9 @@ export function RecommendationsSection({
                                 <span className="absolute bottom-0 left-0 rounded-tr-sm bg-black/70 px-1.5 py-0.5 text-[11px] font-bold text-white">
                                     ¥{displayPrice.toLocaleString()}
                                 </span>
+                                {item.free_shipping && (
+                                    <FreeShippingBadge className="absolute left-1 top-1" compact />
+                                )}
                             </div>
                             <span className="line-clamp-2 text-xs leading-snug text-[#333333] group-hover:text-[#e62017]">
                                 {item.title}

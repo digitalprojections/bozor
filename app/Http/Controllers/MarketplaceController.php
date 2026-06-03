@@ -45,6 +45,10 @@ class MarketplaceController extends Controller
             $listingsQuery->where('status', '!=', 'sold');
         }
 
+        if ($request->boolean('free_shipping')) {
+            $listingsQuery->freeShipping();
+        }
+
         // Apply search filter
         if ($request->filled('search')) {
             $listingsQuery->where(function ($q) use ($request) {
@@ -88,6 +92,7 @@ class MarketplaceController extends Controller
                 'category' => $request->category,
                 'sort' => $sort,
                 'hide_sold' => $request->boolean('hide_sold'),
+                'free_shipping' => $request->boolean('free_shipping'),
             ],
             'seo' => [
                 'title' => __('Marketplace').' | '.config('app.name'),

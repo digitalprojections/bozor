@@ -1,4 +1,4 @@
-import { Search, Grid, List, SlidersHorizontal } from 'lucide-react';
+import { Search, Grid, List, SlidersHorizontal, Truck } from 'lucide-react';
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -25,11 +25,13 @@ interface SearchAndFiltersProps {
     currentSort: string;
     currentSearch: string;
     hideSold: boolean;
+    freeShipping: boolean;
     viewMode: 'grid' | 'list';
     onSearch: (search: string) => void;
     onCategoryChange: (categoryId: number | null) => void;
     onSortChange: (sort: string) => void;
     onHideSoldChange: (hideSold: boolean) => void;
+    onFreeShippingChange: (freeShipping: boolean) => void;
     onViewModeChange: (mode: 'grid' | 'list') => void;
 }
 
@@ -39,11 +41,13 @@ export function SearchAndFilters({
     currentSort,
     currentSearch,
     hideSold,
+    freeShipping,
     viewMode,
     onSearch,
     onCategoryChange,
     onSortChange,
     onHideSoldChange,
+    onFreeShippingChange,
     onViewModeChange,
 }: SearchAndFiltersProps) {
     const { t } = useTranslations();
@@ -131,6 +135,17 @@ export function SearchAndFilters({
                         />
                         <span>{t('marketplace.filters.hide_sold')}</span>
                     </label>
+
+                    <label className="flex h-10 w-full cursor-pointer items-center gap-2 rounded-md border border-emerald-200 bg-emerald-50 px-3 text-sm font-medium text-emerald-800 sm:w-auto">
+                        <Checkbox
+                            checked={freeShipping}
+                            onCheckedChange={(checked) =>
+                                onFreeShippingChange(checked === true)
+                            }
+                        />
+                        <Truck className="h-4 w-4 text-emerald-600" />
+                        <span>{t('marketplace.filters.free_shipping')}</span>
+                    </label>
                 </div>
 
                 {/* View Mode Toggle */}
@@ -155,7 +170,7 @@ export function SearchAndFilters({
             </div>
 
             {/* Active Filters */}
-            {(currentSearch || currentCategory || hideSold) && (
+            {(currentSearch || currentCategory || hideSold || freeShipping) && (
                 <div className="flex flex-wrap gap-2">
                     {currentSearch && (
                         <Badge variant="secondary">
@@ -194,6 +209,18 @@ export function SearchAndFilters({
                                 className="ml-2"
                             >
                                 ×
+                            </button>
+                        </Badge>
+                    )}
+                    {freeShipping && (
+                        <Badge className="bg-emerald-500 text-white hover:bg-emerald-500">
+                            <Truck className="h-3 w-3" />
+                            {t('marketplace.filters.free_shipping')}
+                            <button
+                                onClick={() => onFreeShippingChange(false)}
+                                className="ml-2"
+                            >
+                                x
                             </button>
                         </Badge>
                     )}

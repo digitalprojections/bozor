@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Package } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SoldBadge } from './sold-badge';
+import { FreeShippingBadge } from './free-shipping-badge';
 
 interface Listing {
     id: number;
@@ -14,6 +15,7 @@ interface Listing {
     images: string[];
     main_image_url?: string | null;
     status: string;
+    free_shipping?: boolean;
 }
 
 interface ListingCardProps {
@@ -61,11 +63,17 @@ export function ListingCard({ listing, className }: ListingCardProps) {
                             ¥{displayPrice.toLocaleString()}
                         </Badge>
                     </div>
+                    {listing.free_shipping && (
+                        <FreeShippingBadge className="absolute right-3 top-3" compact />
+                    )}
                 </div>
                 <CardContent className="p-4">
                     <h3 className="truncate leading-tight font-bold text-[#0b1b32] transition-colors group-hover:text-[#0d9488]">
                         {listing.title}
                     </h3>
+                    {listing.free_shipping && (
+                        <FreeShippingBadge className="mt-2" compact />
+                    )}
                 </CardContent>
             </Card>
         </Link>
