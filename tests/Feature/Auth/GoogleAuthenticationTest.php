@@ -66,6 +66,9 @@ class GoogleAuthenticationTest extends TestCase
         $this->assertAuthenticatedAs($user);
         $this->assertFalse((bool) $user->is_guest);
         $this->assertNotNull($user->email_verified_at);
+        $this->assertSame('google', session('auth.login_provider'));
+        $this->assertNull($user->password);
+        $this->assertFalse($user->has_local_password);
     }
 
     private function fakeGoogleUser(string $email, string $name, string $avatar): void

@@ -39,6 +39,7 @@ import {
     SheetTrigger,
 } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
+import { formatRating } from '@/lib/format';
 import type { BreadcrumbItem } from '@/types';
 import AppLogo from '@/components/app-logo';
 import type { LayoutAds } from '@/types';
@@ -137,9 +138,7 @@ export default function BazaarLayout({
                                                 size={10}
                                                 className="fill-amber-500"
                                             />
-                                            {(
-                                                user?.average_rating || 0
-                                            ).toFixed(1)}
+                                            {formatRating(user?.average_rating)}
                                         </div>
                                         <div className="text-[9px] leading-none text-[#5f6c84]">
                                             ({user?.ratings_count || 0})
@@ -426,7 +425,7 @@ function DefaultSidebar() {
                     <SidebarSection title={t('layout.sidebar.settings')}>
                         <SidebarLink
                             icon={Settings}
-                            label={t('layout.sidebar.options')}
+                            label={t('layout.sidebar.profile')}
                             href="/settings/profile"
                         />
                         <SidebarLink
@@ -436,7 +435,7 @@ function DefaultSidebar() {
                         />
                         <SidebarLink
                             icon={ShieldCheck}
-                            label={t('layout.sidebar.auth')}
+                            label={t('layout.sidebar.two_factor_auth')}
                             href="/settings/two-factor"
                         />
                         <SidebarLink

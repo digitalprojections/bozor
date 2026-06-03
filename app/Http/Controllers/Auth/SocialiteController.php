@@ -7,7 +7,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
-use Illuminate\Support\Str;
 
 class SocialiteController extends Controller
 {
@@ -52,7 +51,7 @@ class SocialiteController extends Controller
             $user = User::create([
                 'name' => $googleUser->getName(),
                 'email' => $googleUser->getEmail(),
-                'password' => bcrypt(Str::random(24)),
+                'password' => null,
                 'avatar' => $googleUser->getAvatar(),
                 'google_avatar' => $googleUser->getAvatar(),
                 'avatar_source' => 'google',
@@ -62,6 +61,7 @@ class SocialiteController extends Controller
         }
 
         Auth::login($user, true);
+        request()->session()->put('auth.login_provider', 'google');
 
         return redirect()->intended(route('marketplace'));
     }

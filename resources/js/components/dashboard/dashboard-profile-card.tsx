@@ -8,6 +8,7 @@ import { useTranslations } from '@/hooks/use-translations';
 import { ChevronRight, Star, CheckCircle2 } from 'lucide-react';
 import { Link } from '@inertiajs/react';
 import { edit } from '@/routes/profile';
+import { formatRating, roundedRating } from '@/lib/format';
 
 interface DashboardProfileCardProps {
     user: User;
@@ -52,14 +53,14 @@ export function DashboardProfileCard({ user, isVerified, rating = '5.0', reviewC
                                             key={star}
                                             size={14}
                                             className={cn(
-                                                star <= Math.round(user.average_rating || 0)
+                                                star <= roundedRating(user.average_rating)
                                                     ? "fill-[#f5b342] text-[#f5b342]"
                                                     : "text-[#d1e2f3]"
                                             )}
                                         />
                                     ))}
                                 </div>
-                                <span className="ml-1 whitespace-nowrap">{(user.average_rating || 0).toFixed(1)}</span>
+                                <span className="ml-1 whitespace-nowrap">{formatRating(user.average_rating)}</span>
                                 <span className="ml-1 text-[#7f8fa4] font-normal">({user.ratings_count || 0})</span>
                             </div>
 

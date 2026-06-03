@@ -18,8 +18,16 @@ class PasswordUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'current_password' => $this->currentPasswordRules(),
+            'current_password' => $this->requiresCurrentPassword()
+                ? $this->currentPasswordRules()
+                : ['nullable'],
             'password' => $this->passwordRules(),
         ];
+    }
+
+    private function requiresCurrentPassword(): bool
+    {
+        return (bool) $this->user()?->has_local_password
+            && $this->session()->get('auth.login_provider') !== 'google';
     }
 }

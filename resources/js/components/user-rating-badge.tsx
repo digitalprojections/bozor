@@ -3,6 +3,7 @@ import { Star } from 'lucide-react';
 import { UserAvatar } from '@/components/user-avatar';
 import { cn } from '@/lib/utils';
 import { Link } from '@inertiajs/react';
+import { roundedRating } from '@/lib/format';
 
 interface UserRatingBadgeProps {
     user: {
@@ -12,7 +13,7 @@ interface UserRatingBadgeProps {
         avatar_url?: string;
         avatar_source?: 'uploaded' | 'mascot' | 'generated' | 'google';
         avatar_seed?: string;
-        average_rating?: number;
+        average_rating?: number | string;
         ratings_count?: number;
     };
     variant?: 'compact' | 'standard' | 'full';
@@ -20,7 +21,7 @@ interface UserRatingBadgeProps {
 }
 
 export function UserRatingBadge({ user, variant = 'standard', className }: UserRatingBadgeProps) {
-    const rating = Math.round(user.average_rating || 0);
+    const rating = roundedRating(user.average_rating);
 
     if (variant === 'compact') {
         return (

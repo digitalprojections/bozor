@@ -59,4 +59,45 @@ class PasswordUpdateTest extends TestCase
             ->assertSessionHasErrors('current_password')
             ->assertRedirect(route('user-password.edit'));
     }
+
+    public function test_passwordless_user_can_set_password_without_current_password()
+    {
+        $user = User::factory()->create([
+            'password' => null,
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('user-password.edit'))
+            ->put(route('user-password.update'), [
+                'password' => 'new-password',
+                'password_confirmation' => 'new-password',
+            ]);
+
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('user-password.edit'));
+
+        $this->assertTrue(Hash::check('new-password', $user->refresh()->password));
+    }
+
+    public function test_google_authenticated_user_can_set_password_without_current_password()
+    {
+        $user = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->withSession(['auth.login_provider' => 'google'])
+            ->from(route('user-password.edit'))
+            ->put(route('user-password.update'), [
+                'password' => 'new-password',
+                'password_confirmation' => 'new-password',
+            ]);
+
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('user-password.edit'));
+
+        $this->assertTrue(Hash::check('new-password', $user->refresh()->password));
+    }
 }

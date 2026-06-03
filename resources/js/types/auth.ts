@@ -11,9 +11,10 @@ export type User = {
     avatar_seed?: string;
     gender?: 'male' | 'female' | 'other' | 'unspecified';
     email_verified_at: string | null;
-    average_rating?: number;
+    average_rating?: number | string;
     ratings_count?: number;
     two_factor_enabled?: boolean;
+    has_local_password?: boolean;
     is_guest?: boolean;
     created_at: string;
     updated_at: string;
@@ -22,6 +23,7 @@ export type User = {
 
 export type Auth = {
     user: User;
+    logged_in_with_google?: boolean;
 };
 
 export type TwoFactorSetupData = {

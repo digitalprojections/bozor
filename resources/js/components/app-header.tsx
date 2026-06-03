@@ -31,6 +31,7 @@ import { UserMenuContent } from '@/components/user-menu-content';
 import { UserAvatar } from '@/components/user-avatar';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { cn, toUrl } from '@/lib/utils';
+import { formatRating } from '@/lib/format';
 import type { BreadcrumbItem, NavItem } from '@/types';
 import AppLogo from './app-logo';
 import { dashboard, home, login, register } from '@/routes';
@@ -260,7 +261,7 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                                         <div className="flex flex-col items-end mr-1">
                                             <div className="flex items-center gap-1 text-[10px] font-bold text-amber-500">
                                                 <Star size={10} className="fill-amber-500" />
-                                                {(auth.user.average_rating || 0).toFixed(1)}
+                                                {formatRating(auth.user.average_rating)}
                                             </div>
                                             <div className="text-[9px] text-muted-foreground leading-none">
                                                 ({auth.user.ratings_count || 0})

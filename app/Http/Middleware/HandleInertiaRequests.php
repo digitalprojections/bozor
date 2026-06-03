@@ -48,6 +48,7 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user() ? $request->user()->append(['average_rating', 'ratings_count']) : null,
                 'is_admin' => EnsureAdmin::isAdminEmail($request->user()?->email),
+                'logged_in_with_google' => $request->session()->get('auth.login_provider') === 'google',
             ],
             'sidebarOpen' => !$request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'locale' => $locale,

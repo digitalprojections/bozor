@@ -53,6 +53,53 @@ class TwoFactorAuthenticationTest extends TestCase
         $response->assertRedirect(route('password.confirm'));
     }
 
+    public function test_passwordless_user_can_view_two_factor_settings_without_password_confirmation()
+    {
+        if (! Features::canManageTwoFactorAuthentication()) {
+            $this->markTestSkipped('Two-factor authentication is not enabled.');
+        }
+
+        $user = User::factory()->create([
+            'password' => null,
+        ]);
+
+        Features::twoFactorAuthentication([
+            'confirm' => true,
+            'confirmPassword' => true,
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('two-factor.show'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('settings/two-factor')
+                ->where('twoFactorEnabled', false)
+            );
+    }
+
+    public function test_google_authenticated_user_can_view_two_factor_settings_without_password_confirmation()
+    {
+        if (! Features::canManageTwoFactorAuthentication()) {
+            $this->markTestSkipped('Two-factor authentication is not enabled.');
+        }
+
+        $user = User::factory()->create();
+
+        Features::twoFactorAuthentication([
+            'confirm' => true,
+            'confirmPassword' => true,
+        ]);
+
+        $this->actingAs($user)
+            ->withSession(['auth.login_provider' => 'google'])
+            ->get(route('two-factor.show'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('settings/two-factor')
+                ->where('twoFactorEnabled', false)
+            );
+    }
+
     public function test_two_factor_settings_page_does_not_requires_password_confirmation_when_disabled()
     {
         if (! Features::canManageTwoFactorAuthentication()) {

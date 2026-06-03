@@ -66,6 +66,7 @@ class User extends Authenticatable
         'avatar_url',
         'masked_name',
         'has_accepted_terms',
+        'has_local_password',
         'store_banner_url',
     ];
 
@@ -141,7 +142,7 @@ class User extends Authenticatable
 
     public function getAverageRatingAttribute()
     {
-        return $this->receivedRatings()->avg('score') ?: 0;
+        return (float) ($this->receivedRatings()->avg('score') ?: 0);
     }
 
     public function getRatingsCountAttribute()
@@ -185,6 +186,11 @@ class User extends Authenticatable
     public function getHasAcceptedTermsAttribute(): bool
     {
         return $this->terms_accepted_at !== null;
+    }
+
+    public function getHasLocalPasswordAttribute(): bool
+    {
+        return filled($this->password);
     }
 
     /**

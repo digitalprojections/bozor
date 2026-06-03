@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { ListingCard } from '@/components/listings/listing-card';
 import { UserAvatar } from '@/components/user-avatar';
 import { cn } from '@/lib/utils';
+import { formatRating, roundedRating } from '@/lib/format';
 import type { BreadcrumbItem } from '@/types';
 
 interface Rating {
@@ -62,7 +63,7 @@ interface ProfileProps {
         avatar_source?: 'uploaded' | 'mascot' | 'generated' | 'google';
         avatar_seed?: string;
         created_at: string;
-        average_rating: number;
+        average_rating: number | string;
         ratings_count: number;
         received_ratings: Rating[];
         store_name: string | null;
@@ -208,12 +209,12 @@ export default function Show({ profileUser, activeListings, soldListings }: Prof
                                                     size={14}
                                                     className={cn(
                                                         "transition-colors",
-                                                        star <= Math.round(profileUser.average_rating || 0) ? "text-amber-500 fill-amber-500" : "text-slate-200"
+                                                        star <= roundedRating(profileUser.average_rating) ? "text-amber-500 fill-amber-500" : "text-slate-200"
                                                     )}
                                                 />
                                             ))}
                                         </div>
-                                        <span className="text-lg">{profileUser.average_rating.toFixed(1)}</span>
+                                        <span className="text-lg">{formatRating(profileUser.average_rating)}</span>
                                     </div>
                                 </div>
                                 <div className="flex items-center justify-between">
