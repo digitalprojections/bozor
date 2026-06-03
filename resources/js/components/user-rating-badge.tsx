@@ -1,7 +1,6 @@
 import React from 'react';
 import { Star } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useInitials } from '@/hooks/use-initials';
+import { UserAvatar } from '@/components/user-avatar';
 import { cn } from '@/lib/utils';
 import { Link } from '@inertiajs/react';
 
@@ -11,6 +10,8 @@ interface UserRatingBadgeProps {
         name: string;
         masked_name?: string;
         avatar_url?: string;
+        avatar_source?: 'uploaded' | 'mascot' | 'generated' | 'google';
+        avatar_seed?: string;
         average_rating?: number;
         ratings_count?: number;
     };
@@ -19,18 +20,12 @@ interface UserRatingBadgeProps {
 }
 
 export function UserRatingBadge({ user, variant = 'standard', className }: UserRatingBadgeProps) {
-    const getInitials = useInitials();
     const rating = Math.round(user.average_rating || 0);
 
     if (variant === 'compact') {
         return (
             <div className={cn("flex items-center gap-2", className)}>
-                <Avatar className="h-6 w-6">
-                    <AvatarImage src={user.avatar_url} alt={user.name} />
-                    <AvatarFallback className="text-[10px]">
-                        {getInitials(user.name)}
-                    </AvatarFallback>
-                </Avatar>
+                <UserAvatar user={user} className="h-6 w-6" fallbackClassName="text-[10px]" mascotSize={22} />
                 <span className="text-xs text-muted-foreground truncate">
                     {user.masked_name || user.name}
                 </span>
@@ -40,15 +35,16 @@ export function UserRatingBadge({ user, variant = 'standard', className }: UserR
 
     return (
         <div className={cn("flex items-center gap-3", className)}>
-            <Avatar className={cn(
-                "border border-[#e1e9f2] shrink-0",
-                variant === 'full' ? "h-11 w-11" : "h-9 w-9"
-            )}>
-                <AvatarImage src={user.avatar_url} alt={user.name} className="object-cover" />
-                <AvatarFallback className="bg-[#d3e0f0] text-[#3a5670] font-semibold">
-                    {getInitials(user.name)}
-                </AvatarFallback>
-            </Avatar>
+            <UserAvatar
+                user={user}
+                className={cn(
+                    "border border-[#e1e9f2] shrink-0",
+                    variant === 'full' ? "h-11 w-11" : "h-9 w-9"
+                )}
+                imageClassName="object-cover"
+                fallbackClassName="bg-[#d3e0f0] text-[#3a5670] font-semibold"
+                mascotSize={variant === 'full' ? 40 : 34}
+            />
             <div className="min-w-0">
                 <div className={cn(
                     "font-bold text-[#0b1b32] truncate",

@@ -3,14 +3,13 @@ import { Head, Link } from '@inertiajs/react';
 import { Star, Package, Calendar, CheckCircle2, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
 import BazaarLayout from '@/layouts/bazaar-layout';
 import { useTranslations } from '@/hooks/use-translations';
-import { useInitials } from '@/hooks/use-initials';
 import { Card, CardContent } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { ListingCard } from '@/components/listings/listing-card';
+import { UserAvatar } from '@/components/user-avatar';
 import { cn } from '@/lib/utils';
 import type { BreadcrumbItem } from '@/types';
 
@@ -24,6 +23,8 @@ interface Rating {
         name: string;
         masked_name: string;
         avatar_url: string;
+        avatar_source?: 'uploaded' | 'mascot' | 'generated' | 'google';
+        avatar_seed?: string;
     };
 }
 
@@ -58,6 +59,8 @@ interface ProfileProps {
         name: string;
         masked_name: string;
         avatar_url: string;
+        avatar_source?: 'uploaded' | 'mascot' | 'generated' | 'google';
+        avatar_seed?: string;
         created_at: string;
         average_rating: number;
         ratings_count: number;
@@ -72,7 +75,6 @@ interface ProfileProps {
 
 export default function Show({ profileUser, activeListings, soldListings }: ProfileProps) {
     const { t } = useTranslations();
-    const getInitials = useInitials();
     const profileDisplayName = profileUser.masked_name || profileUser.name;
 
     const breadcrumbs: BreadcrumbItem[] = [
@@ -172,12 +174,13 @@ export default function Show({ profileUser, activeListings, soldListings }: Prof
                     <Card className="rounded-[32px] border-[#edf2f9] shadow-sm overflow-hidden p-8 bg-white">
                         <div className="flex flex-col items-center text-center gap-5">
                             <div className="relative">
-                                <Avatar className="h-28 w-28 border-4 border-white shadow-xl">
-                                    <AvatarImage src={profileUser.avatar_url} alt={profileDisplayName} className="object-cover" />
-                                    <AvatarFallback className="bg-[#f0f5fd] text-[#3a5670] text-4xl font-extrabold">
-                                        {getInitials(profileDisplayName)}
-                                    </AvatarFallback>
-                                </Avatar>
+                                <UserAvatar
+                                    user={profileUser}
+                                    className="h-28 w-28 border-4 border-white shadow-xl"
+                                    imageClassName="object-cover"
+                                    fallbackClassName="bg-[#f0f5fd] text-[#3a5670] text-4xl font-extrabold"
+                                    mascotSize={104}
+                                />
                                 <div className="absolute bottom-1 right-1 bg-white rounded-full p-1 shadow-sm border border-[#f0f5fd]">
                                     <CheckCircle2 size={20} className="text-[#0d9488]" />
                                 </div>
@@ -329,12 +332,12 @@ export default function Show({ profileUser, activeListings, soldListings }: Prof
                                         <Card key={rating.id} className="rounded-[24px] border-[#edf2f9] shadow-sm p-6 bg-white hover:border-[#cbd5e1] transition-colors">
                                             <div className="flex gap-5">
                                                 <Link href={`/users/${rating.rater.id}`}>
-                                                    <Avatar className="h-12 w-12 border-2 border-[#f0f5fd]">
-                                                        <AvatarImage src={rating.rater.avatar_url} alt={rating.rater.masked_name || rating.rater.name} />
-                                                        <AvatarFallback className="bg-[#f0f5fd] text-[#2b4b8f] font-bold">
-                                                            {getInitials(rating.rater.masked_name || rating.rater.name)}
-                                                        </AvatarFallback>
-                                                    </Avatar>
+                                                    <UserAvatar
+                                                        user={rating.rater}
+                                                        className="h-12 w-12 border-2 border-[#f0f5fd]"
+                                                        fallbackClassName="bg-[#f0f5fd] text-[#2b4b8f] font-bold"
+                                                        mascotSize={44}
+                                                    />
                                                 </Link>
                                                 <div className="flex-1 min-w-0">
                                                     <div className="flex justify-between items-start mb-2">

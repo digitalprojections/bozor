@@ -2,7 +2,6 @@ import { Link, usePage } from '@inertiajs/react';
 import { useTranslations } from '@/hooks/use-translations';
 import { BookOpen, Folder, LayoutGrid, LogIn, Menu, Search, Star, UserPlus } from 'lucide-react';
 import { Breadcrumbs } from '@/components/breadcrumbs';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -29,8 +28,8 @@ import {
     TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { UserMenuContent } from '@/components/user-menu-content';
+import { UserAvatar } from '@/components/user-avatar';
 import { useCurrentUrl } from '@/hooks/use-current-url';
-import { useInitials } from '@/hooks/use-initials';
 import { cn, toUrl } from '@/lib/utils';
 import type { BreadcrumbItem, NavItem } from '@/types';
 import AppLogo from './app-logo';
@@ -68,7 +67,6 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
     const page = usePage();
     const { auth } = page.props;
     const { t } = useTranslations();
-    const getInitials = useInitials();
     const { isCurrentUrl, whenCurrentUrl } = useCurrentUrl();
     return (
         <>
@@ -268,15 +266,11 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                                                 ({auth.user.ratings_count || 0})
                                             </div>
                                         </div>
-                                        <Avatar className="size-8 overflow-hidden rounded-full border border-neutral-200">
-                                            <AvatarImage
-                                                src={auth.user.avatar_url}
-                                                alt={auth.user.name}
-                                            />
-                                            <AvatarFallback className="rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
-                                                {getInitials(auth.user.name)}
-                                            </AvatarFallback>
-                                        </Avatar>
+                                        <UserAvatar
+                                            user={auth.user}
+                                            className="size-8 border border-neutral-200"
+                                            mascotSize={30}
+                                        />
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent className="w-56" align="end">

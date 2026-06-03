@@ -2,11 +2,10 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { UserAvatar } from '@/components/user-avatar';
 import { User } from '@/types/auth';
 import { useTranslations } from '@/hooks/use-translations';
-import { useInitials } from '@/hooks/use-initials';
-import { ChevronRight, Star, User as UserIcon, CheckCircle2, Settings } from 'lucide-react';
+import { ChevronRight, Star, CheckCircle2 } from 'lucide-react';
 import { Link } from '@inertiajs/react';
 import { edit } from '@/routes/profile';
 
@@ -19,19 +18,19 @@ interface DashboardProfileCardProps {
 
 export function DashboardProfileCard({ user, isVerified, rating = '5.0', reviewCount = 0 }: DashboardProfileCardProps) {
     const { t } = useTranslations();
-    const getInitials = useInitials();
 
     return (
         <Card className="overflow-hidden rounded-[4px] border-[#f0f2f5] bg-white shadow-sm">
             <CardContent className="p-6">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
                     {/* Avatar */}
-                    <Avatar className="h-16 w-16 border border-[#e1e9f2]">
-                        <AvatarImage src={user.avatar_url || undefined} alt={user.name} className="object-cover" />
-                        <AvatarFallback className="bg-[#f0f2f5] text-[#3a5670] text-xl font-semibold">
-                            {getInitials(user.name)}
-                        </AvatarFallback>
-                    </Avatar>
+                    <UserAvatar
+                        user={user}
+                        className="h-16 w-16 border border-[#e1e9f2]"
+                        imageClassName="object-cover"
+                        fallbackClassName="bg-[#f0f2f5] text-[#3a5670] text-xl font-semibold"
+                        mascotSize={58}
+                    />
 
                     {/* Identity Info */}
                     <div className="flex-1 min-w-0 space-y-2">

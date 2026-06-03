@@ -25,12 +25,11 @@ import {
 } from 'lucide-react';
 import React, { ReactNode } from 'react';
 import { useTranslations } from '@/hooks/use-translations';
-import { useInitials } from '@/hooks/use-initials';
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { LocaleSwitcher } from '@/components/locale-switcher';
 import { LoginRequiredDialog } from '@/components/login-required-dialog';
 import { AdSlot } from '@/components/ads/ad-slot';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { UserAvatar } from '@/components/user-avatar';
 import {
     Sheet,
     SheetContent,
@@ -57,7 +56,6 @@ export default function BazaarLayout({
     sidebar,
 }: BazaarLayoutProps) {
     const { t } = useTranslations();
-    const getInitials = useInitials();
     const { auth, layoutAds = {} } = usePage().props as any;
     const user = auth.user && !auth.user.is_guest ? auth.user : null;
     const ads = layoutAds as LayoutAds;
@@ -146,20 +144,13 @@ export default function BazaarLayout({
                                             ({user?.ratings_count || 0})
                                         </div>
                                     </div>
-                                    <Avatar className="h-8 w-8 border border-[#e1e9f2]">
-                                        <AvatarImage
-                                            src={user?.avatar_url || undefined}
-                                            alt={user?.name}
-                                            className="object-cover"
-                                        />
-                                        <AvatarFallback className="bg-[#d9e2ef] text-xs font-semibold text-[#3a5670]">
-                                            {user?.name ? (
-                                                getInitials(user.name)
-                                            ) : (
-                                                <Star size={14} />
-                                            )}
-                                        </AvatarFallback>
-                                    </Avatar>
+                                    <UserAvatar
+                                        user={user}
+                                        className="h-8 w-8 border border-[#e1e9f2]"
+                                        imageClassName="object-cover"
+                                        fallbackClassName="bg-[#d9e2ef] text-xs font-semibold text-[#3a5670]"
+                                        mascotSize={30}
+                                    />
                                     <span className="hidden font-bold text-[#0b1b32] lg:inline">
                                         {user?.masked_name || user?.name}
                                     </span>
