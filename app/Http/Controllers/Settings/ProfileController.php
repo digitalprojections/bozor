@@ -9,11 +9,21 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class ProfileController extends Controller
 {
+    private function deleteStoredFile(?string $path): void
+    {
+        if (! $path || str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return;
+        }
+
+        Storage::disk('public')->delete($path);
+    }
+
     /**
      * Show the user's profile settings page.
      */
@@ -34,13 +44,13 @@ class ProfileController extends Controller
         
         // Handle avatar removal
         if ($request->boolean('remove_avatar') && $user->avatar) {
-            \Illuminate\Support\Facades\Storage::disk('public')->delete($user->avatar);
+            $this->deleteStoredFile($user->avatar);
             $user->avatar = null;
         }
 
         // Handle store banner removal
         if ($request->boolean('remove_store_banner') && $user->store_banner) {
-            \Illuminate\Support\Facades\Storage::disk('public')->delete($user->store_banner);
+            $this->deleteStoredFile($user->store_banner);
             $user->store_banner = null;
         }
         
@@ -48,7 +58,7 @@ class ProfileController extends Controller
         if ($request->hasFile('avatar')) {
             // Delete old avatar if exists
             if ($user->avatar) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($user->avatar);
+                $this->deleteStoredFile($user->avatar);
             }
             
             // Store new avatar
@@ -60,7 +70,7 @@ class ProfileController extends Controller
         if ($request->hasFile('store_banner')) {
             // Delete old banner if exists
             if ($user->store_banner) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($user->store_banner);
+                $this->deleteStoredFile($user->store_banner);
             }
 
             // Store new banner

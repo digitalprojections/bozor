@@ -11,6 +11,11 @@ use Illuminate\Support\Str;
 
 class SocialiteController extends Controller
 {
+    private function shouldUseGoogleAvatar(User $user): bool
+    {
+        return ! $user->avatar || str_starts_with($user->avatar, 'http://') || str_starts_with($user->avatar, 'https://');
+    }
+
     public function redirectToGoogle()
     {
         return Socialite::driver('google')->redirect();
@@ -28,13 +33,17 @@ class SocialiteController extends Controller
         $user = User::where('email', $googleUser->getEmail())->first();
 
         if ($user) {
-            // Always update user name and avatar from Google to ensure sync
-            $user->update([
+            $updates = [
                 'name' => $googleUser->getName(),
-                'avatar' => $googleUser->getAvatar(),
                 'is_guest' => false,
                 'email_verified_at' => $user->email_verified_at ?? now(),
-            ]);
+            ];
+
+            if ($this->shouldUseGoogleAvatar($user)) {
+                $updates['avatar'] = $googleUser->getAvatar();
+            }
+
+            $user->update($updates);
         } else {
             // Create a new user
             $user = User::create([

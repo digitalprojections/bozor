@@ -73,6 +73,11 @@ export default function Profile({
 
                     <Form
                         {...ProfileController.update.form()}
+                        transform={(data) => ({
+                            ...data,
+                            ...(avatarFile ? { avatar: avatarFile } : {}),
+                            ...(bannerFile ? { store_banner: bannerFile } : {}),
+                        })}
                         options={{
                             preserveScroll: true,
                         }}
@@ -97,22 +102,6 @@ export default function Profile({
                                         />
                                     )}
                                 </div>
-
-                                {/* File input for avatar - only included when file is selected */}
-                                {avatarFile && (
-                                    <input
-                                        type="file"
-                                        name="avatar"
-                                        className="hidden"
-                                        ref={(input) => {
-                                            if (input) {
-                                                const dataTransfer = new DataTransfer();
-                                                dataTransfer.items.add(avatarFile);
-                                                input.files = dataTransfer.files;
-                                            }
-                                        }}
-                                    />
-                                )}
 
                                 {/* Hidden inputs for avatar data */}
                                 {avatarStyle && (
@@ -141,21 +130,6 @@ export default function Profile({
                                         type="hidden"
                                         name="remove_avatar"
                                         value="1"
-                                    />
-                                )}
-
-                                {bannerFile && (
-                                    <input
-                                        type="file"
-                                        name="store_banner"
-                                        className="hidden"
-                                        ref={(input) => {
-                                            if (input) {
-                                                const dataTransfer = new DataTransfer();
-                                                dataTransfer.items.add(bannerFile);
-                                                input.files = dataTransfer.files;
-                                            }
-                                        }}
                                     />
                                 )}
 

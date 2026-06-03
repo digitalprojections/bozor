@@ -83,6 +83,7 @@ trait ProfileValidationRules
             'string',
             Rule::in([
                 'initials',
+                'mascot',
                 'avataaars',
                 'personas',
                 'lorelei',

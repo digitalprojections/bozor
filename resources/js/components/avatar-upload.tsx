@@ -150,12 +150,14 @@ export function AvatarUpload({
         : previewUrl || user.avatar_url;
 
     const hasCustomAvatar = user.avatar && !removeAvatar;
+    const hasUploadedAvatar = Boolean(user.avatar && !/^https?:\/\//.test(user.avatar));
+    const shouldShowMascot = selectedStyle === 'mascot' && !previewUrl && !hasUploadedAvatar;
 
     return (
         <div className="space-y-4">
             <div className="flex items-start gap-6">
                 <Avatar className="h-24 w-24 overflow-hidden rounded-full border border-sidebar-border bg-background">
-                    {selectedStyle === 'mascot' ? (
+                    {shouldShowMascot ? (
                         <div className="flex h-full w-full items-center justify-center bg-background p-1">
                             <MascotAvatar {...mascotConfig} size={88} />
                         </div>

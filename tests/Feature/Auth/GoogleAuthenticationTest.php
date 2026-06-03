@@ -33,6 +33,25 @@ class GoogleAuthenticationTest extends TestCase
         $this->assertSame('https://example.com/avatar.jpg', $user->avatar);
     }
 
+    public function test_google_login_does_not_overwrite_existing_uploaded_avatar(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'seller@example.com',
+            'avatar' => 'avatars/custom-avatar.png',
+        ]);
+
+        $this->fakeGoogleUser('seller@example.com', 'Seller Name', 'https://example.com/google-avatar.jpg');
+
+        $this->get('/auth/google/callback')
+            ->assertRedirect(route('marketplace'));
+
+        $user->refresh();
+
+        $this->assertAuthenticatedAs($user);
+        $this->assertSame('Seller Name', $user->name);
+        $this->assertSame('avatars/custom-avatar.png', $user->avatar);
+    }
+
     public function test_google_login_creates_verified_user(): void
     {
         $this->fakeGoogleUser('new-buyer@example.com', 'New Buyer', 'https://example.com/new-avatar.jpg');
