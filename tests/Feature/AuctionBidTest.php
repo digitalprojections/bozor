@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Bid;
 use App\Models\Category;
 use App\Models\Listing;
+use App\Models\Transaction;
 use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -250,6 +251,41 @@ class AuctionBidTest extends TestCase
                 ->has('items', 1)
                 ->where('items.0.id', $listing->id)
             );
+    }
+
+    public function test_opening_ended_won_auction_creates_transaction_context(): void
+    {
+        $buyer = User::factory()->create();
+        $seller = User::factory()->create();
+        $listing = $this->createAuction($seller, [
+            'price' => 1000,
+            'reserve_price' => 1500,
+            'auction_end_date' => now()->subMinute(),
+        ]);
+
+        Bid::create([
+            'listing_id' => $listing->id,
+            'user_id' => $buyer->id,
+            'amount' => 1500,
+        ]);
+
+        $this->actingAs($buyer)
+            ->get(route('listings.show', $listing))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('listing.status', 'sold')
+                ->where('listing.display_price', 1500)
+                ->where('transaction.amount', 1500)
+                ->where('transaction.purchase_type', Transaction::TYPE_AUCTION)
+            );
+
+        $this->assertDatabaseHas('transactions', [
+            'listing_id' => $listing->id,
+            'buyer_id' => $buyer->id,
+            'seller_id' => $seller->id,
+            'amount' => 1500,
+            'purchase_type' => Transaction::TYPE_AUCTION,
+        ]);
     }
 
     public function test_bid_extends_auction_to_full_five_minutes_when_close_to_ending(): void

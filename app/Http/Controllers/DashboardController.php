@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Listing;
 use App\Models\Transaction;
+use App\Services\AuctionTransactionService;
 use App\Services\ListingService;
 use Illuminate\Http\Request;
 
@@ -71,13 +72,29 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function wonItems(Request $request)
+    public function wonItems(Request $request, AuctionTransactionService $auctionTransactions)
     {
         $user = $request->user();
 
+        Listing::where('is_auction', true)
+            ->where('auction_end_date', '<', now())
+            ->whereHas('bids', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->with('bids')
+            ->get()
+            ->filter(function ($listing) use ($user) {
+                $highestBid = $listing->bids->first();
+
+                return $highestBid
+                    && $highestBid->user_id === $user->id
+                    && $listing->reserveMet();
+            })
+            ->each(fn ($listing) => $auctionTransactions->ensureForListing($listing));
+
         // 1. Get items won via "Buy Now" (Transactions)
         $purchasedItems = Transaction::where('buyer_id', $user->id)
-            ->with(['listing.categories', 'seller'])
+            ->with(['listing.categories', 'seller', 'package.transactions'])
             ->latest()
             ->get()
             ->filter(fn ($transaction) => $transaction->listing !== null)
@@ -85,6 +102,8 @@ class DashboardController extends Controller
                 return [
                     'id' => $transaction->listing->id,
                     'transaction_id' => $transaction->id,
+                    'package_id' => $transaction->transaction_package_id,
+                    'package_item_count' => $transaction->package?->transactions?->count() ?? 1,
                     'title' => $transaction->listing->title,
                     'price' => $transaction->amount,
                     'seller' => $transaction->seller,
@@ -92,7 +111,7 @@ class DashboardController extends Controller
                     'main_image_url' => $transaction->listing->main_image_url,
                     'won_at' => $transaction->created_at,
                     'status' => $transaction->status,
-                    'type' => 'purchase',
+                    'type' => $transaction->purchase_type === Transaction::TYPE_AUCTION ? 'auction' : 'purchase',
                 ];
             });
 
@@ -100,11 +119,15 @@ class DashboardController extends Controller
         // An auction is won if it's ended and the user has the highest bid
         $wonAuctions = Listing::where('is_auction', true)
             ->where('auction_end_date', '<', now())
+            ->whereDoesntHave('transactions', function ($query) {
+                $query->where('status', '!=', Transaction::STATUS_CANCELLED);
+            })
             ->whereHas('bids', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             })
             ->with(['bids', 'user', 'transactions' => function ($query) use ($user) {
-                $query->where('buyer_id', $user->id);
+                $query->where('buyer_id', $user->id)
+                    ->with('package.transactions');
             }])
             ->get()
             ->filter(function ($listing) use ($user) {
@@ -120,6 +143,8 @@ class DashboardController extends Controller
                 return [
                     'id' => $listing->id,
                     'transaction_id' => $transaction ? $transaction->id : null,
+                    'package_id' => $transaction?->transaction_package_id,
+                    'package_item_count' => $transaction?->package?->transactions?->count() ?? 1,
                     'title' => $listing->title,
                     'price' => $listing->display_price,
                     'seller' => $listing->user,
@@ -141,12 +166,19 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function soldItems(Request $request)
+    public function soldItems(Request $request, AuctionTransactionService $auctionTransactions)
     {
         $user = $request->user();
 
+        Listing::where('user_id', $user->id)
+            ->where('is_auction', true)
+            ->where('auction_end_date', '<', now())
+            ->with('bids')
+            ->get()
+            ->each(fn ($listing) => $auctionTransactions->ensureForListing($listing));
+
         $soldItems = Transaction::where('seller_id', $user->id)
-            ->with(['listing.categories', 'buyer'])
+            ->with(['listing.categories', 'buyer', 'package.transactions'])
             ->latest()
             ->get()
             ->filter(fn ($transaction) => $transaction->listing !== null)
@@ -154,6 +186,8 @@ class DashboardController extends Controller
                 return [
                     'id' => $transaction->listing->id,
                     'transaction_id' => $transaction->id,
+                    'package_id' => $transaction->transaction_package_id,
+                    'package_item_count' => $transaction->package?->transactions?->count() ?? 1,
                     'title' => $transaction->listing->title,
                     'price' => $transaction->amount,
                     'buyer' => $transaction->buyer,
@@ -161,7 +195,7 @@ class DashboardController extends Controller
                     'main_image_url' => $transaction->listing->main_image_url,
                     'sold_at' => $transaction->created_at,
                     'status' => $transaction->status,
-                    'type' => $transaction->listing->is_auction ? 'auction' : 'purchase',
+                    'type' => $transaction->purchase_type === Transaction::TYPE_AUCTION ? 'auction' : 'purchase',
                 ];
             });
 

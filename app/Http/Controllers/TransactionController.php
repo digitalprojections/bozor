@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Listing;
 use App\Models\Transaction;
+use App\Models\TransactionPackage;
 use App\Notifications\Seller\ListingSold;
 use App\Notifications\TransactionUpdated;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -31,12 +33,16 @@ class TransactionController extends Controller
                 abort(422, 'This listing does not have a Buy Now price.');
             }
 
+            $package = $this->createPackageForListing($listing, auth()->id());
+
             $transaction = Transaction::create([
                 'listing_id' => $listing->id,
                 'buyer_id' => auth()->id(),
                 'seller_id' => $listing->user_id,
+                'transaction_package_id' => $package->id,
                 'amount' => $purchasePrice,
                 'status' => Transaction::STATUS_PENDING_PAYMENT,
+                'purchase_type' => Transaction::TYPE_BUY_NOW,
             ]);
 
             $listing->update(['status' => 'sold']);
@@ -49,7 +55,7 @@ class TransactionController extends Controller
 
     public function show(Transaction $transaction)
     {
-        $transaction->load(['listing', 'seller', 'buyer', 'ratings.rater']);
+        $transaction->load(['listing', 'seller', 'buyer', 'ratings.rater', 'package.transactions.listing']);
         $canSeeFullNames = auth()->check() && in_array(auth()->id(), [$transaction->buyer_id, $transaction->seller_id], true);
 
         return inertia('transactions/show', [
@@ -60,8 +66,10 @@ class TransactionController extends Controller
                 'seller_id' => $transaction->seller_id,
                 'amount' => $transaction->amount,
                 'status' => $transaction->status,
+                'purchase_type' => $transaction->purchase_type ?? Transaction::TYPE_BUY_NOW,
                 'tracking_number' => $transaction->tracking_number,
                 'shipping_method' => $transaction->shipping_method,
+                'package' => $this->transactionPackage($transaction),
                 'paid_at' => $transaction->paid_at,
                 'shipped_at' => $transaction->shipped_at,
                 'delivered_at' => $transaction->delivered_at,
@@ -157,20 +165,31 @@ class TransactionController extends Controller
             'tracking_number' => 'nullable|string|max:255',
         ]);
 
-        if ($transaction->status !== Transaction::STATUS_PAID) {
-            return back()->withErrors(['error' => 'Transaction must be paid before shipping.']);
+        $package = $this->ensurePackage($transaction);
+        $package->load('transactions');
+
+        if ($package->transactions->contains(fn ($item) => $item->status !== Transaction::STATUS_PAID)) {
+            return back()->withErrors(['error' => 'Every transaction in this package must be paid before shipping.']);
         }
 
-        $transaction->update([
-            'status' => Transaction::STATUS_SHIPPED,
-            'shipping_method' => $validated['shipping_method'],
-            'tracking_number' => $validated['tracking_number'],
-            'shipped_at' => now(),
-        ]);
+        DB::transaction(function () use ($package, $validated) {
+            $package->update([
+                'shipping_method' => $validated['shipping_method'],
+                'tracking_number' => $validated['tracking_number'],
+                'shipped_at' => now(),
+            ]);
+
+            $package->transactions()->update([
+                'status' => Transaction::STATUS_SHIPPED,
+                'shipping_method' => $validated['shipping_method'],
+                'tracking_number' => $validated['tracking_number'],
+                'shipped_at' => now(),
+            ]);
+        });
 
         $this->notifySafely($transaction->buyer, new TransactionUpdated($transaction, Transaction::STATUS_SHIPPED, 'buyer'));
 
-        return back()->with('success', 'Item marked as shipped!');
+        return back()->with('success', 'Package marked as shipped!');
     }
 
     public function markAsReceived(Transaction $transaction)
@@ -179,19 +198,94 @@ class TransactionController extends Controller
             abort(403);
         }
 
-        if ($transaction->status !== Transaction::STATUS_SHIPPED) {
-            return back()->withErrors(['error' => 'Item has not been shipped yet.']);
+        $package = $this->ensurePackage($transaction);
+        $package->load('transactions');
+
+        if ($package->transactions->contains(fn ($item) => $item->status !== Transaction::STATUS_SHIPPED)) {
+            return back()->withErrors(['error' => 'Package has not been shipped yet.']);
         }
 
-        $transaction->update([
-            'status' => Transaction::STATUS_RECEIVED,
-            'received_at' => now(),
-            'completed_at' => now(),
-        ]);
+        DB::transaction(function () use ($package) {
+            $package->update([
+                'received_at' => now(),
+            ]);
+
+            $package->transactions()->update([
+                'status' => Transaction::STATUS_RECEIVED,
+                'received_at' => now(),
+                'completed_at' => now(),
+            ]);
+        });
 
         $this->notifySafely($transaction->seller, new TransactionUpdated($transaction, Transaction::STATUS_RECEIVED, 'seller'));
 
-        return back()->with('success', 'Item received! Transaction completed.');
+        return back()->with('success', 'Package received! Transactions completed.');
+    }
+
+    public function consolidatePackages(Request $request)
+    {
+        $validated = $request->validate([
+            'transaction_ids' => ['required', 'array', 'min:1'],
+            'transaction_ids.*' => ['integer', 'distinct', 'exists:transactions,id'],
+            'mode' => ['required', 'in:combine,separate'],
+        ]);
+
+        $result = DB::transaction(function () use ($validated) {
+            $transactions = Transaction::query()
+                ->with(['listing', 'package'])
+                ->whereIn('id', $validated['transaction_ids'])
+                ->lockForUpdate()
+                ->get();
+
+            if ($transactions->count() !== count($validated['transaction_ids'])) {
+                return back()->withErrors(['transaction_ids' => 'Some transactions could not be found.']);
+            }
+
+            $userId = auth()->id();
+            if ($transactions->contains(fn ($transaction) => ! in_array($userId, [$transaction->buyer_id, $transaction->seller_id], true))) {
+                abort(403);
+            }
+
+            if ($transactions->contains(fn ($transaction) => in_array($transaction->status, [
+                Transaction::STATUS_SHIPPED,
+                Transaction::STATUS_DELIVERED,
+                Transaction::STATUS_RECEIVED,
+                Transaction::STATUS_CANCELLED,
+            ], true))) {
+                return back()->withErrors(['transaction_ids' => 'Only unshipped active transactions can be regrouped.']);
+            }
+
+            if ($transactions->pluck('buyer_id')->unique()->count() !== 1 || $transactions->pluck('seller_id')->unique()->count() !== 1) {
+                return back()->withErrors(['transaction_ids' => 'Packages can only combine transactions between the same buyer and seller.']);
+            }
+
+            if ($validated['mode'] === 'separate') {
+                $transactions->each(function (Transaction $transaction) {
+                    $package = $this->createPackageForListing($transaction->listing, $transaction->buyer_id);
+                    $transaction->update(['transaction_package_id' => $package->id]);
+                });
+
+                return;
+            }
+
+            $package = TransactionPackage::create([
+                'buyer_id' => $transactions->first()->buyer_id,
+                'seller_id' => $transactions->first()->seller_id,
+                ...$this->shippingForPackage($transactions),
+            ]);
+
+            Transaction::query()
+                ->whereIn('id', $transactions->pluck('id'))
+                ->update(['transaction_package_id' => $package->id]);
+        });
+
+        if ($result) {
+            return $result;
+        }
+
+        return back()->with('success', $validated['mode'] === 'combine'
+            ? 'Selected items were combined into one package.'
+            : 'Selected items were separated into individual packages.');
     }
 
     private function notifySafely($notifiable, $notification): void
@@ -210,6 +304,88 @@ class TransactionController extends Controller
             'name' => $canSeeFullName ? $user->name : $user->masked_name,
             'masked_name' => $user->masked_name,
             'avatar_url' => $user->avatar_url,
+        ];
+    }
+
+    private function createPackageForListing(Listing $listing, int $buyerId): TransactionPackage
+    {
+        return TransactionPackage::create([
+            'buyer_id' => $buyerId,
+            'seller_id' => $listing->user_id,
+            ...$this->shippingForPackage(collect([(object) ['listing' => $listing]])),
+        ]);
+    }
+
+    private function ensurePackage(Transaction $transaction): TransactionPackage
+    {
+        if ($transaction->package) {
+            return $transaction->package;
+        }
+
+        $transaction->loadMissing('listing');
+        $package = $this->createPackageForListing($transaction->listing, $transaction->buyer_id);
+        $transaction->update(['transaction_package_id' => $package->id]);
+
+        return $package;
+    }
+
+    private function shippingForPackage(Collection $transactions): array
+    {
+        $listings = $transactions->map(fn ($transaction) => $transaction->listing)->filter();
+
+        if ($listings->contains(fn (Listing $listing) => $listing->shipping_cost_type === 'chakubarai')) {
+            return [
+                'shipping_cost_type' => 'chakubarai',
+                'shipping_cost' => null,
+            ];
+        }
+
+        $fixedCosts = $listings
+            ->filter(fn (Listing $listing) => $listing->shipping_cost_type === 'fixed')
+            ->map(fn (Listing $listing) => (int) ($listing->shipping_cost ?? 0));
+
+        if ($fixedCosts->isNotEmpty()) {
+            return [
+                'shipping_cost_type' => 'fixed',
+                'shipping_cost' => $fixedCosts->max(),
+            ];
+        }
+
+        if ($listings->contains(fn (Listing $listing) => $listing->shipping_cost_type === 'location_based')) {
+            return [
+                'shipping_cost_type' => 'location_based',
+                'shipping_cost' => null,
+            ];
+        }
+
+        return [
+            'shipping_cost_type' => 'free',
+            'shipping_cost' => 0,
+        ];
+    }
+
+    private function transactionPackage(Transaction $transaction): ?array
+    {
+        if (! $transaction->package) {
+            return null;
+        }
+
+        return [
+            'id' => $transaction->package->id,
+            'shipping_cost_type' => $transaction->package->shipping_cost_type,
+            'shipping_cost' => $transaction->package->shipping_cost,
+            'shipping_method' => $transaction->package->shipping_method,
+            'tracking_number' => $transaction->package->tracking_number,
+            'items' => $transaction->package->transactions->map(fn (Transaction $item) => [
+                'id' => $item->id,
+                'amount' => $item->amount,
+                'status' => $item->status,
+                'listing' => [
+                    'id' => $item->listing->id,
+                    'title' => $item->listing->title,
+                    'main_image_url' => $item->listing->main_image_url,
+                ],
+            ])->values(),
         ];
     }
 }

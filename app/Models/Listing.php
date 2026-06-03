@@ -140,6 +140,13 @@ class Listing extends Model
         return $this->hasMany(Transaction::class);
     }
 
+    public function latestTransaction()
+    {
+        return $this->hasOne(Transaction::class)
+            ->where('status', '!=', Transaction::STATUS_CANCELLED)
+            ->latestOfMany();
+    }
+
     public function bids()
     {
         return $this->hasMany(Bid::class)->orderBy('amount', 'desc');
@@ -173,6 +180,17 @@ class Listing extends Model
 
     public function currentPrice(): int
     {
+        if ($this->status === 'sold') {
+            if ($this->relationLoaded('latestTransaction') && $this->latestTransaction) {
+                return (int) $this->latestTransaction->amount;
+            }
+
+            $soldAmount = $this->latestTransaction()->value('amount');
+            if ($soldAmount !== null) {
+                return (int) $soldAmount;
+            }
+        }
+
         if (! $this->is_auction) {
             return (int) $this->price;
         }

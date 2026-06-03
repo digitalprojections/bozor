@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Listing;
-use Carbon\CarbonImmutable;
+use App\Models\Transaction;
 use App\Notifications\WatchlistItemUpdated;
+use App\Services\AuctionTransactionService;
 use App\Services\ListingService;
+use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
@@ -126,13 +128,17 @@ class ListingController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Listing $listing, ListingService $listingService): Response
+    public function show(Listing $listing, ListingService $listingService, AuctionTransactionService $auctionTransactions): Response
     {
-        $listing->load(['user', 'categories'])->loadCount('bids')->loadMax('bids', 'amount');
+        $auctionTransactions->ensureForListing($listing);
+
+        $listing->refresh();
+        $listing->load(['user', 'categories', 'latestTransaction'])->loadCount('bids')->loadMax('bids', 'amount');
         $listing->user->append(['average_rating', 'ratings_count']);
         $highestBid = $listing->bids()->orderBy('amount', 'desc')->first();
         $listing->setAttribute('minimum_bid', $listing->minimumBidAmount());
         $listing->setAttribute('is_highest_bidder', auth()->check() && $highestBid?->user_id === auth()->id());
+        $transaction = $this->visibleTransactionFor($listing);
 
         $recommendations = $listingService->getRecommendations(
             auth()->user(),
@@ -146,6 +152,14 @@ class ListingController extends Controller
 
         return Inertia::render('listings/show', [
             'listing' => $listing,
+            'transaction' => $transaction ? [
+                'id' => $transaction->id,
+                'amount' => $transaction->amount,
+                'status' => $transaction->status,
+                'purchase_type' => $transaction->purchase_type ?? Transaction::TYPE_BUY_NOW,
+                'buyer_id' => $transaction->buyer_id,
+                'seller_id' => $transaction->seller_id,
+            ] : null,
             'is_watched' => auth()->check() ? auth()->user()->watchedListings()->where('listing_id', $listing->id)->exists() : false,
             'recommendations' => $recommendations,
             'seo' => [
@@ -172,6 +186,22 @@ class ListingController extends Controller
                 ],
             ],
         ]);
+    }
+
+    private function visibleTransactionFor(Listing $listing): ?Transaction
+    {
+        if (! auth()->check()) {
+            return null;
+        }
+
+        return $listing->transactions()
+            ->where(function ($query) {
+                $query->where('buyer_id', auth()->id())
+                    ->orWhere('seller_id', auth()->id());
+            })
+            ->where('status', '!=', Transaction::STATUS_CANCELLED)
+            ->latest()
+            ->first();
     }
 
     /**

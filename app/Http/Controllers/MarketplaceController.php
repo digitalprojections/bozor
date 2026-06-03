@@ -33,7 +33,7 @@ class MarketplaceController extends Controller
         $categories = Category::withCount('listings')->get();
 
         // Build listings query with filters
-        $listingsQuery = Listing::with(['user', 'categories'])
+        $listingsQuery = Listing::with(['user', 'categories', 'latestTransaction'])
             ->withCount('bids')
             ->withMax('bids', 'amount')
             ->items()
@@ -67,7 +67,9 @@ class MarketplaceController extends Controller
         // Apply sorting
         $sort = $request->input('sort', 'newest');
         $highestBidSql = '(select max(amount) from bids where bids.listing_id = listings.id)';
-        $displayPriceSql = 'case when coalesce('.$highestBidSql.', 0) > price then coalesce('.$highestBidSql.', 0) else price end';
+        $transactionAmountSql = "(select amount from transactions where transactions.listing_id = listings.id and transactions.status != 'cancelled' order by transactions.created_at desc limit 1)";
+        $auctionPriceSql = 'case when coalesce('.$highestBidSql.', 0) > price then coalesce('.$highestBidSql.', 0) else price end';
+        $displayPriceSql = "case when status = 'sold' and ".$transactionAmountSql.' is not null then '.$transactionAmountSql.' else '.$auctionPriceSql.' end';
         match ($sort) {
             'price_low' => $listingsQuery->orderByRaw($displayPriceSql.' asc'),
             'price_high' => $listingsQuery->orderByRaw($displayPriceSql.' desc'),

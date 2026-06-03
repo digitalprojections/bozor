@@ -1,6 +1,13 @@
 import React from 'react';
 import { Link } from '@inertiajs/react';
-import { Check, Share2, ShoppingBag, Truck } from 'lucide-react';
+import {
+    Check,
+    CreditCard,
+    Share2,
+    ShoppingBag,
+    Trophy,
+    Truck,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslations } from '@/hooks/use-translations';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -52,10 +59,22 @@ interface ListingSidebarProps {
             ratings_count?: number;
         };
     };
+    transaction?: {
+        id: number;
+        amount: number;
+        status: string;
+        purchase_type: 'buy_now' | 'auction' | string;
+        buyer_id: number;
+        seller_id: number;
+    } | null;
     shareUrl?: string;
 }
 
-export function ListingSidebar({ listing, shareUrl }: ListingSidebarProps) {
+export function ListingSidebar({
+    listing,
+    transaction,
+    shareUrl,
+}: ListingSidebarProps) {
     const { t } = useTranslations();
     const { auth, is_watched } = usePage().props as any;
     const purchasePrice =
@@ -70,6 +89,7 @@ export function ListingSidebar({ listing, shareUrl }: ListingSidebarProps) {
         listing.reserve_met === false &&
         listing.status === 'active';
     const currentPrice =
+        transaction?.amount ??
         listing.display_price ??
         listing.current_price ??
         (listing.is_auction
@@ -180,6 +200,56 @@ export function ListingSidebar({ listing, shareUrl }: ListingSidebarProps) {
 
     return (
         <div className="flex flex-col gap-6">
+            {transaction && (
+                <Card className="overflow-hidden rounded-[16px] border-[#c7d2fe] bg-[#f8faff] shadow-sm sm:rounded-[24px]">
+                    <CardHeader className="flex flex-row items-center gap-2 border-b border-[#e5ebff] px-4 py-3 text-sm font-bold text-[#1e2a5a] sm:px-6 sm:py-4 sm:text-base">
+                        <CreditCard size={18} className="text-[#2b4b8f]" />
+                        {t('common.transaction')}
+                    </CardHeader>
+                    <CardContent className="flex flex-col gap-4 p-4 sm:p-6">
+                        <div className="flex items-center justify-between gap-3">
+                            <div className="flex items-center gap-2 text-sm font-bold text-[#1a263b]">
+                                {transaction.purchase_type === 'auction' ? (
+                                    <Trophy
+                                        size={16}
+                                        className="text-[#0d9488]"
+                                    />
+                                ) : (
+                                    <ShoppingBag
+                                        size={16}
+                                        className="text-[#2b4b8f]"
+                                    />
+                                )}
+                                {transaction.purchase_type === 'auction'
+                                    ? t('listing.type.auction')
+                                    : t('listing.type.purchase')}
+                            </div>
+                            <span className="rounded-full bg-white px-3 py-1 text-xs font-bold text-[#475569]">
+                                {t(
+                                    `transaction.status.${transaction.status}`,
+                                ) || transaction.status}
+                            </span>
+                        </div>
+                        <div className="flex items-end justify-between gap-3">
+                            <div className="flex flex-col gap-1">
+                                <span className="text-xs font-medium text-[#64748b]">
+                                    {t('transaction.details.total')}
+                                </span>
+                                <PriceDisplay
+                                    price={transaction.amount}
+                                    size="lg"
+                                />
+                            </div>
+                            <Link href={`/transactions/${transaction.id}`}>
+                                <Button className="h-10 rounded-full bg-[#2b4b8f] px-5 text-sm font-bold text-white hover:bg-[#203a70]">
+                                    {t('common.view')}
+                                </Button>
+                            </Link>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
+
             {/* Bid / Watch Action Card */}
             <Card className="overflow-hidden rounded-[16px] border-[#edf2f9] shadow-sm sm:rounded-[24px]">
                 <CardContent className="flex flex-col gap-4 p-4 sm:gap-5 sm:p-6">
@@ -209,7 +279,9 @@ export function ListingSidebar({ listing, shareUrl }: ListingSidebarProps) {
                     <div className="flex flex-col gap-1">
                         <span className="text-xs text-muted-foreground sm:text-sm">
                             {listing.is_auction
-                                ? t('listing.show.current_price')
+                                ? listing.status === 'sold'
+                                    ? t('listing.show.final_price')
+                                    : t('listing.show.current_price')
                                 : t('listing.create.price')}
                         </span>
                         <PriceDisplay price={currentPrice} size="lg" />
@@ -394,9 +466,12 @@ export function ListingSidebar({ listing, shareUrl }: ListingSidebarProps) {
                                 {t('listing.sidebar.payment')}
                             </span>
                             <span className="text-right font-medium text-[#1a263b]">
-                                {t('transaction.payment.cash')},{' '}
-                                {t('transaction.payment.cod')}
+                                {t('transaction.payment.cash') || 'Cash'}
                             </span>
+                        </div>
+                        <div className="rounded-lg border border-dashed border-[#cbd5e1] bg-[#f8fafc] p-3 text-xs leading-relaxed text-[#475569]">
+                            {t('transaction.payment.cod_contracted_note') ||
+                                'Yamato TA-Q-BIN Collect/COD is only for contracted corporate, organization, or sole-proprietor senders. Individual sellers should not offer COD unless they have the required Yamato contract.'}
                         </div>
                         <a
                             href={YAMATO_RATE_TABLE_URL}

@@ -1,7 +1,8 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../wayfinder'
+import packages from './packages'
 /**
 * @see \App\Http\Controllers\TransactionController::markAsPaid
- * @see app/Http/Controllers/TransactionController.php:92
+ * @see app/Http/Controllers/TransactionController.php:100
  * @route '/transactions/{transaction}/mark-as-paid'
  */
 export const markAsPaid = (args: { transaction: string | number | { id: string | number } } | [transaction: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +17,7 @@ markAsPaid.definition = {
 
 /**
 * @see \App\Http\Controllers\TransactionController::markAsPaid
- * @see app/Http/Controllers/TransactionController.php:92
+ * @see app/Http/Controllers/TransactionController.php:100
  * @route '/transactions/{transaction}/mark-as-paid'
  */
 markAsPaid.url = (args: { transaction: string | number | { id: string | number } } | [transaction: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
@@ -49,7 +50,7 @@ markAsPaid.url = (args: { transaction: string | number | { id: string | number }
 
 /**
 * @see \App\Http\Controllers\TransactionController::markAsPaid
- * @see app/Http/Controllers/TransactionController.php:92
+ * @see app/Http/Controllers/TransactionController.php:100
  * @route '/transactions/{transaction}/mark-as-paid'
  */
 markAsPaid.post = (args: { transaction: string | number | { id: string | number } } | [transaction: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -59,7 +60,7 @@ markAsPaid.post = (args: { transaction: string | number | { id: string | number 
 
     /**
 * @see \App\Http\Controllers\TransactionController::markAsPaid
- * @see app/Http/Controllers/TransactionController.php:92
+ * @see app/Http/Controllers/TransactionController.php:100
  * @route '/transactions/{transaction}/mark-as-paid'
  */
     const markAsPaidForm = (args: { transaction: string | number | { id: string | number } } | [transaction: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -69,7 +70,7 @@ markAsPaid.post = (args: { transaction: string | number | { id: string | number 
 
             /**
 * @see \App\Http\Controllers\TransactionController::markAsPaid
- * @see app/Http/Controllers/TransactionController.php:92
+ * @see app/Http/Controllers/TransactionController.php:100
  * @route '/transactions/{transaction}/mark-as-paid'
  */
         markAsPaidForm.post = (args: { transaction: string | number | { id: string | number } } | [transaction: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -80,7 +81,7 @@ markAsPaid.post = (args: { transaction: string | number | { id: string | number 
     markAsPaid.form = markAsPaidForm
 /**
 * @see \App\Http\Controllers\TransactionController::cancel
- * @see app/Http/Controllers/TransactionController.php:112
+ * @see app/Http/Controllers/TransactionController.php:120
  * @route '/transactions/{transaction}/cancel'
  */
 export const cancel = (args: { transaction: string | number | { id: string | number } } | [transaction: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -95,7 +96,7 @@ cancel.definition = {
 
 /**
 * @see \App\Http\Controllers\TransactionController::cancel
- * @see app/Http/Controllers/TransactionController.php:112
+ * @see app/Http/Controllers/TransactionController.php:120
  * @route '/transactions/{transaction}/cancel'
  */
 cancel.url = (args: { transaction: string | number | { id: string | number } } | [transaction: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
@@ -128,7 +129,7 @@ cancel.url = (args: { transaction: string | number | { id: string | number } } |
 
 /**
 * @see \App\Http\Controllers\TransactionController::cancel
- * @see app/Http/Controllers/TransactionController.php:112
+ * @see app/Http/Controllers/TransactionController.php:120
  * @route '/transactions/{transaction}/cancel'
  */
 cancel.post = (args: { transaction: string | number | { id: string | number } } | [transaction: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -138,7 +139,7 @@ cancel.post = (args: { transaction: string | number | { id: string | number } } 
 
     /**
 * @see \App\Http\Controllers\TransactionController::cancel
- * @see app/Http/Controllers/TransactionController.php:112
+ * @see app/Http/Controllers/TransactionController.php:120
  * @route '/transactions/{transaction}/cancel'
  */
     const cancelForm = (args: { transaction: string | number | { id: string | number } } | [transaction: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -148,7 +149,7 @@ cancel.post = (args: { transaction: string | number | { id: string | number } } 
 
             /**
 * @see \App\Http\Controllers\TransactionController::cancel
- * @see app/Http/Controllers/TransactionController.php:112
+ * @see app/Http/Controllers/TransactionController.php:120
  * @route '/transactions/{transaction}/cancel'
  */
         cancelForm.post = (args: { transaction: string | number | { id: string | number } } | [transaction: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -159,7 +160,7 @@ cancel.post = (args: { transaction: string | number | { id: string | number } } 
     cancel.form = cancelForm
 /**
 * @see \App\Http\Controllers\TransactionController::markAsShipped
- * @see app/Http/Controllers/TransactionController.php:149
+ * @see app/Http/Controllers/TransactionController.php:157
  * @route '/transactions/{transaction}/mark-as-shipped'
  */
 export const markAsShipped = (args: { transaction: string | number | { id: string | number } } | [transaction: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -174,7 +175,7 @@ markAsShipped.definition = {
 
 /**
 * @see \App\Http\Controllers\TransactionController::markAsShipped
- * @see app/Http/Controllers/TransactionController.php:149
+ * @see app/Http/Controllers/TransactionController.php:157
  * @route '/transactions/{transaction}/mark-as-shipped'
  */
 markAsShipped.url = (args: { transaction: string | number | { id: string | number } } | [transaction: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
@@ -207,7 +208,7 @@ markAsShipped.url = (args: { transaction: string | number | { id: string | numbe
 
 /**
 * @see \App\Http\Controllers\TransactionController::markAsShipped
- * @see app/Http/Controllers/TransactionController.php:149
+ * @see app/Http/Controllers/TransactionController.php:157
  * @route '/transactions/{transaction}/mark-as-shipped'
  */
 markAsShipped.post = (args: { transaction: string | number | { id: string | number } } | [transaction: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -217,7 +218,7 @@ markAsShipped.post = (args: { transaction: string | number | { id: string | numb
 
     /**
 * @see \App\Http\Controllers\TransactionController::markAsShipped
- * @see app/Http/Controllers/TransactionController.php:149
+ * @see app/Http/Controllers/TransactionController.php:157
  * @route '/transactions/{transaction}/mark-as-shipped'
  */
     const markAsShippedForm = (args: { transaction: string | number | { id: string | number } } | [transaction: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -227,7 +228,7 @@ markAsShipped.post = (args: { transaction: string | number | { id: string | numb
 
             /**
 * @see \App\Http\Controllers\TransactionController::markAsShipped
- * @see app/Http/Controllers/TransactionController.php:149
+ * @see app/Http/Controllers/TransactionController.php:157
  * @route '/transactions/{transaction}/mark-as-shipped'
  */
         markAsShippedForm.post = (args: { transaction: string | number | { id: string | number } } | [transaction: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -238,7 +239,7 @@ markAsShipped.post = (args: { transaction: string | number | { id: string | numb
     markAsShipped.form = markAsShippedForm
 /**
 * @see \App\Http\Controllers\TransactionController::markAsReceived
- * @see app/Http/Controllers/TransactionController.php:176
+ * @see app/Http/Controllers/TransactionController.php:195
  * @route '/transactions/{transaction}/mark-as-received'
  */
 export const markAsReceived = (args: { transaction: string | number | { id: string | number } } | [transaction: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -253,7 +254,7 @@ markAsReceived.definition = {
 
 /**
 * @see \App\Http\Controllers\TransactionController::markAsReceived
- * @see app/Http/Controllers/TransactionController.php:176
+ * @see app/Http/Controllers/TransactionController.php:195
  * @route '/transactions/{transaction}/mark-as-received'
  */
 markAsReceived.url = (args: { transaction: string | number | { id: string | number } } | [transaction: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
@@ -286,7 +287,7 @@ markAsReceived.url = (args: { transaction: string | number | { id: string | numb
 
 /**
 * @see \App\Http\Controllers\TransactionController::markAsReceived
- * @see app/Http/Controllers/TransactionController.php:176
+ * @see app/Http/Controllers/TransactionController.php:195
  * @route '/transactions/{transaction}/mark-as-received'
  */
 markAsReceived.post = (args: { transaction: string | number | { id: string | number } } | [transaction: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -296,7 +297,7 @@ markAsReceived.post = (args: { transaction: string | number | { id: string | num
 
     /**
 * @see \App\Http\Controllers\TransactionController::markAsReceived
- * @see app/Http/Controllers/TransactionController.php:176
+ * @see app/Http/Controllers/TransactionController.php:195
  * @route '/transactions/{transaction}/mark-as-received'
  */
     const markAsReceivedForm = (args: { transaction: string | number | { id: string | number } } | [transaction: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -306,7 +307,7 @@ markAsReceived.post = (args: { transaction: string | number | { id: string | num
 
             /**
 * @see \App\Http\Controllers\TransactionController::markAsReceived
- * @see app/Http/Controllers/TransactionController.php:176
+ * @see app/Http/Controllers/TransactionController.php:195
  * @route '/transactions/{transaction}/mark-as-received'
  */
         markAsReceivedForm.post = (args: { transaction: string | number | { id: string | number } } | [transaction: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -396,7 +397,7 @@ rate.post = (args: { transaction: string | number | { id: string | number } } | 
     rate.form = rateForm
 /**
 * @see \App\Http\Controllers\TransactionController::show
- * @see app/Http/Controllers/TransactionController.php:50
+ * @see app/Http/Controllers/TransactionController.php:56
  * @route '/transactions/{transaction}'
  */
 export const show = (args: { transaction: string | number | { id: string | number } } | [transaction: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -411,7 +412,7 @@ show.definition = {
 
 /**
 * @see \App\Http\Controllers\TransactionController::show
- * @see app/Http/Controllers/TransactionController.php:50
+ * @see app/Http/Controllers/TransactionController.php:56
  * @route '/transactions/{transaction}'
  */
 show.url = (args: { transaction: string | number | { id: string | number } } | [transaction: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
@@ -444,7 +445,7 @@ show.url = (args: { transaction: string | number | { id: string | number } } | [
 
 /**
 * @see \App\Http\Controllers\TransactionController::show
- * @see app/Http/Controllers/TransactionController.php:50
+ * @see app/Http/Controllers/TransactionController.php:56
  * @route '/transactions/{transaction}'
  */
 show.get = (args: { transaction: string | number | { id: string | number } } | [transaction: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -453,7 +454,7 @@ show.get = (args: { transaction: string | number | { id: string | number } } | [
 })
 /**
 * @see \App\Http\Controllers\TransactionController::show
- * @see app/Http/Controllers/TransactionController.php:50
+ * @see app/Http/Controllers/TransactionController.php:56
  * @route '/transactions/{transaction}'
  */
 show.head = (args: { transaction: string | number | { id: string | number } } | [transaction: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -463,7 +464,7 @@ show.head = (args: { transaction: string | number | { id: string | number } } | 
 
     /**
 * @see \App\Http\Controllers\TransactionController::show
- * @see app/Http/Controllers/TransactionController.php:50
+ * @see app/Http/Controllers/TransactionController.php:56
  * @route '/transactions/{transaction}'
  */
     const showForm = (args: { transaction: string | number | { id: string | number } } | [transaction: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -473,7 +474,7 @@ show.head = (args: { transaction: string | number | { id: string | number } } | 
 
             /**
 * @see \App\Http\Controllers\TransactionController::show
- * @see app/Http/Controllers/TransactionController.php:50
+ * @see app/Http/Controllers/TransactionController.php:56
  * @route '/transactions/{transaction}'
  */
         showForm.get = (args: { transaction: string | number | { id: string | number } } | [transaction: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -482,7 +483,7 @@ show.head = (args: { transaction: string | number | { id: string | number } } | 
         })
             /**
 * @see \App\Http\Controllers\TransactionController::show
- * @see app/Http/Controllers/TransactionController.php:50
+ * @see app/Http/Controllers/TransactionController.php:56
  * @route '/transactions/{transaction}'
  */
         showForm.head = (args: { transaction: string | number | { id: string | number } } | [transaction: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -501,6 +502,7 @@ const transactions = {
 cancel: Object.assign(cancel, cancel),
 markAsShipped: Object.assign(markAsShipped, markAsShipped),
 markAsReceived: Object.assign(markAsReceived, markAsReceived),
+packages: Object.assign(packages, packages),
 rate: Object.assign(rate, rate),
 show: Object.assign(show, show),
 }

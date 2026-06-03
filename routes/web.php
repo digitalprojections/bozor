@@ -63,6 +63,7 @@ Route::middleware(['real-user'])->group(function () {
         Route::post('/transactions/{transaction}/cancel', [App\Http\Controllers\TransactionController::class, 'cancel'])->name('transactions.cancel');
         Route::post('/transactions/{transaction}/mark-as-shipped', [App\Http\Controllers\TransactionController::class, 'markAsShipped'])->name('transactions.mark-as-shipped');
         Route::post('/transactions/{transaction}/mark-as-received', [App\Http\Controllers\TransactionController::class, 'markAsReceived'])->name('transactions.mark-as-received');
+        Route::post('/transactions/packages/consolidate', [App\Http\Controllers\TransactionController::class, 'consolidatePackages'])->name('transactions.packages.consolidate');
         Route::post('/transactions/{transaction}/rate', [App\Http\Controllers\RatingController::class, 'store'])->name('transactions.rate');
 
         Route::get('dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');

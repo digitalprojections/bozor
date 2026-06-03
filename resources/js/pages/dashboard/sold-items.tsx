@@ -1,4 +1,4 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import BazaarLayout from '@/layouts/bazaar-layout';
 import { useTranslations } from '@/hooks/use-translations';
 import { Card, CardContent } from '@/components/ui/card';
@@ -12,6 +12,7 @@ import {
     CreditCard,
     ChevronRight,
     Truck,
+    Boxes,
 } from 'lucide-react';
 import type { BreadcrumbItem } from '@/types';
 import { useState } from 'react';
@@ -27,6 +28,8 @@ import { UserRatingBadge } from '@/components/user-rating-badge';
 interface SoldItem {
     id: number;
     transaction_id: number;
+    package_id?: number | null;
+    package_item_count?: number;
     title: string;
     price: number;
     buyer: {
@@ -46,6 +49,10 @@ export default function SoldItems({ items }: { items: SoldItem[] }) {
     const [activeFilter, setActiveFilter] = useState<
         'all' | 'pending' | 'active' | 'completed' | 'cancelled'
     >('all');
+    const [selectedTransactionIds, setSelectedTransactionIds] = useState<
+        number[]
+    >([]);
+    const [packageProcessing, setPackageProcessing] = useState(false);
 
     const breadcrumbs: BreadcrumbItem[] = [
         { title: t('common.dashboard'), href: '/dashboard' },
@@ -69,6 +76,34 @@ export default function SoldItems({ items }: { items: SoldItem[] }) {
             return item.status === TRANSACTION_STATUS.CANCELLED;
         return true;
     });
+    const packageableItems = filteredItems.filter((item) =>
+        canRegroup(item.status, item.transaction_id),
+    );
+    const selectedCount = selectedTransactionIds.length;
+
+    const toggleTransaction = (transactionId: number) => {
+        setSelectedTransactionIds((current) =>
+            current.includes(transactionId)
+                ? current.filter((id) => id !== transactionId)
+                : [...current, transactionId],
+        );
+    };
+
+    const submitPackageAction = (mode: 'combine' | 'separate') => {
+        router.post(
+            '/transactions/packages/consolidate',
+            {
+                transaction_ids: selectedTransactionIds,
+                mode,
+            },
+            {
+                preserveScroll: true,
+                onStart: () => setPackageProcessing(true),
+                onFinish: () => setPackageProcessing(false),
+                onSuccess: () => setSelectedTransactionIds([]),
+            },
+        );
+    };
 
     return (
         <BazaarLayout
@@ -164,6 +199,61 @@ export default function SoldItems({ items }: { items: SoldItem[] }) {
                     </button>
                 </div>
 
+                {packageableItems.length > 0 && (
+                    <div className="flex flex-col gap-3 rounded-xl border border-[#dbe7f3] bg-[#f8fbfe] p-4 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="flex items-start gap-3">
+                            <Boxes className="mt-0.5 h-5 w-5 text-[#0d9488]" />
+                            <div>
+                                <div className="text-sm font-bold text-[#0b1b32]">
+                                    {t('transaction.packages.manage') ||
+                                        'Package consolidation'}
+                                </div>
+                                <div className="text-xs text-[#5f6c84]">
+                                    {t('transaction.packages.manage_desc') ||
+                                        'Select unshipped items from the same buyer and seller, then combine them into one package or split them back into individual packages.'}
+                                </div>
+                            </div>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    setSelectedTransactionIds(
+                                        packageableItems.map(
+                                            (item) => item.transaction_id,
+                                        ),
+                                    )
+                                }
+                                className="rounded-lg border border-[#cbd5e1] bg-white px-3 py-2 text-xs font-bold text-[#2b4b8f]"
+                            >
+                                {t('common.select_all') || 'Select all'}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => submitPackageAction('combine')}
+                                disabled={
+                                    selectedCount < 2 || packageProcessing
+                                }
+                                className="rounded-lg bg-[#0d9488] px-3 py-2 text-xs font-bold text-white disabled:opacity-50"
+                            >
+                                {t('transaction.packages.combine') ||
+                                    'Combine selected'}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => submitPackageAction('separate')}
+                                disabled={
+                                    selectedCount < 1 || packageProcessing
+                                }
+                                className="rounded-lg border border-[#cbd5e1] bg-white px-3 py-2 text-xs font-bold text-[#475569] disabled:opacity-50"
+                            >
+                                {t('transaction.packages.separate') ||
+                                    'One package each'}
+                            </button>
+                        </div>
+                    </div>
+                )}
+
                 <div className="flex flex-col gap-3">
                     {filteredItems.length > 0 ? (
                         filteredItems.map((item, index) => (
@@ -172,6 +262,24 @@ export default function SoldItems({ items }: { items: SoldItem[] }) {
                                 className="group overflow-hidden rounded-xl border-[#f0f2f5] shadow-sm transition-all hover:border-[#ced9e5]"
                             >
                                 <CardContent className="flex items-center gap-4 p-4">
+                                    {canRegroup(
+                                        item.status,
+                                        item.transaction_id,
+                                    ) && (
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedTransactionIds.includes(
+                                                item.transaction_id,
+                                            )}
+                                            onChange={() =>
+                                                toggleTransaction(
+                                                    item.transaction_id,
+                                                )
+                                            }
+                                            className="h-4 w-4 shrink-0 rounded border-[#cbd5e1] text-[#0d9488]"
+                                            aria-label={`Select ${item.title}`}
+                                        />
+                                    )}
                                     <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[#e1e9f2] bg-[#f0f5fd]">
                                         {item.main_image_url ? (
                                             <img
@@ -235,6 +343,22 @@ export default function SoldItems({ items }: { items: SoldItem[] }) {
                                                     user={item.buyer}
                                                     variant="compact"
                                                 />
+                                                {item.package_id && (
+                                                    <>
+                                                        <span>•</span>
+                                                        <span className="inline-flex items-center gap-1 rounded-full bg-[#eef6ff] px-2 py-0.5 text-xs font-bold text-[#2b4b8f]">
+                                                            <Boxes size={12} />
+                                                            {t(
+                                                                'transaction.packages.package',
+                                                            ) || 'Package'}{' '}
+                                                            #{item.package_id}
+                                                            {item.package_item_count &&
+                                                                item.package_item_count >
+                                                                    1 &&
+                                                                ` (${item.package_item_count})`}
+                                                        </span>
+                                                    </>
+                                                )}
                                             </div>
                                             <Link
                                                 href={`/transactions/${item.transaction_id}`}
@@ -264,5 +388,15 @@ export default function SoldItems({ items }: { items: SoldItem[] }) {
                 </div>
             </div>
         </BazaarLayout>
+    );
+}
+
+function canRegroup(status: TransactionStatus, transactionId?: number): boolean {
+    return (
+        typeof transactionId === 'number' &&
+        [
+            TRANSACTION_STATUS.PENDING_PAYMENT,
+            TRANSACTION_STATUS.PAID,
+        ].includes(status)
     );
 }

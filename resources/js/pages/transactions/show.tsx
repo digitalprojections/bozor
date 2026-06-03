@@ -3,7 +3,7 @@ import BazaarLayout from '@/layouts/bazaar-layout';
 import { useTranslations } from '@/hooks/use-translations';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Package, Truck, CheckCircle, Clock, MapPin, User, ArrowLeft, CreditCard, Receipt, AlertCircle, Info, Star } from 'lucide-react';
+import { Package, Truck, CheckCircle, Clock, User, ArrowLeft, CreditCard, Receipt, AlertCircle, Info, Star, Boxes } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { BreadcrumbItem, User as UserType } from '@/types';
@@ -32,6 +32,23 @@ interface Transaction {
     status: TransactionStatus;
     tracking_number: string | null;
     shipping_method: string | null;
+    package: {
+        id: number;
+        shipping_cost_type: 'free' | 'fixed' | 'location_based' | 'chakubarai';
+        shipping_cost: number | null;
+        shipping_method: string | null;
+        tracking_number: string | null;
+        items: Array<{
+            id: number;
+            amount: number;
+            status: TransactionStatus;
+            listing: {
+                id: number;
+                title: string;
+                main_image_url: string | null;
+            };
+        }>;
+    } | null;
     paid_at: string | null;
     shipped_at: string | null;
     delivered_at: string | null;
@@ -74,6 +91,9 @@ export default function Show({ transaction }: { transaction: Transaction }) {
     const isSeller = auth.user?.id === transaction.seller_id;
     const isParticipant = isBuyer || isSeller;
     const canMarkAsPaid = isBuyer && transaction.status === TRANSACTION_STATUS.PENDING_PAYMENT;
+    const packageShippingMethod = transaction.package?.shipping_method ?? transaction.shipping_method;
+    const packageTrackingNumber = transaction.package?.tracking_number ?? transaction.tracking_number;
+    const packageItems = transaction.package?.items ?? [];
 
     const handleMarkAsPaid = () => {
         if (confirm(t('transaction.mark_as_paid_confirm') || 'Are you sure you have completed the payment for this item?')) {
@@ -218,9 +238,9 @@ export default function Show({ transaction }: { transaction: Transaction }) {
                                 <Truck size={24} className="text-[#0369a1]" />
                             </div>
                             <div>
-                                <h3 className="font-bold text-[#0369a1] text-lg">{t('transaction.ship_item.title') || 'Ship the Item'}</h3>
+                                <h3 className="font-bold text-[#0369a1] text-lg">{t('transaction.ship_item.title') || 'Ship the Package'}</h3>
                                 <p className="text-[#075985] text-sm">
-                                    {t('transaction.ship_item.desc') || 'The buyer has paid. Please ship the item and provide tracking details below.'}
+                                    {t('transaction.ship_item.desc') || 'The buyer has paid. Please ship the package and provide tracking details below.'}
                                 </p>
                             </div>
                         </div>
@@ -507,6 +527,46 @@ export default function Show({ transaction }: { transaction: Transaction }) {
                     </Card>
                 )}
 
+                {packageItems.length > 1 && (
+                    <Card className="rounded-[24px] border-[#edf2f9] shadow-sm overflow-hidden">
+                        <CardHeader className="px-6 py-4 border-b border-[#f0f2f5]">
+                            <h3 className="font-bold text-[#0b1b32] flex items-center gap-2">
+                                <Boxes size={18} className="text-[#0d9488]" />
+                                {t('transaction.packages.package') || 'Package'} #{transaction.package?.id}
+                            </h3>
+                        </CardHeader>
+                        <CardContent className="p-6">
+                            <div className="flex flex-col gap-3">
+                                {packageItems.map((item) => (
+                                    <Link
+                                        key={item.id}
+                                        href={`/transactions/${item.id}`}
+                                        className="flex items-center gap-3 rounded-xl border border-[#edf2f9] p-3 transition hover:bg-[#f8fbfe]"
+                                    >
+                                        <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-[#f0f5fd]">
+                                            {item.listing.main_image_url ? (
+                                                <img src={item.listing.main_image_url} alt="" className="h-full w-full object-cover" />
+                                            ) : (
+                                                <div className="flex h-full w-full items-center justify-center text-[#a3b6cc]">
+                                                    <Package size={20} />
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="min-w-0 flex-1">
+                                            <div className="truncate text-sm font-bold text-[#1a263b]">
+                                                {item.listing.title}
+                                            </div>
+                                            <div className="text-xs text-[#64748b]">
+                                                ¥{item.amount.toLocaleString()} · {item.status.replace('_', ' ')}
+                                            </div>
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Item Summary */}
                     <Card className="rounded-[24px] border-[#edf2f9] shadow-sm">
@@ -550,14 +610,22 @@ export default function Show({ transaction }: { transaction: Transaction }) {
                             <div className="flex flex-col gap-4">
                                 <div className="flex justify-between text-sm">
                                     <span className="text-[#5f6c84]">{t('transaction.details.method') || 'Method'}</span>
-                                    <span className="font-medium text-[#1a263b]">{transaction.shipping_method || t('common.n_a')}</span>
+                                    <span className="font-medium text-[#1a263b]">{packageShippingMethod || t('common.n_a')}</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
                                     <span className="text-[#5f6c84]">{t('transaction.details.tracking') || 'Tracking Number'}</span>
                                     <span className="font-mono font-medium text-[#0d9488] underline decoration-dotted underline-offset-4">
-                                        {transaction.tracking_number || t('common.n_a')}
+                                        {packageTrackingNumber || t('common.n_a')}
                                     </span>
                                 </div>
+                                {transaction.package && (
+                                    <div className="flex justify-between text-sm">
+                                        <span className="text-[#5f6c84]">{t('transaction.packages.package') || 'Package'}</span>
+                                        <span className="font-medium text-[#1a263b]">
+                                            #{transaction.package.id} · {formatPackageCost(transaction.package)}
+                                        </span>
+                                    </div>
+                                )}
                             </div>
                         </CardContent>
                     </Card>
@@ -610,4 +678,20 @@ export default function Show({ transaction }: { transaction: Transaction }) {
             </div>
         </BazaarLayout>
     );
+}
+
+function formatPackageCost(pkg: NonNullable<Transaction['package']>): string {
+    if (pkg.shipping_cost_type === 'fixed') {
+        return `¥${(pkg.shipping_cost ?? 0).toLocaleString()}`;
+    }
+
+    if (pkg.shipping_cost_type === 'chakubarai') {
+        return 'Chakubarai';
+    }
+
+    if (pkg.shipping_cost_type === 'location_based') {
+        return 'Decided by location';
+    }
+
+    return 'Free shipping';
 }

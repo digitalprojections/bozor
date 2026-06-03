@@ -55,6 +55,14 @@ interface ListingProps {
         shipping_cost_type?: 'free' | 'fixed' | 'location_based' | 'chakubarai';
         shipping_cost?: number | null;
     };
+    transaction?: {
+        id: number;
+        amount: number;
+        status: string;
+        purchase_type: 'buy_now' | 'auction' | string;
+        buyer_id: number;
+        seller_id: number;
+    } | null;
     recommendations?: any[];
     is_watched?: boolean;
     seo?: {
@@ -68,6 +76,7 @@ interface ListingProps {
 
 export default function Show({
     listing,
+    transaction = null,
     recommendations = [],
     is_watched = false,
     seo,
@@ -82,7 +91,10 @@ export default function Show({
     const activeImageUrl = imageUrls[activeImage];
     const activeImageFailed = failedImages.has(activeImage);
     const displayPrice =
-        listing.display_price ?? listing.current_price ?? listing.price;
+        transaction?.amount ??
+        listing.display_price ??
+        listing.current_price ??
+        listing.price;
     const listingUrl = seo?.canonical ?? seo?.url ?? `/listings/${listing.id}`;
     const seoDescription =
         seo?.description ?? listing.description.substring(0, 160);
@@ -106,7 +118,13 @@ export default function Show({
         <BazaarLayout
             title={t('listing.show.title')}
             breadcrumbs={breadcrumbs}
-            sidebar={<ListingSidebar listing={listing} shareUrl={listingUrl} />}
+            sidebar={
+                <ListingSidebar
+                    listing={listing}
+                    transaction={transaction}
+                    shareUrl={listingUrl}
+                />
+            }
         >
             <Head title={`${listing.title} - ${t('marketplace.title')}`}>
                 <link rel="canonical" href={listingUrl} />
@@ -282,7 +300,11 @@ export default function Show({
                                 <div className="flex flex-col gap-1">
                                     <span className="text-[10px] font-medium tracking-wider text-[#64748b] uppercase sm:text-sm">
                                         {listing.is_auction
-                                            ? t('listing.show.current_price')
+                                            ? listing.status === 'sold'
+                                                ? t('listing.show.final_price')
+                                                : t(
+                                                      'listing.show.current_price',
+                                                  )
                                             : t('listing.create.price')}
                                     </span>
                                     <PriceDisplay
