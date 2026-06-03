@@ -16,6 +16,7 @@ import { UserRatingBadge } from '@/components/user-rating-badge';
 import { LoginRequiredDialog } from '@/components/login-required-dialog';
 import { useClipboard } from '@/hooks/use-clipboard';
 import { YAMATO_RATE_TABLE_URL } from '@/components/listings/shipping-settings-card';
+import { AuctionCountdown } from '@/components/listings/auction-countdown';
 
 interface ListingSidebarProps {
     listing: {
@@ -65,7 +66,9 @@ export function ListingSidebar({ listing, shareUrl }: ListingSidebarProps) {
     const canBuyNow = listing.status === 'active' && purchasePrice !== null;
     const auctionEnded = listing.is_auction && Boolean(listing.auction_ended);
     const reserveNotMet =
-        auctionEnded && listing.reserve_met === false && listing.status === 'active';
+        auctionEnded &&
+        listing.reserve_met === false &&
+        listing.status === 'active';
     const currentPrice =
         listing.display_price ??
         listing.current_price ??
@@ -169,26 +172,25 @@ export function ListingSidebar({ listing, shareUrl }: ListingSidebarProps) {
             <Card className="overflow-hidden rounded-[16px] border-[#edf2f9] shadow-sm sm:rounded-[24px]">
                 <CardContent className="flex flex-col gap-4 p-4 sm:gap-5 sm:p-6">
                     {listing.is_auction && (
-                        <div className="flex justify-between text-xs font-medium sm:text-sm">
-                            <span>
-                                {t('listing.sidebar.bids')}:{' '}
-                                <strong className="text-[#0b1b32]">
-                                    {listing.bids_count ?? 0}
-                                </strong>
-                            </span>
-                            <span className="text-right">
-                                {auctionEnded
-                                    ? t('listing.sidebar.ended')
-                                    : t('listing.sidebar.time_remaining')}
-                                :{' '}
-                                <strong className="block text-[#0b1b32] sm:inline">
-                                    {listing.auction_end_date
-                                        ? new Date(
-                                              listing.auction_end_date,
-                                          ).toLocaleString()
-                                        : t('common.n_a')}
-                                </strong>
-                            </span>
+                        <div className="flex flex-col gap-3">
+                            <div className="flex justify-between text-xs font-medium sm:text-sm">
+                                <span>
+                                    {t('listing.sidebar.bids')}:{' '}
+                                    <strong className="text-[#0b1b32]">
+                                        {listing.bids_count ?? 0}
+                                    </strong>
+                                </span>
+                                <span className="text-[#64748b]">
+                                    {auctionEnded
+                                        ? t('listing.sidebar.ended')
+                                        : t('listing.sidebar.time_remaining')}
+                                </span>
+                            </div>
+                            <AuctionCountdown
+                                endsAt={listing.auction_end_date}
+                                ended={auctionEnded}
+                                variant="panel"
+                            />
                         </div>
                     )}
 
@@ -362,9 +364,7 @@ export function ListingSidebar({ listing, shareUrl }: ListingSidebarProps) {
                             </span>
                         </div>
                         <div className="flex justify-between border-b border-dashed border-[#e4ecf5] pb-2 sm:pb-3">
-                            <span className="text-[#5f6c84]">
-                                Cost
-                            </span>
+                            <span className="text-[#5f6c84]">Cost</span>
                             <span className="text-right font-medium text-[#1a263b]">
                                 {shippingSummary.cost}
                             </span>

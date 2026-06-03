@@ -6,6 +6,7 @@ import { Package } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SoldBadge } from './sold-badge';
 import { FreeShippingBadge } from './free-shipping-badge';
+import { AuctionCountdown } from './auction-countdown';
 
 interface Listing {
     id: number;
@@ -16,6 +17,9 @@ interface Listing {
     main_image_url?: string | null;
     status: string;
     free_shipping?: boolean;
+    is_auction?: boolean;
+    auction_end_date?: string | null;
+    auction_ended?: boolean;
 }
 
 interface ListingCardProps {
@@ -64,8 +68,21 @@ export function ListingCard({ listing, className }: ListingCardProps) {
                         </Badge>
                     </div>
                     {listing.free_shipping && (
-                        <FreeShippingBadge className="absolute right-3 top-3" compact />
+                        <FreeShippingBadge
+                            className="absolute top-3 right-3"
+                            compact
+                        />
                     )}
+                    {listing.is_auction &&
+                        listing.auction_end_date &&
+                        !isSold && (
+                            <AuctionCountdown
+                                endsAt={listing.auction_end_date}
+                                ended={listing.auction_ended}
+                                variant="overlay"
+                                className="absolute top-3 left-3 max-w-[calc(100%-1.5rem)]"
+                            />
+                        )}
                 </div>
                 <CardContent className="p-4">
                     <h3 className="truncate leading-tight font-bold text-[#0b1b32] transition-colors group-hover:text-[#0d9488]">

@@ -2,6 +2,7 @@ import { Link } from '@inertiajs/react';
 import { Package } from 'lucide-react';
 import { useTranslations } from '@/hooks/use-translations';
 import { FreeShippingBadge } from '@/components/listings/free-shipping-badge';
+import { AuctionCountdown } from '@/components/listings/auction-countdown';
 
 interface Listing {
     id: number;
@@ -12,6 +13,9 @@ interface Listing {
     images?: string[];
     main_image_url?: string;
     free_shipping?: boolean;
+    is_auction?: boolean;
+    auction_end_date?: string | null;
+    auction_ended?: boolean;
 }
 
 interface RecommendationsSectionProps {
@@ -67,8 +71,21 @@ export function RecommendationsSection({
                                     ¥{displayPrice.toLocaleString()}
                                 </span>
                                 {item.free_shipping && (
-                                    <FreeShippingBadge className="absolute left-1 top-1" compact />
+                                    <FreeShippingBadge
+                                        className="absolute top-1 left-1"
+                                        compact
+                                    />
                                 )}
+                                {item.is_auction &&
+                                    item.auction_end_date &&
+                                    item.status !== 'sold' && (
+                                        <AuctionCountdown
+                                            endsAt={item.auction_end_date}
+                                            ended={item.auction_ended}
+                                            variant="compact"
+                                            className="absolute top-1 right-1 max-w-[calc(100%-0.5rem)] shadow-sm"
+                                        />
+                                    )}
                             </div>
                             <span className="line-clamp-2 text-xs leading-snug text-[#333333] group-hover:text-[#e62017]">
                                 {item.title}
