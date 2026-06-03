@@ -22,6 +22,7 @@ import {
     Truck,
     LogOut,
     Menu,
+    UsersRound,
 } from 'lucide-react';
 import React, { ReactNode } from 'react';
 import { useTranslations } from '@/hooks/use-translations';
@@ -355,6 +356,7 @@ function DefaultSidebar() {
     const { t } = useTranslations();
     const { auth } = usePage().props as any;
     const user = auth.user && !auth.user.is_guest ? auth.user : null;
+    const isAdmin = !!auth.is_admin;
 
     return (
         <div className="flex flex-col gap-8">
@@ -366,6 +368,13 @@ function DefaultSidebar() {
             </div>
 
             <SidebarSection title={t('layout.sidebar.activity')}>
+                {isAdmin && (
+                    <SidebarLink
+                        icon={UsersRound}
+                        label="Admin Users"
+                        href="/admin/users"
+                    />
+                )}
                 <SidebarLink
                     icon={LayoutDashboard}
                     label={t('common.dashboard')}

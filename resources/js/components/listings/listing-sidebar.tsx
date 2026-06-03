@@ -79,9 +79,22 @@ export function ListingSidebar({ listing, shareUrl }: ListingSidebarProps) {
         listing.minimum_bid ?? getSuggestedBidAmount(currentPrice);
     const shippingSummary = getShippingSummary(listing);
 
-    const { data, setData, post, processing, errors, reset } = useForm({
+    const { data, setData, post, processing, errors } = useForm({
         amount: suggestedBidAmount,
     });
+    const previousSuggestedBidAmount = React.useRef(suggestedBidAmount);
+
+    React.useEffect(() => {
+        const shouldUpdateAmount =
+            data.amount === previousSuggestedBidAmount.current ||
+            data.amount < suggestedBidAmount;
+
+        if (shouldUpdateAmount) {
+            setData('amount', suggestedBidAmount);
+        }
+
+        previousSuggestedBidAmount.current = suggestedBidAmount;
+    }, [data.amount, setData, suggestedBidAmount]);
 
     const [isTermsModalOpen, setIsTermsModalOpen] = React.useState(false);
     const [pendingAction, setPendingAction] = React.useState<
@@ -124,7 +137,6 @@ export function ListingSidebar({ listing, shareUrl }: ListingSidebarProps) {
             post(`/listings/${listing.id}/bid`, {
                 onSuccess: () => {
                     synth.playSuccess();
-                    reset();
                 },
             });
         });

@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Services\AdService;
+use App\Http\Middleware\EnsureAdmin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\File;
@@ -46,6 +47,7 @@ class HandleInertiaRequests extends Middleware
             'name' => config('app.name'),
             'auth' => [
                 'user' => $request->user() ? $request->user()->append(['average_rating', 'ratings_count']) : null,
+                'is_admin' => EnsureAdmin::isAdminEmail($request->user()?->email),
             ],
             'sidebarOpen' => !$request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'locale' => $locale,

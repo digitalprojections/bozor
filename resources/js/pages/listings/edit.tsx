@@ -263,8 +263,8 @@ export default function EditListing({
         <BazaarLayout title={t('listing.edit.title')} breadcrumbs={breadcrumbs}>
             <Head title={t('listing.edit.title')} />
 
-            <div className="space-y-6 p-4 sm:p-6">
-                <div>
+            <div className="w-full max-w-full space-y-5 px-0 py-4 sm:space-y-6 sm:p-6">
+                <div className="px-1 sm:px-0">
                     <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
                         {t('listing.edit.title')}
                     </h1>
@@ -287,8 +287,8 @@ export default function EditListing({
                     </Alert>
                 )}
 
-                <form onSubmit={submit} className="space-y-6">
-                    <Card className="p-4 sm:p-6">
+                <form onSubmit={submit} className="w-full max-w-full space-y-5 sm:space-y-6">
+                    <Card className="w-full max-w-full overflow-hidden rounded-lg p-4 sm:p-6">
                         <h2 className="mb-4 text-lg font-semibold sm:text-xl">
                             {t('listing.create.basic_info')}
                         </h2>
@@ -407,7 +407,7 @@ export default function EditListing({
                                                         condition.value,
                                                     )
                                                 }
-                                                className="rounded-full"
+                                                className="max-w-full whitespace-normal rounded-full"
                                             >
                                                 {t(condition.labelKey)}
                                             </Button>
@@ -442,9 +442,9 @@ export default function EditListing({
                                 </div>
                             </div>
 
-                            <div className="space-y-4 rounded-lg border bg-muted/30 p-4">
-                                <div className="flex items-center justify-between">
-                                    <div>
+                            <div className="space-y-4 rounded-lg border bg-muted/30 p-3 sm:p-4">
+                                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                    <div className="min-w-0">
                                         <h3 className="font-medium">
                                             {t('listing.create.auction_mode')}
                                         </h3>
@@ -467,6 +467,7 @@ export default function EditListing({
                                                 !data.is_auction,
                                             )
                                         }
+                                        className="w-full sm:w-auto"
                                     >
                                         {data.is_auction
                                             ? t('listing.create.enabled')
@@ -583,7 +584,7 @@ export default function EditListing({
                         setData={setData}
                     />
 
-                    <Card className="p-4 sm:p-6">
+                    <Card className="w-full max-w-full overflow-hidden rounded-lg p-4 sm:p-6">
                         <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
                             <div>
                                 <h2 className="text-lg font-semibold sm:text-xl">
@@ -643,7 +644,7 @@ export default function EditListing({
                                         ) : (
                                             <label
                                                 htmlFor={inputId}
-                                                className="flex h-full cursor-pointer flex-col items-center justify-center gap-2 p-3 text-center text-sm font-medium text-[#5f6c84] transition hover:bg-[#eef5fb]"
+                                                className="flex h-full cursor-pointer flex-col items-center justify-center gap-2 p-2 text-center text-xs font-medium text-[#5f6c84] transition hover:bg-[#eef5fb] sm:p-3 sm:text-sm"
                                             >
                                                 {isBroken ? (
                                                     <ImageOff className="h-7 w-7 text-[#b42318]" />
@@ -662,14 +663,14 @@ export default function EditListing({
                                             <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-1 bg-black/60 px-2 py-1 text-[10px] text-white backdrop-blur-sm">
                                                 <label
                                                     htmlFor={inputId}
-                                                    className="cursor-pointer font-semibold hover:underline"
+                                                    className="min-w-0 cursor-pointer truncate font-semibold hover:underline"
                                                 >
                                                     {isBroken
                                                         ? 'Replace'
                                                         : 'Change'}
                                                 </label>
                                                 {slot.kind === 'new' && (
-                                                    <span className="flex items-center gap-1 text-green-300">
+                                                    <span className="flex shrink-0 items-center gap-1 text-green-300">
                                                         <Sparkles className="h-2.5 w-2.5" />
                                                         -
                                                         {

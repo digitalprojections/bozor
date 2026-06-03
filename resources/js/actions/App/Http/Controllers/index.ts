@@ -10,6 +10,7 @@ import TransactionController from './TransactionController'
 import RatingController from './RatingController'
 import DashboardController from './DashboardController'
 import Settings from './Settings'
+import Admin from './Admin'
 import ProfileController from './ProfileController'
 const Controllers = {
     LocaleController: Object.assign(LocaleController, LocaleController),
@@ -24,6 +25,7 @@ TransactionController: Object.assign(TransactionController, TransactionControlle
 RatingController: Object.assign(RatingController, RatingController),
 DashboardController: Object.assign(DashboardController, DashboardController),
 Settings: Object.assign(Settings, Settings),
+Admin: Object.assign(Admin, Admin),
 ProfileController: Object.assign(ProfileController, ProfileController),
 }
 

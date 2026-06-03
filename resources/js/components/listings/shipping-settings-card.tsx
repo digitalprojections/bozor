@@ -57,9 +57,9 @@ export function ShippingSettingsCard({
     };
 
     return (
-        <Card className="p-4 sm:p-6">
+        <Card className="w-full max-w-full overflow-hidden rounded-lg p-4 sm:p-6">
             <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                <div>
+                <div className="min-w-0">
                     <h2 className="flex items-center gap-2 text-lg font-semibold sm:text-xl">
                         <Truck className="h-5 w-5 text-[#0d9488]" />
                         Shipping settings
@@ -74,7 +74,7 @@ export function ShippingSettingsCard({
                     href={YAMATO_RATE_TABLE_URL}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex h-10 items-center justify-center gap-2 rounded-full border border-[#cbd5e1] px-4 text-sm font-semibold text-[#0f766e] transition hover:bg-[#f0fdfa]"
+                    className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-full border border-[#cbd5e1] px-4 text-sm font-semibold text-[#0f766e] transition hover:bg-[#f0fdfa] sm:w-auto"
                 >
                     Check Yamato rates
                     <ExternalLink className="h-4 w-4" />
@@ -83,12 +83,12 @@ export function ShippingSettingsCard({
 
             <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(280px,360px)]">
                 <div className="space-y-4">
-                    <div className="rounded-lg border border-[#dbe7f3] bg-[#f8fbfe] p-4">
+                    <div className="rounded-lg border border-[#dbe7f3] bg-[#f8fbfe] p-3 sm:p-4">
                         <div className="flex items-center gap-3">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#dff7f3] text-[#0f766e]">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#dff7f3] text-[#0f766e]">
                                 <PackageCheck className="h-5 w-5" />
                             </div>
-                            <div>
+                            <div className="min-w-0">
                                 <div className="text-sm font-bold text-[#0b1b32]">
                                     Kuroneko Yamato TA-Q-BIN
                                 </div>
@@ -109,9 +109,9 @@ export function ShippingSettingsCard({
                                     : 'outline'
                             }
                             onClick={chooseFreeShipping}
-                            className="h-auto justify-start rounded-lg p-4 text-left"
+                            className="h-auto justify-start whitespace-normal rounded-lg p-3 text-left sm:p-4"
                         >
-                            <span>
+                            <span className="min-w-0">
                                 <span className="block font-bold">
                                     Free shipping
                                 </span>
@@ -128,9 +128,9 @@ export function ShippingSettingsCard({
                                     : 'outline'
                             }
                             onClick={() => chooseBuyerPays('fixed')}
-                            className="h-auto justify-start rounded-lg p-4 text-left"
+                            className="h-auto justify-start whitespace-normal rounded-lg p-3 text-left sm:p-4"
                         >
-                            <span>
+                            <span className="min-w-0">
                                 <span className="block font-bold">
                                     Buyer pays shipping
                                 </span>
@@ -143,7 +143,7 @@ export function ShippingSettingsCard({
                     </div>
 
                     {data.shipping_payer === 'buyer' && (
-                        <div className="space-y-4 rounded-lg border bg-muted/30 p-4">
+                        <div className="space-y-4 rounded-lg border bg-muted/30 p-3 sm:p-4">
                             <div className="grid gap-3 md:grid-cols-3">
                                 <Button
                                     type="button"
@@ -153,7 +153,7 @@ export function ShippingSettingsCard({
                                             : 'outline'
                                     }
                                     onClick={() => chooseBuyerPays('fixed')}
-                                    className="h-auto rounded-lg p-3"
+                                    className="h-auto whitespace-normal rounded-lg p-3"
                                 >
                                     Fixed cost
                                 </Button>
@@ -168,7 +168,7 @@ export function ShippingSettingsCard({
                                     onClick={() =>
                                         chooseBuyerPays('location_based')
                                     }
-                                    className="h-auto rounded-lg p-3"
+                                    className="h-auto whitespace-normal rounded-lg p-3"
                                 >
                                     Decide by location
                                 </Button>
@@ -183,7 +183,7 @@ export function ShippingSettingsCard({
                                     onClick={() =>
                                         chooseBuyerPays('chakubarai')
                                     }
-                                    className="h-auto rounded-lg p-3"
+                                    className="h-auto whitespace-normal rounded-lg p-3"
                                 >
                                     Chakubarai
                                 </Button>
@@ -221,7 +221,7 @@ export function ShippingSettingsCard({
                                 'location_based' && (
                                 <div className="flex gap-3 rounded-lg border border-dashed border-[#cbd5e1] bg-white p-3 text-sm text-[#334155]">
                                     <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#0d9488]" />
-                                    <span>
+                                    <span className="min-w-0">
                                         Buyer sees that Yamato shipping will be
                                         decided from the buyer&apos;s delivery
                                         location. Use the official Yamato rate
@@ -233,7 +233,7 @@ export function ShippingSettingsCard({
                             {data.shipping_cost_type === 'chakubarai' && (
                                 <div className="flex gap-3 rounded-lg border border-dashed border-[#cbd5e1] bg-white p-3 text-sm text-[#334155]">
                                     <Truck className="mt-0.5 h-4 w-4 shrink-0 text-[#0d9488]" />
-                                    <span>
+                                    <span className="min-w-0">
                                         Buyer pays the Yamato shipping charge on
                                         delivery. Confirm availability and price
                                         with Yamato before shipping.

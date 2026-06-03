@@ -79,6 +79,20 @@ Route::get('/transactions/{transaction}', [App\Http\Controllers\TransactionContr
 
 require __DIR__ . '/settings.php';
 
+Route::middleware(['auth', 'admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        Route::get('/users', [App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');
+        Route::get('/users/{user}/edit', [App\Http\Controllers\Admin\UserController::class, 'edit'])->name('users.edit');
+        Route::patch('/users/{user}', [App\Http\Controllers\Admin\UserController::class, 'update'])->name('users.update');
+
+        Route::get('/verifications', [App\Http\Controllers\Admin\VerificationController::class, 'index'])->name('verifications.index');
+        Route::get('/verifications/{id}', [App\Http\Controllers\Admin\VerificationController::class, 'show'])->name('verifications.show');
+        Route::post('/verifications/{id}/approve', [App\Http\Controllers\Admin\VerificationController::class, 'approve'])->name('verifications.approve');
+        Route::post('/verifications/{id}/reject', [App\Http\Controllers\Admin\VerificationController::class, 'reject'])->name('verifications.reject');
+    });
+
 // Public Wildcard Routes (Must be at the bottom to avoid shadowing static routes)
 Route::get('/listings/{listing}', [App\Http\Controllers\ListingController::class, 'show'])->name('listings.show');
 Route::get('/users/{user}', [App\Http\Controllers\ProfileController::class, 'show'])->name('profile.show');

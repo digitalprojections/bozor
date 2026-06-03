@@ -329,7 +329,7 @@ export function CategoryMultiSelect({
                             </>
                         )}
 
-                        <div className="flex items-center justify-between border-t px-3 py-2">
+                        <div className="flex flex-col gap-2 border-t px-3 py-2 sm:flex-row sm:items-center sm:justify-between">
                             <span className="text-xs text-muted-foreground">
                                 {value.length}/{maxSelections} selected
                             </span>
@@ -340,6 +340,7 @@ export function CategoryMultiSelect({
                                         variant="ghost"
                                         size="sm"
                                         onClick={clearCategories}
+                                        className="flex-1 sm:flex-none"
                                     >
                                         Clear
                                     </Button>
@@ -349,6 +350,7 @@ export function CategoryMultiSelect({
                                     variant="secondary"
                                     size="sm"
                                     onClick={() => setIsOpen(false)}
+                                    className="flex-1 sm:flex-none"
                                 >
                                     Done
                                 </Button>

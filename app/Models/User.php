@@ -22,6 +22,8 @@ class User extends Authenticatable
         'name',
         'email',
         'email_verified_at',
+        'is_verified',
+        'verified_at',
         'password',
         'avatar',
         'google_avatar',
@@ -97,6 +99,16 @@ class User extends Authenticatable
     public function verificationRequests()
     {
         return $this->hasMany(VerificationRequest::class);
+    }
+
+    public function purchases()
+    {
+        return $this->hasMany(Transaction::class, 'buyer_id');
+    }
+
+    public function sales()
+    {
+        return $this->hasMany(Transaction::class, 'seller_id');
     }
 
     public function latestVerificationRequest()
