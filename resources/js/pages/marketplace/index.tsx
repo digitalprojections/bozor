@@ -39,7 +39,10 @@ interface Listing {
     user: {
         id: number;
         name: string;
+        masked_name?: string;
         avatar_url: string;
+        avatar_source?: 'uploaded' | 'mascot' | 'generated' | 'google';
+        avatar_seed?: string;
     };
     categories: Array<{
         id: number;

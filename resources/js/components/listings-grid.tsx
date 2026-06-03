@@ -2,7 +2,6 @@ import React from 'react';
 import { Link, router } from '@inertiajs/react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Package, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslations } from '@/hooks/use-translations';
 import { cn } from '@/lib/utils';
@@ -12,6 +11,7 @@ import { PriceDisplay } from '@/components/listings/price-display';
 import { UserRatingBadge } from '@/components/user-rating-badge';
 import { FreeShippingBadge } from '@/components/listings/free-shipping-badge';
 import { AuctionCountdown } from '@/components/listings/auction-countdown';
+import { UserAvatar } from '@/components/user-avatar';
 
 interface Listing {
     id: number;
@@ -31,6 +31,8 @@ interface Listing {
         name: string;
         masked_name?: string;
         avatar_url?: string;
+        avatar_source?: 'uploaded' | 'mascot' | 'generated' | 'google';
+        avatar_seed?: string;
     };
     categories: Array<{
         id: number;
@@ -165,22 +167,12 @@ export function ListingsGrid({
                                         {listing.title}
                                     </h3>
                                     <div className="mt-1 flex items-center gap-1.5 text-[11px] text-[#777777]">
-                                        <Avatar className="h-4 w-4 border border-[#eeeeee]">
-                                            <AvatarImage
-                                                src={
-                                                    listing.user.avatar_url ||
-                                                    undefined
-                                                }
-                                                alt={listing.user.name}
-                                            />
-                                            <AvatarFallback className="bg-[#eeeeee] text-[8px] text-[#777777]">
-                                                {(
-                                                    listing.user.masked_name ||
-                                                    listing.user.name ||
-                                                    '?'
-                                                ).slice(0, 1)}
-                                            </AvatarFallback>
-                                        </Avatar>
+                                        <UserAvatar
+                                            user={listing.user}
+                                            className="h-4 w-4 border border-[#eeeeee]"
+                                            fallbackClassName="bg-[#eeeeee] text-[8px] text-[#777777]"
+                                            mascotSize={16}
+                                        />
                                         <span className="truncate">
                                             {listing.user.masked_name ||
                                                 listing.user.name}
