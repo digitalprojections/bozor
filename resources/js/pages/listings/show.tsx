@@ -100,6 +100,10 @@ export default function Show({
         seo?.description ?? listing.description.substring(0, 160);
     const seoImage = seo?.og_image ?? imageUrls[0];
     const hasBids = (listing.bids_count ?? 0) > 0;
+    const isOwner =
+        auth?.user &&
+        !auth.user.is_guest &&
+        Number(listing.user.id) === Number(auth.user.id);
     const reserveNotMet =
         listing.is_auction &&
         Boolean(listing.auction_ended) &&
@@ -332,26 +336,23 @@ export default function Show({
                                                             }
                                                         />
                                                     )}
-                                                {auth?.user &&
-                                                    !auth.user.is_guest &&
-                                                    Number(listing.user.id) ===
-                                                        Number(auth.user.id) &&
-                                                    !hasBids && (
-                                                        <div className="flex w-full items-center gap-2 sm:w-auto">
-                                                            <Link
-                                                                href={`/listings/${listing.id}/edit`}
-                                                                className="flex-1 sm:flex-none"
+                                                {isOwner && (
+                                                    <div className="flex w-full items-center gap-2 sm:w-auto">
+                                                        <Link
+                                                            href={`/listings/${listing.id}/edit`}
+                                                            className="flex-1 sm:flex-none"
+                                                        >
+                                                            <Button
+                                                                variant="outline"
+                                                                size="sm"
+                                                                className="h-9 w-full rounded-full border-[#cbd5e1] px-5 text-[#475569] sm:h-10"
                                                             >
-                                                                <Button
-                                                                    variant="outline"
-                                                                    size="sm"
-                                                                    className="h-9 w-full rounded-full border-[#cbd5e1] px-5 text-[#475569] sm:h-10"
-                                                                >
-                                                                    {t(
-                                                                        'common.edit',
-                                                                    )}
-                                                                </Button>
-                                                            </Link>
+                                                                {t(
+                                                                    'common.edit',
+                                                                )}
+                                                            </Button>
+                                                        </Link>
+                                                        {!hasBids && (
                                                             <Button
                                                                 variant="outline"
                                                                 size="sm"
@@ -378,8 +379,9 @@ export default function Show({
                                                                     'common.delete',
                                                                 )}
                                                             </Button>
-                                                        </div>
-                                                    )}
+                                                        )}
+                                                    </div>
+                                                )}
                                                 {(!auth?.user ||
                                                     auth.user.is_guest) && (
                                                     <WatchButton

@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { FreeShippingBadge } from '@/components/listings/free-shipping-badge';
 
 export const YAMATO_RATE_TABLE_URL =
     'https://www.kuronekoyamato.co.jp/ytc/en/search/estimate/all_list.html';
@@ -66,8 +67,8 @@ export function ShippingSettingsCard({
                     </h2>
                     <p className="mt-1 text-sm text-muted-foreground">
                         Kuroneko Yamato is the only shipping carrier for now.
-                        Choose whether shipping is free for the buyer or paid
-                        by the buyer.
+                        Choose whether shipping is free for the buyer or paid by
+                        the buyer.
                     </p>
                 </div>
                 <a
@@ -109,11 +110,11 @@ export function ShippingSettingsCard({
                                     : 'outline'
                             }
                             onClick={chooseFreeShipping}
-                            className="h-auto justify-start whitespace-normal rounded-lg p-3 text-left sm:p-4"
+                            className="h-auto justify-start rounded-lg p-3 text-left whitespace-normal sm:p-4"
                         >
                             <span className="min-w-0">
-                                <span className="block font-bold">
-                                    Free shipping
+                                <span className="mb-2 flex flex-wrap items-center gap-2 font-bold">
+                                    <FreeShippingBadge />
                                 </span>
                                 <span className="block text-xs opacity-80">
                                     Seller pays Yamato. Buyer sees ¥0 shipping.
@@ -128,7 +129,7 @@ export function ShippingSettingsCard({
                                     : 'outline'
                             }
                             onClick={() => chooseBuyerPays('fixed')}
-                            className="h-auto justify-start whitespace-normal rounded-lg p-3 text-left sm:p-4"
+                            className="h-auto justify-start rounded-lg p-3 text-left whitespace-normal sm:p-4"
                         >
                             <span className="min-w-0">
                                 <span className="block font-bold">
@@ -153,7 +154,7 @@ export function ShippingSettingsCard({
                                             : 'outline'
                                     }
                                     onClick={() => chooseBuyerPays('fixed')}
-                                    className="h-auto whitespace-normal rounded-lg p-3"
+                                    className="h-auto rounded-lg p-3 whitespace-normal"
                                 >
                                     Fixed cost
                                 </Button>
@@ -168,22 +169,21 @@ export function ShippingSettingsCard({
                                     onClick={() =>
                                         chooseBuyerPays('location_based')
                                     }
-                                    className="h-auto whitespace-normal rounded-lg p-3"
+                                    className="h-auto rounded-lg p-3 whitespace-normal"
                                 >
                                     Decide by location
                                 </Button>
                                 <Button
                                     type="button"
                                     variant={
-                                        data.shipping_cost_type ===
-                                        'chakubarai'
+                                        data.shipping_cost_type === 'chakubarai'
                                             ? 'default'
                                             : 'outline'
                                     }
                                     onClick={() =>
                                         chooseBuyerPays('chakubarai')
                                     }
-                                    className="h-auto whitespace-normal rounded-lg p-3"
+                                    className="h-auto rounded-lg p-3 whitespace-normal"
                                 >
                                     Chakubarai
                                 </Button>
@@ -217,8 +217,7 @@ export function ShippingSettingsCard({
                                 </div>
                             )}
 
-                            {data.shipping_cost_type ===
-                                'location_based' && (
+                            {data.shipping_cost_type === 'location_based' && (
                                 <div className="flex gap-3 rounded-lg border border-dashed border-[#cbd5e1] bg-white p-3 text-sm text-[#334155]">
                                     <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#0d9488]" />
                                     <span className="min-w-0">
