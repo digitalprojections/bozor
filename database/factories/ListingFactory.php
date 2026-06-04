@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\Category;
 use App\Models\Listing;
 use App\Models\User;
-use App\Models\Category;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -28,6 +28,8 @@ class ListingFactory extends Factory
             'status' => 'active',
             'images' => [],
             'location' => $this->faker->city(),
+            'public_prefecture' => 'Tokyo',
+            'public_city' => 'Shibuya',
             'shipping_payer' => 'seller',
             'shipping_method' => 'kuroneko_yamato',
             'shipping_cost_type' => 'free',

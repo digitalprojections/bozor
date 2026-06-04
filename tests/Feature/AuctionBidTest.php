@@ -76,6 +76,8 @@ class AuctionBidTest extends TestCase
             'title' => 'Auction without reserve',
             'reserve_price' => null,
             'is_auction' => true,
+            'public_prefecture' => 'Tokyo',
+            'public_city' => 'Shibuya',
         ]);
     }
 

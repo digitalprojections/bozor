@@ -32,6 +32,8 @@ class Listing extends Model
         'ad_clicks',
         'images',
         'location',
+        'public_prefecture',
+        'public_city',
         'shipping_payer',
         'shipping_method',
         'shipping_cost_type',

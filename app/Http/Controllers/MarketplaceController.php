@@ -31,6 +31,7 @@ class MarketplaceController extends Controller
 
         // Get categories with listing counts
         $categories = Category::withCount('listings')->get();
+        $locationOptions = $this->locationOptions($request);
 
         // Build listings query with filters
         $listingsQuery = Listing::with(['user', 'categories', 'latestTransaction'])
@@ -53,8 +54,19 @@ class MarketplaceController extends Controller
         if ($request->filled('search')) {
             $listingsQuery->where(function ($q) use ($request) {
                 $q->where('title', 'like', "%{$request->search}%")
-                    ->orWhere('description', 'like', "%{$request->search}%");
+                    ->orWhere('description', 'like', "%{$request->search}%")
+                    ->orWhere('location', 'like', "%{$request->search}%")
+                    ->orWhere('public_prefecture', 'like', "%{$request->search}%")
+                    ->orWhere('public_city', 'like', "%{$request->search}%");
             });
+        }
+
+        if ($request->filled('prefecture')) {
+            $listingsQuery->where('public_prefecture', $request->string('prefecture')->toString());
+        }
+
+        if ($request->filled('city')) {
+            $listingsQuery->where('public_city', $request->string('city')->toString());
         }
 
         // Apply category filter
@@ -86,6 +98,7 @@ class MarketplaceController extends Controller
         return Inertia::render('marketplace/index', [
             'stats' => $stats,
             'categories' => $categories,
+            'locationOptions' => $locationOptions,
             'listings' => $listings,
             'recommendations' => $recommendations,
             'watched_ids' => $user ? $user->watchedListings()->pluck('listing_id')->toArray() : [],
@@ -95,11 +108,53 @@ class MarketplaceController extends Controller
                 'sort' => $sort,
                 'hide_sold' => $request->boolean('hide_sold'),
                 'free_shipping' => $request->boolean('free_shipping'),
+                'prefecture' => $request->input('prefecture'),
+                'city' => $request->input('city'),
             ],
             'seo' => [
                 'title' => __('Marketplace').' | '.config('app.name'),
                 'description' => __('Browse and buy products from individuals and small businesses across Japan. Free registration and zero sales fees!'),
             ],
         ]);
+    }
+
+    /**
+     * @return array{prefectures: array<int, string>, cities: array<int, string>}
+     */
+    private function locationOptions(Request $request): array
+    {
+        $baseQuery = Listing::query()
+            ->items()
+            ->where('status', '!=', 'disabled')
+            ->where('status', '!=', 'draft');
+
+        $prefectures = (clone $baseQuery)
+            ->whereNotNull('public_prefecture')
+            ->where('public_prefecture', '!=', '')
+            ->distinct()
+            ->orderBy('public_prefecture')
+            ->pluck('public_prefecture')
+            ->values()
+            ->all();
+
+        $cityQuery = (clone $baseQuery)
+            ->whereNotNull('public_city')
+            ->where('public_city', '!=', '');
+
+        if ($request->filled('prefecture')) {
+            $cityQuery->where('public_prefecture', $request->string('prefecture')->toString());
+        }
+
+        $cities = $cityQuery
+            ->distinct()
+            ->orderBy('public_city')
+            ->pluck('public_city')
+            ->values()
+            ->all();
+
+        return [
+            'prefectures' => $prefectures,
+            'cities' => $cities,
+        ];
     }
 }

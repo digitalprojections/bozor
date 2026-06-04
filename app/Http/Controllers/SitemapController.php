@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Listing;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Route;
 
 class SitemapController extends Controller
 {
@@ -21,13 +20,13 @@ class SitemapController extends Controller
         // Main pages for each locale
         foreach ($locales as $locale) {
             $urls[] = [
-                'loc' => url("/$locale"),
+                'loc' => route('home', ['lang' => $locale]),
                 'lastmod' => now()->startOfDay()->toAtomString(),
                 'changefreq' => 'daily',
                 'priority' => '1.0',
             ];
             $urls[] = [
-                'loc' => url("/$locale/marketplace"),
+                'loc' => route('marketplace', ['lang' => $locale]),
                 'lastmod' => now()->startOfDay()->toAtomString(),
                 'changefreq' => 'always',
                 'priority' => '0.9',
@@ -37,9 +36,8 @@ class SitemapController extends Controller
         // Listing pages
         foreach ($listings as $listing) {
             foreach ($locales as $locale) {
-                // We use the ID but often SEO slugs are better. For now, ID to match routes.
                 $urls[] = [
-                    'loc' => url("/$locale/listings/{$listing->id}"),
+                    'loc' => route('listings.show', ['listing' => $listing, 'lang' => $locale]),
                     'lastmod' => $listing->updated_at->toAtomString(),
                     'changefreq' => 'weekly',
                     'priority' => '0.8',

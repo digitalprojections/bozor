@@ -1,4 +1,4 @@
-import { Search, Grid, List, SlidersHorizontal, Truck } from 'lucide-react';
+import { Search, Grid, List, SlidersHorizontal, Truck, MapPin } from 'lucide-react';
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -21,14 +21,22 @@ interface Category {
 
 interface SearchAndFiltersProps {
     categories: Category[];
+    locationOptions: {
+        prefectures: string[];
+        cities: string[];
+    };
     currentCategory?: number;
     currentSort: string;
     currentSearch: string;
+    currentPrefecture: string;
+    currentCity: string;
     hideSold: boolean;
     freeShipping: boolean;
     viewMode: 'grid' | 'list';
     onSearch: (search: string) => void;
     onCategoryChange: (categoryId: number | null) => void;
+    onPrefectureChange: (prefecture: string | null) => void;
+    onCityChange: (city: string | null) => void;
     onSortChange: (sort: string) => void;
     onHideSoldChange: (hideSold: boolean) => void;
     onFreeShippingChange: (freeShipping: boolean) => void;
@@ -37,14 +45,19 @@ interface SearchAndFiltersProps {
 
 export function SearchAndFilters({
     categories,
+    locationOptions,
     currentCategory,
     currentSort,
     currentSearch,
+    currentPrefecture,
+    currentCity,
     hideSold,
     freeShipping,
     viewMode,
     onSearch,
     onCategoryChange,
+    onPrefectureChange,
+    onCityChange,
     onSortChange,
     onHideSoldChange,
     onFreeShippingChange,
@@ -109,6 +122,47 @@ export function SearchAndFilters({
                         </Select>
                     </div>
 
+                    <div className="flex items-center gap-2 flex-1 sm:flex-initial">
+                        <MapPin className="h-4 w-4 text-muted-foreground hidden sm:block" />
+                        <Select
+                            value={currentPrefecture || 'all'}
+                            onValueChange={(value) =>
+                                onPrefectureChange(value === 'all' ? null : value)
+                            }
+                        >
+                            <SelectTrigger className="w-full sm:w-[160px] h-10">
+                                <SelectValue placeholder={t('marketplace.filters.all_prefectures')} />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">{t('marketplace.filters.all_prefectures')}</SelectItem>
+                                {locationOptions.prefectures.map((prefecture) => (
+                                    <SelectItem key={prefecture} value={prefecture}>
+                                        {prefecture}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    <Select
+                        value={currentCity || 'all'}
+                        onValueChange={(value) =>
+                            onCityChange(value === 'all' ? null : value)
+                        }
+                    >
+                        <SelectTrigger className="w-full sm:w-[160px] h-10">
+                            <SelectValue placeholder={t('marketplace.filters.all_cities')} />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">{t('marketplace.filters.all_cities')}</SelectItem>
+                            {locationOptions.cities.map((city) => (
+                                <SelectItem key={city} value={city}>
+                                    {city}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+
                     {/* Sort */}
                     <Select value={currentSort} onValueChange={onSortChange}>
                         <SelectTrigger className="w-full sm:w-[150px] h-10">
@@ -170,7 +224,7 @@ export function SearchAndFilters({
             </div>
 
             {/* Active Filters */}
-            {(currentSearch || currentCategory || hideSold || freeShipping) && (
+            {(currentSearch || currentCategory || currentPrefecture || currentCity || hideSold || freeShipping) && (
                 <div className="flex flex-wrap gap-2">
                     {currentSearch && (
                         <Badge variant="secondary">
@@ -198,6 +252,28 @@ export function SearchAndFilters({
                                 className="ml-2"
                             >
                                 ×
+                            </button>
+                        </Badge>
+                    )}
+                    {currentPrefecture && (
+                        <Badge variant="secondary">
+                            {t('marketplace.filters.active_prefecture')}: {currentPrefecture}
+                            <button
+                                onClick={() => onPrefectureChange(null)}
+                                className="ml-2"
+                            >
+                                x
+                            </button>
+                        </Badge>
+                    )}
+                    {currentCity && (
+                        <Badge variant="secondary">
+                            {t('marketplace.filters.active_city')}: {currentCity}
+                            <button
+                                onClick={() => onCityChange(null)}
+                                className="ml-2"
+                            >
+                                x
                             </button>
                         </Badge>
                     )}

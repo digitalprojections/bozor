@@ -64,11 +64,14 @@ interface Filters {
     sort?: string;
     hide_sold?: boolean;
     free_shipping?: boolean;
+    prefecture?: string;
+    city?: string;
 }
 
 export default function Marketplace({
     stats,
     categories,
+    locationOptions,
     listings,
     recommendations = [],
     filters,
@@ -76,6 +79,10 @@ export default function Marketplace({
 }: {
     stats: Stats | null;
     categories: Category[];
+    locationOptions: {
+        prefectures: string[];
+        cities: string[];
+    };
     listings: PaginatedListings;
     recommendations?: any[];
     filters: Filters;
@@ -95,6 +102,22 @@ export default function Marketplace({
         router.get(
             '/marketplace',
             { ...filters, category: categoryId || undefined },
+            { preserveState: true, preserveScroll: true }
+        );
+    };
+
+    const handlePrefectureChange = (prefecture: string | null) => {
+        router.get(
+            '/marketplace',
+            { ...filters, prefecture: prefecture || undefined, city: undefined },
+            { preserveState: true, preserveScroll: true }
+        );
+    };
+
+    const handleCityChange = (city: string | null) => {
+        router.get(
+            '/marketplace',
+            { ...filters, city: city || undefined },
             { preserveState: true, preserveScroll: true }
         );
     };
@@ -132,14 +155,19 @@ export default function Marketplace({
 
                 <SearchAndFilters
                     categories={categories}
+                    locationOptions={locationOptions}
                     currentCategory={filters.category}
                     currentSort={filters.sort || 'newest'}
                     currentSearch={filters.search || ''}
+                    currentPrefecture={filters.prefecture || ''}
+                    currentCity={filters.city || ''}
                     hideSold={filters.hide_sold || false}
                     freeShipping={filters.free_shipping || false}
                     viewMode={viewMode}
                     onSearch={handleSearch}
                     onCategoryChange={handleCategoryChange}
+                    onPrefectureChange={handlePrefectureChange}
+                    onCityChange={handleCityChange}
                     onSortChange={handleSortChange}
                     onHideSoldChange={handleHideSoldChange}
                     onFreeShippingChange={handleFreeShippingChange}

@@ -50,6 +50,8 @@ export default function CreateListing({
         price: '',
         categories: [] as number[],
         location: defaultLocation,
+        public_prefecture: auth.user?.prefecture || '',
+        public_city: auth.user?.city || '',
         images: [] as File[],
         status: 'draft',
         condition: '' as ItemCondition | '',
@@ -126,6 +128,18 @@ export default function CreateListing({
             setData('buy_now_price', '');
             setData('auction_end_date', '');
         }
+    };
+
+    const updatePublicLocation = (
+        field: 'public_prefecture' | 'public_city',
+        value: string,
+    ) => {
+        const nextPrefecture =
+            field === 'public_prefecture' ? value : data.public_prefecture;
+        const nextCity = field === 'public_city' ? value : data.public_city;
+
+        setData(field, value);
+        setData('location', [nextPrefecture, nextCity].filter(Boolean).join(', '));
     };
 
     const submit = (e: React.FormEvent) => {
@@ -284,25 +298,56 @@ export default function CreateListing({
                                     )}
                                 </div>
 
-                                <div>
-                                    <Label htmlFor="location">{t('listing.create.location')}</Label>
-                                    <Input
-                                        id="location"
-                                        type="text"
-                                        value={data.location}
-                                        onChange={(e) =>
-                                            setData('location', e.target.value)
-                                        }
-                                        placeholder="e.g., Tokyo, Shibuya"
-                                        className="mt-1"
-                                    />
+                                <div className="grid gap-4 sm:grid-cols-2">
+                                    <div>
+                                        <Label htmlFor="public_prefecture">{t('Prefecture')}</Label>
+                                        <Input
+                                            id="public_prefecture"
+                                            type="text"
+                                            value={data.public_prefecture}
+                                            onChange={(e) =>
+                                                updatePublicLocation('public_prefecture', e.target.value)
+                                            }
+                                            placeholder="Tokyo"
+                                            className="mt-1"
+                                        />
+                                        {errors.public_prefecture && (
+                                            <p className="mt-1 text-sm text-red-500">
+                                                {errors.public_prefecture}
+                                            </p>
+                                        )}
+                                    </div>
+                                    <div>
+                                        <Label htmlFor="public_city">{t('City')}</Label>
+                                        <Input
+                                            id="public_city"
+                                            type="text"
+                                            value={data.public_city}
+                                            onChange={(e) =>
+                                                updatePublicLocation('public_city', e.target.value)
+                                            }
+                                            placeholder="Shibuya"
+                                            className="mt-1"
+                                        />
+                                        {errors.public_city && (
+                                            <p className="mt-1 text-sm text-red-500">
+                                                {errors.public_city}
+                                            </p>
+                                        )}
+                                    </div>
+                                    <input type="hidden" name="location" value={data.location} />
                                     {errors.location && (
-                                        <p className="mt-1 text-sm text-red-500">
+                                        <p className="mt-1 text-sm text-red-500 sm:col-span-2">
                                             {errors.location}
                                         </p>
                                     )}
                                 </div>
                             </div>
+                            {data.location && (
+                                <div className="rounded-md border bg-muted/30 px-3 py-2 text-sm text-muted-foreground">
+                                    {t('listing.create.location')}: {data.location}
+                                </div>
+                            )}
 
                             {/* Auction and Buy Now */}
                             <div className="space-y-4 rounded-lg border bg-muted/30 p-4">

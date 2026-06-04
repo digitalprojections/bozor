@@ -25,6 +25,7 @@ class ListingSharePreviewTest extends TestCase
             'title' => 'Vintage Film Camera',
             'description' => 'A clean working camera with the original leather case and a bright lens.',
             'images' => ['listings/camera.webp'],
+            'location' => 'Tokyo',
             'price' => 12800,
         ]);
 
@@ -43,6 +44,9 @@ class ListingSharePreviewTest extends TestCase
                 ->where('seo.description', 'A clean working camera with the original leather case and a bright lens.')
                 ->where('seo.canonical', $url)
                 ->where('seo.og_image', $imageUrl)
+                ->where('seo.json_ld.offers.availableAtOrFrom.@type', 'Place')
+                ->where('seo.json_ld.offers.availableAtOrFrom.name', 'Tokyo')
+                ->where('seo.json_ld.offers.availableAtOrFrom.address.addressCountry', 'JP')
             );
     }
 }

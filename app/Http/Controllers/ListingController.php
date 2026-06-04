@@ -57,6 +57,8 @@ class ListingController extends Controller
             'categories' => 'required|array|min:1|max:5',
             'categories.*' => 'exists:categories,id',
             'location' => 'nullable|string|max:255',
+            'public_prefecture' => 'nullable|string|max:100',
+            'public_city' => 'nullable|string|max:100',
             'images' => 'nullable|array|max:5',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'status' => 'in:draft,active',
@@ -102,6 +104,7 @@ class ListingController extends Controller
 
         $auctionEndDate = $this->normalizeAuctionEndDate($request, $isAuction);
         $shipping = $this->normalizeShipping($validated);
+        $publicLocation = $this->normalizePublicLocation($request, $validated);
 
         $listing = Listing::create([
             'user_id' => auth()->id(),
@@ -109,7 +112,9 @@ class ListingController extends Controller
             'description' => $validated['description'],
             'price' => $validated['price'],
             'reserve_price' => $isAuction ? ($validated['reserve_price'] ?? null) : null,
-            'location' => $validated['location'] ?? null,
+            'location' => $publicLocation['location'],
+            'public_prefecture' => $publicLocation['public_prefecture'],
+            'public_city' => $publicLocation['public_city'],
             'images' => $imagePaths,
             'status' => $validated['status'] ?? 'draft',
             'condition' => $validated['condition'],
@@ -149,6 +154,45 @@ class ListingController extends Controller
         $description = str($listing->description)->squish()->limit(160)->toString();
         $canonicalUrl = route('listings.show', $listing);
         $previewImageUrl = $listing->main_image_url ?: asset('favicon.png');
+        $jsonLd = [
+            '@context' => 'https://schema.org/',
+            '@type' => 'Product',
+            'name' => $listing->title,
+            'image' => $listing->all_image_urls,
+            'description' => $description,
+            'url' => $canonicalUrl,
+            'offers' => [
+                '@type' => 'Offer',
+                'price' => $listing->display_price,
+                'priceCurrency' => 'JPY',
+                'availability' => $listing->status === 'active' ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+            ],
+        ];
+
+        if (filled($listing->location)) {
+            $address = [
+                '@type' => 'PostalAddress',
+                'addressCountry' => 'JP',
+            ];
+
+            if (filled($listing->public_city)) {
+                $address['addressLocality'] = $listing->public_city;
+            }
+
+            if (filled($listing->public_prefecture)) {
+                $address['addressRegion'] = $listing->public_prefecture;
+            }
+
+            if (! isset($address['addressLocality'], $address['addressRegion'])) {
+                $address['addressLocality'] = $listing->location;
+            }
+
+            $jsonLd['offers']['availableAtOrFrom'] = [
+                '@type' => 'Place',
+                'name' => $listing->location,
+                'address' => $address,
+            ];
+        }
 
         return Inertia::render('listings/show', [
             'listing' => $listing,
@@ -170,20 +214,7 @@ class ListingController extends Controller
                 'og_type' => 'product',
                 'og_image' => $previewImageUrl,
                 'twitter_card' => 'summary_large_image',
-                'json_ld' => [
-                    '@context' => 'https://schema.org/',
-                    '@type' => 'Product',
-                    'name' => $listing->title,
-                    'image' => $listing->all_image_urls,
-                    'description' => $description,
-                    'url' => $canonicalUrl,
-                    'offers' => [
-                        '@type' => 'Offer',
-                        'price' => $listing->display_price,
-                        'priceCurrency' => 'JPY',
-                        'availability' => $listing->status === 'active' ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-                    ],
-                ],
+                'json_ld' => $jsonLd,
             ],
         ]);
     }
@@ -243,6 +274,8 @@ class ListingController extends Controller
             'categories' => 'required|array|min:1|max:5',
             'categories.*' => 'exists:categories,id',
             'location' => 'nullable|string|max:255',
+            'public_prefecture' => 'nullable|string|max:100',
+            'public_city' => 'nullable|string|max:100',
             'status' => 'in:draft,active',
             'condition' => 'required|in:new,like_new,used_good,used_fair,for_parts',
             'buy_now_price' => 'nullable|integer|min:1',
@@ -308,13 +341,16 @@ class ListingController extends Controller
             $changes['status'] = ['old' => $listing->status, 'new' => $validated['status']];
         }
         $shipping = $this->normalizeShipping($validated);
+        $publicLocation = $this->normalizePublicLocation($request, $validated, $listing);
 
         $listing->update([
             'title' => $validated['title'],
             'description' => $validated['description'],
             'price' => $validated['price'],
             'reserve_price' => $isAuction ? ($validated['reserve_price'] ?? null) : null,
-            'location' => $validated['location'] ?? null,
+            'location' => $publicLocation['location'],
+            'public_prefecture' => $publicLocation['public_prefecture'],
+            'public_city' => $publicLocation['public_city'],
             'status' => $validated['status'] ?? 'draft',
             'condition' => $validated['condition'],
             'buy_now_price' => $isAuction ? ($validated['buy_now_price'] ?? null) : null,
@@ -397,6 +433,33 @@ class ListingController extends Controller
                 ]);
             }
         }
+    }
+
+    /**
+     * @param  array<string, mixed>  $validated
+     * @return array{location: ?string, public_prefecture: ?string, public_city: ?string}
+     */
+    private function normalizePublicLocation(Request $request, array $validated, ?Listing $listing = null): array
+    {
+        $user = $request->user();
+        $prefecture = $validated['public_prefecture']
+            ?? $listing?->public_prefecture
+            ?? $user?->prefecture;
+        $city = $validated['public_city']
+            ?? $listing?->public_city
+            ?? $user?->city;
+
+        $prefecture = filled($prefecture) ? trim((string) $prefecture) : null;
+        $city = filled($city) ? trim((string) $city) : null;
+        $location = filled($validated['location'] ?? null)
+            ? trim((string) $validated['location'])
+            : collect([$prefecture, $city])->filter()->implode(', ');
+
+        return [
+            'location' => filled($location) ? $location : null,
+            'public_prefecture' => $prefecture,
+            'public_city' => $city,
+        ];
     }
 
     private function normalizeAuctionEndDate(Request $request, bool $isAuction, ?Listing $listing = null): ?CarbonImmutable

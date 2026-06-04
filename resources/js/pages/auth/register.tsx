@@ -18,6 +18,12 @@ export default function Register() {
         email: '',
         password: '',
         password_confirmation: '',
+        postal_code: '',
+        prefecture: '',
+        city: '',
+        address_line1: '',
+        address_line2: '',
+        phone: '',
     });
 
     const submit = (e: React.FormEvent) => {
@@ -103,10 +109,97 @@ export default function Register() {
                         <InputError message={errors.password_confirmation} />
                     </div>
 
+                    <div className="grid gap-4 sm:grid-cols-2">
+                        <div className="grid gap-2">
+                            <Label htmlFor="postal_code">{t('Postal Code')}</Label>
+                            <Input
+                                id="postal_code"
+                                name="postal_code"
+                                value={data.postal_code}
+                                onChange={(e) => setData('postal_code', e.target.value)}
+                                required
+                                tabIndex={5}
+                                autoComplete="postal-code"
+                            />
+                            <InputError message={errors.postal_code} />
+                        </div>
+
+                        <div className="grid gap-2">
+                            <Label htmlFor="prefecture">{t('Prefecture')}</Label>
+                            <Input
+                                id="prefecture"
+                                name="prefecture"
+                                value={data.prefecture}
+                                onChange={(e) => setData('prefecture', e.target.value)}
+                                required
+                                tabIndex={6}
+                                autoComplete="address-level1"
+                            />
+                            <InputError message={errors.prefecture} />
+                        </div>
+                    </div>
+
+                    <div className="grid gap-4 sm:grid-cols-2">
+                        <div className="grid gap-2">
+                            <Label htmlFor="city">{t('City')}</Label>
+                            <Input
+                                id="city"
+                                name="city"
+                                value={data.city}
+                                onChange={(e) => setData('city', e.target.value)}
+                                required
+                                tabIndex={7}
+                                autoComplete="address-level2"
+                            />
+                            <InputError message={errors.city} />
+                        </div>
+
+                        <div className="grid gap-2">
+                            <Label htmlFor="phone">{t('Phone')}</Label>
+                            <Input
+                                id="phone"
+                                name="phone"
+                                value={data.phone}
+                                onChange={(e) => setData('phone', e.target.value)}
+                                required
+                                tabIndex={8}
+                                autoComplete="tel"
+                            />
+                            <InputError message={errors.phone} />
+                        </div>
+                    </div>
+
+                    <div className="grid gap-2">
+                        <Label htmlFor="address_line1">{t('Address Line 1')}</Label>
+                        <Input
+                            id="address_line1"
+                            name="address_line1"
+                            value={data.address_line1}
+                            onChange={(e) => setData('address_line1', e.target.value)}
+                            required
+                            tabIndex={9}
+                            autoComplete="address-line1"
+                        />
+                        <InputError message={errors.address_line1} />
+                    </div>
+
+                    <div className="grid gap-2">
+                        <Label htmlFor="address_line2">{t('Address Line 2')}</Label>
+                        <Input
+                            id="address_line2"
+                            name="address_line2"
+                            value={data.address_line2}
+                            onChange={(e) => setData('address_line2', e.target.value)}
+                            tabIndex={10}
+                            autoComplete="address-line2"
+                        />
+                        <InputError message={errors.address_line2} />
+                    </div>
+
                     <Button
                         type="submit"
                         className="mt-2 w-full cursor-pointer"
-                        tabIndex={5}
+                        tabIndex={11}
                         disabled={processing}
                         data-test="register-user-button"
                     >
@@ -140,7 +233,7 @@ export default function Register() {
 
                 <div className="text-center text-sm text-muted-foreground">
                     {t('Already have an account?')}{' '}
-                    <TextLink href={loginRoute()} tabIndex={6}>
+                    <TextLink href={loginRoute()} tabIndex={12}>
                         {t('Log in')}
                     </TextLink>
                 </div>

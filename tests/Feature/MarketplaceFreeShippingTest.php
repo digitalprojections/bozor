@@ -58,4 +58,73 @@ class MarketplaceFreeShippingTest extends TestCase
 
         $this->assertFalse($listing->fresh()->free_shipping);
     }
+
+    public function test_marketplace_search_matches_listing_location(): void
+    {
+        Category::create([
+            'name' => 'Electronics',
+            'slug' => 'electronics',
+        ]);
+
+        $tokyoListing = Listing::factory()->create([
+            'title' => 'Mirrorless camera',
+            'description' => 'Clean camera body.',
+            'location' => 'Tokyo',
+            'public_prefecture' => 'Tokyo',
+            'public_city' => 'Shinjuku',
+        ]);
+
+        Listing::factory()->create([
+            'title' => 'Tripod',
+            'description' => 'Compact travel tripod.',
+            'location' => 'Osaka',
+            'public_prefecture' => 'Osaka',
+            'public_city' => 'Namba',
+        ]);
+
+        $this->get(route('marketplace', ['search' => 'Tokyo']))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('filters.search', 'Tokyo')
+                ->has('listings.data', 1)
+                ->where('listings.data.0.id', $tokyoListing->id)
+            );
+    }
+
+    public function test_marketplace_can_filter_by_public_listing_location(): void
+    {
+        Category::create([
+            'name' => 'Electronics',
+            'slug' => 'electronics',
+        ]);
+
+        $tokyoListing = Listing::factory()->create([
+            'title' => 'Tokyo listing',
+            'location' => 'Tokyo, Shinjuku',
+            'public_prefecture' => 'Tokyo',
+            'public_city' => 'Shinjuku',
+        ]);
+
+        Listing::factory()->create([
+            'title' => 'Osaka listing',
+            'location' => 'Osaka, Namba',
+            'public_prefecture' => 'Osaka',
+            'public_city' => 'Namba',
+        ]);
+
+        $this->get(route('marketplace', [
+            'prefecture' => 'Tokyo',
+            'city' => 'Shinjuku',
+        ]))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('filters.prefecture', 'Tokyo')
+                ->where('filters.city', 'Shinjuku')
+                ->where('locationOptions.prefectures.0', 'Osaka')
+                ->where('locationOptions.prefectures.1', 'Tokyo')
+                ->where('locationOptions.cities.0', 'Shinjuku')
+                ->has('listings.data', 1)
+                ->where('listings.data.0.id', $tokyoListing->id)
+            );
+    }
 }
