@@ -79,6 +79,71 @@ class AuctionBidTest extends TestCase
         ]);
     }
 
+    public function test_auction_listing_can_be_created_with_optional_buy_now_price(): void
+    {
+        $seller = User::factory()->create();
+        $category = Category::create([
+            'name' => 'Electronics',
+            'slug' => 'electronics-'.uniqid(),
+        ]);
+
+        $this->actingAs($seller)
+            ->from(route('listings.create'))
+            ->post(route('listings.store'), [
+                'title' => 'Auction with buy now',
+                'description' => 'A useful item with an optional instant price.',
+                'price' => 1000,
+                'reserve_price' => 1500,
+                'categories' => [$category->id],
+                'location' => 'Tokyo',
+                'status' => 'active',
+                'condition' => 'used_good',
+                'buy_now_price' => 3000,
+                'is_auction' => true,
+                'auction_end_date' => now()->addDay()->toDateTimeString(),
+            ])
+            ->assertRedirect(route('marketplace'));
+
+        $this->assertDatabaseHas('listings', [
+            'title' => 'Auction with buy now',
+            'price' => 1000,
+            'reserve_price' => 1500,
+            'buy_now_price' => 3000,
+            'is_auction' => true,
+        ]);
+    }
+
+    public function test_non_auction_creation_ignores_buy_now_price(): void
+    {
+        $seller = User::factory()->create();
+        $category = Category::create([
+            'name' => 'Electronics',
+            'slug' => 'electronics-'.uniqid(),
+        ]);
+
+        $this->actingAs($seller)
+            ->from(route('listings.create'))
+            ->post(route('listings.store'), [
+                'title' => 'Direct sale ignores buy now',
+                'description' => 'A direct sale item should use price only.',
+                'price' => 1000,
+                'categories' => [$category->id],
+                'location' => 'Tokyo',
+                'status' => 'active',
+                'condition' => 'used_good',
+                'buy_now_price' => 3000,
+                'is_auction' => false,
+            ])
+            ->assertRedirect(route('marketplace'));
+
+        $this->assertDatabaseHas('listings', [
+            'title' => 'Direct sale ignores buy now',
+            'price' => 1000,
+            'buy_now_price' => null,
+            'is_auction' => false,
+        ]);
+    }
+
     public function test_auction_end_date_uses_submitted_timezone_offset(): void
     {
         $this->travelTo(CarbonImmutable::parse('2026-06-03 00:00:00', 'UTC'));

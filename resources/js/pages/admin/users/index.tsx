@@ -1,6 +1,6 @@
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { FormEvent, useState } from 'react';
-import { Edit3, Search, ShieldCheck, Store, UserRound } from 'lucide-react';
+import { Edit3, Search, ShieldCheck, Store, Trash2, UserRound } from 'lucide-react';
 import BazaarLayout from '@/layouts/bazaar-layout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -51,6 +51,7 @@ export default function AdminUsersIndex({
     users: PaginatedUsers;
     filters: { search?: string };
 }) {
+    const { errors, flash } = usePage().props as any;
     const [search, setSearch] = useState(filters.search ?? '');
 
     const submit = (event: FormEvent) => {
@@ -75,11 +76,37 @@ export default function AdminUsersIndex({
               }).format(new Date(value))
             : 'Unknown';
 
+    const deleteUser = (user: AdminUser) => {
+        if (
+            !confirm(
+                `Delete ${user.name} (${user.email})? This cannot be undone.`,
+            )
+        ) {
+            return;
+        }
+
+        router.delete(`/admin/users/${user.id}`, {
+            preserveScroll: true,
+        });
+    };
+
     return (
         <BazaarLayout title="Admin Users" breadcrumbs={breadcrumbs}>
             <Head title="Admin Users" />
 
             <div className="space-y-4">
+                {(flash?.success || errors?.delete) && (
+                    <div
+                        className={
+                            errors?.delete
+                                ? 'rounded border border-[#f1c7c7] bg-[#fff1f1] px-3 py-2 text-sm font-medium text-[#b42318]'
+                                : 'rounded border border-[#bbf7d0] bg-[#f0fdf4] px-3 py-2 text-sm font-medium text-[#166534]'
+                        }
+                    >
+                        {errors?.delete ?? flash?.success}
+                    </div>
+                )}
+
                 <form
                     onSubmit={submit}
                     className="flex flex-col gap-2 rounded border border-[#dce5ef] bg-white p-3 shadow-sm sm:flex-row"
@@ -102,12 +129,12 @@ export default function AdminUsersIndex({
                 </form>
 
                 <div className="overflow-hidden rounded border border-[#dce5ef] bg-white shadow-sm">
-                    <div className="flex items-center justify-between border-b border-[#edf2f7] px-4 py-3">
+                    <div className="flex items-center justify-between border-b border-[#edf2f7] px-3 py-2">
                         <div>
-                            <h2 className="font-semibold text-[#0b1b32]">
+                            <h2 className="text-sm font-semibold text-[#0b1b32]">
                                 Accounts
                             </h2>
-                            <p className="text-sm text-[#667085]">
+                            <p className="text-xs text-[#667085]">
                                 Showing {users.from ?? 0}-{users.to ?? 0} of{' '}
                                 {users.total}
                             </p>
@@ -115,14 +142,14 @@ export default function AdminUsersIndex({
                     </div>
 
                     <div className="overflow-x-auto">
-                        <table className="w-full min-w-[920px] text-left text-sm">
+                        <table className="w-full min-w-[860px] text-left text-xs">
                             <thead className="bg-[#f8fafc] text-xs font-semibold tracking-wide text-[#526173] uppercase">
                                 <tr>
-                                    <th className="px-4 py-3">User</th>
-                                    <th className="px-4 py-3">Status</th>
-                                    <th className="px-4 py-3">Activity</th>
-                                    <th className="px-4 py-3">Joined</th>
-                                    <th className="px-4 py-3 text-right">
+                                    <th className="px-3 py-2">User</th>
+                                    <th className="px-3 py-2">Status</th>
+                                    <th className="px-3 py-2">Activity</th>
+                                    <th className="px-3 py-2">Joined</th>
+                                    <th className="px-3 py-2 text-right">
                                         Actions
                                     </th>
                                 </tr>
@@ -133,21 +160,21 @@ export default function AdminUsersIndex({
                                         key={user.id}
                                         className="align-top hover:bg-[#fbfdff]"
                                     >
-                                        <td className="px-4 py-4">
-                                            <div className="flex min-w-0 gap-3">
-                                                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded bg-[#e7f2f1] text-[#0f766e]">
-                                                    <UserRound size={18} />
+                                        <td className="px-3 py-2">
+                                            <div className="flex min-w-0 gap-2">
+                                                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-[#e7f2f1] text-[#0f766e]">
+                                                    <UserRound size={14} />
                                                 </div>
                                                 <div className="min-w-0">
-                                                    <div className="truncate font-semibold text-[#16233a]">
+                                                    <div className="truncate font-semibold leading-4 text-[#16233a]">
                                                         {user.name}
                                                     </div>
-                                                    <div className="truncate text-[#667085]">
+                                                    <div className="truncate leading-4 text-[#667085]">
                                                         {user.email}
                                                     </div>
                                                     {user.store_name && (
-                                                        <div className="mt-1 flex items-center gap-1 text-xs text-[#667085]">
-                                                            <Store size={12} />
+                                                        <div className="flex items-center gap-1 text-[11px] leading-4 text-[#667085]">
+                                                            <Store size={11} />
                                                             <span className="truncate">
                                                                 {
                                                                     user.store_name
@@ -158,44 +185,42 @@ export default function AdminUsersIndex({
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-4 py-4">
-                                            <div className="flex flex-wrap gap-1.5">
+                                        <td className="px-3 py-2">
+                                            <div className="flex flex-wrap gap-1">
                                                 <Badge
                                                     className={
                                                         user.email_verified_at
-                                                            ? 'border-[#bbf7d0] bg-[#f0fdf4] text-[#166534]'
-                                                            : 'border-[#fed7aa] bg-[#fff7ed] text-[#9a3412]'
+                                                            ? 'border-[#bbf7d0] bg-[#f0fdf4] px-1.5 py-0 text-[11px] text-[#166534]'
+                                                            : 'border-[#fed7aa] bg-[#fff7ed] px-1.5 py-0 text-[11px] text-[#9a3412]'
                                                     }
                                                     variant="outline"
                                                 >
-                                                    Email{' '}
                                                     {user.email_verified_at
-                                                        ? 'verified'
-                                                        : 'unverified'}
+                                                        ? 'Email ok'
+                                                        : 'Email no'}
                                                 </Badge>
                                                 <Badge
                                                     className={
                                                         user.is_verified
-                                                            ? 'border-[#bbf7d0] bg-[#f0fdf4] text-[#166534]'
-                                                            : 'border-[#dbe4f0] bg-[#f8fafc] text-[#475467]'
+                                                            ? 'border-[#bbf7d0] bg-[#f0fdf4] px-1.5 py-0 text-[11px] text-[#166534]'
+                                                            : 'border-[#dbe4f0] bg-[#f8fafc] px-1.5 py-0 text-[11px] text-[#475467]'
                                                     }
                                                     variant="outline"
                                                 >
-                                                    <ShieldCheck size={12} />
-                                                    Marketplace{' '}
+                                                    <ShieldCheck size={11} />
                                                     {user.is_verified
-                                                        ? 'verified'
-                                                        : 'unverified'}
+                                                        ? 'Verified'
+                                                        : 'Unverified'}
                                                 </Badge>
                                                 {user.is_guest && (
-                                                    <Badge variant="secondary">
+                                                    <Badge variant="secondary" className="px-1.5 py-0 text-[11px]">
                                                         Guest
                                                     </Badge>
                                                 )}
                                             </div>
                                         </td>
-                                        <td className="px-4 py-4 text-[#526173]">
-                                            <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                                        <td className="px-3 py-2 text-[#526173]">
+                                            <div className="grid grid-cols-2 gap-x-3 gap-y-0.5">
                                                 <span>
                                                     Listings:{' '}
                                                     {user.listings_count ?? 0}
@@ -215,23 +240,37 @@ export default function AdminUsersIndex({
                                                 </span>
                                             </div>
                                         </td>
-                                        <td className="px-4 py-4 text-[#526173]">
+                                        <td className="px-3 py-2 text-[#526173]">
                                             {formatDate(user.created_at)}
                                         </td>
-                                        <td className="px-4 py-4 text-right">
-                                            <Button
-                                                asChild
-                                                size="sm"
-                                                variant="outline"
-                                                className="rounded-[4px]"
-                                            >
-                                                <Link
-                                                    href={`/admin/users/${user.id}/edit`}
+                                        <td className="px-3 py-2 text-right">
+                                            <div className="flex justify-end gap-1.5">
+                                                <Button
+                                                    asChild
+                                                    size="sm"
+                                                    variant="outline"
+                                                    className="h-7 rounded-[4px] px-2 text-xs"
                                                 >
-                                                    <Edit3 size={14} />
-                                                    Edit
-                                                </Link>
-                                            </Button>
+                                                    <Link
+                                                        href={`/admin/users/${user.id}/edit`}
+                                                    >
+                                                        <Edit3 size={13} />
+                                                        Edit
+                                                    </Link>
+                                                </Button>
+                                                <Button
+                                                    type="button"
+                                                    size="sm"
+                                                    variant="outline"
+                                                    onClick={() =>
+                                                        deleteUser(user)
+                                                    }
+                                                    className="h-7 rounded-[4px] border-[#f1c7c7] px-2 text-xs text-[#b42318] hover:bg-[#fff1f1] hover:text-[#8a1f15]"
+                                                >
+                                                    <Trash2 size={13} />
+                                                    Delete
+                                                </Button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}
@@ -245,7 +284,7 @@ export default function AdminUsersIndex({
                         </div>
                     )}
 
-                    <div className="flex flex-wrap gap-2 border-t border-[#edf2f7] px-4 py-3">
+                    <div className="flex flex-wrap gap-2 border-t border-[#edf2f7] px-3 py-2">
                         {users.links.map((link, index) => (
                             <Button
                                 key={`${link.label}-${index}`}

@@ -119,4 +119,32 @@ class AdminUserManagementTest extends TestCase
 
         $this->assertSame('fuzalov@gmail.com', $admin->refresh()->email);
     }
+
+    public function test_admin_can_delete_a_managed_user_account(): void
+    {
+        $admin = User::factory()->create(['email' => 'fuzalov@gmail.com']);
+        $user = User::factory()->create();
+
+        $this
+            ->actingAs($admin)
+            ->delete(route('admin.users.destroy', $user))
+            ->assertRedirect(route('admin.users.index'))
+            ->assertSessionHasNoErrors();
+
+        $this->assertNull($user->fresh());
+    }
+
+    public function test_admin_cannot_delete_their_own_account(): void
+    {
+        $admin = User::factory()->create(['email' => 'fuzalov@gmail.com']);
+
+        $this
+            ->actingAs($admin)
+            ->from(route('admin.users.index'))
+            ->delete(route('admin.users.destroy', $admin))
+            ->assertRedirect(route('admin.users.index'))
+            ->assertSessionHasErrors('delete');
+
+        $this->assertNotNull($admin->fresh());
+    }
 }

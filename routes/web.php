@@ -87,6 +87,7 @@ Route::middleware(['auth', 'admin'])
         Route::get('/users', [App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');
         Route::get('/users/{user}/edit', [App\Http\Controllers\Admin\UserController::class, 'edit'])->name('users.edit');
         Route::patch('/users/{user}', [App\Http\Controllers\Admin\UserController::class, 'update'])->name('users.update');
+        Route::delete('/users/{user}', [App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('users.destroy');
 
         Route::get('/verifications', [App\Http\Controllers\Admin\VerificationController::class, 'index'])->name('verifications.index');
         Route::get('/verifications/{id}', [App\Http\Controllers\Admin\VerificationController::class, 'show'])->name('verifications.show');

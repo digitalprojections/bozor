@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Middleware\EnsureAdmin;
 use App\Models\User;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -103,5 +104,26 @@ class UserController extends Controller
         return redirect()
             ->route('admin.users.edit', $user)
             ->with('success', 'User account updated.');
+    }
+
+    public function destroy(Request $request, User $user)
+    {
+        if ($request->user()->is($user)) {
+            return back()->withErrors([
+                'delete' => 'You cannot delete your own admin account.',
+            ]);
+        }
+
+        try {
+            $user->delete();
+        } catch (QueryException) {
+            return back()->withErrors([
+                'delete' => 'This account has related transaction records and cannot be deleted safely.',
+            ]);
+        }
+
+        return redirect()
+            ->route('admin.users.index')
+            ->with('success', 'User account deleted.');
     }
 }

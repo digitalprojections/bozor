@@ -118,6 +118,16 @@ export default function CreateListing({
         synth.playPop();
     };
 
+    const setAuctionMode = (enabled: boolean) => {
+        setData('is_auction', enabled);
+
+        if (!enabled) {
+            setData('reserve_price', '');
+            setData('buy_now_price', '');
+            setData('auction_end_date', '');
+        }
+    };
+
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
         
@@ -304,14 +314,14 @@ export default function CreateListing({
                                     <Button
                                         type="button"
                                         variant={data.is_auction ? 'default' : 'outline'}
-                                        onClick={() => setData('is_auction', !data.is_auction)}
+                                        onClick={() => setAuctionMode(!data.is_auction)}
                                     >
                                         {data.is_auction ? t('listing.create.enabled') : t('listing.create.disabled')}
                                     </Button>
                                 </div>
 
                                 {data.is_auction && (
-                                    <div className="grid gap-4 md:grid-cols-2">
+                                    <div className="grid gap-4 md:grid-cols-3">
                                         <div>
                                             <Label htmlFor="reserve_price">
                                                 {t(
@@ -359,23 +369,37 @@ export default function CreateListing({
                                                     <p className="mt-1 text-sm text-red-500">{errors.auction_end_date}</p>
                                                 )}
                                         </div>
+                                        <div>
+                                            <Label htmlFor="buy_now_price">
+                                                {t(
+                                                    'listing.create.buy_now_price',
+                                                )}{' '}
+                                                (¥)
+                                            </Label>
+                                            <Input
+                                                id="buy_now_price"
+                                                type="number"
+                                                min="1"
+                                                value={data.buy_now_price}
+                                                onChange={(e) =>
+                                                    setData(
+                                                        'buy_now_price',
+                                                        e.target.value,
+                                                    )
+                                                }
+                                                placeholder={t(
+                                                    'listing.create.buy_now_placeholder',
+                                                )}
+                                                className="mt-1"
+                                            />
+                                            {errors.buy_now_price && (
+                                                <p className="mt-1 text-sm text-red-500">
+                                                    {errors.buy_now_price}
+                                                </p>
+                                            )}
+                                        </div>
                                     </div>
                                 )}
-
-                                <div>
-                                    <Label htmlFor="buy_now_price">{t('listing.create.buy_now_price')}{' (¥)'}</Label>
-                                    <Input
-                                        id="buy_now_price"
-                                        type="number"
-                                        value={data.buy_now_price}
-                                        onChange={(e) => setData('buy_now_price', e.target.value)}
-                                        placeholder={t('listing.create.buy_now_placeholder')}
-                                        className="mt-1"
-                                    />
-                                    {errors.buy_now_price && (
-                                        <p className="mt-1 text-sm text-red-500">{errors.buy_now_price}</p>
-                                    )}
-                                </div>
                             </div>
                         </div>
                     </Card>
