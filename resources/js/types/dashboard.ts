@@ -16,6 +16,7 @@ export interface Listing {
     location?: string;
     condition?: 'new' | 'like_new' | 'used_good' | 'used_fair' | 'for_parts';
     views: number;
+    watched_by_count?: number;
     created_at: string;
     main_image_url: string | null;
     categories: Category[];

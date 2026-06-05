@@ -276,11 +276,15 @@ export default function EditListing({
     };
 
     return (
-        <BazaarLayout title={t('listing.edit.title')} breadcrumbs={breadcrumbs}>
+        <BazaarLayout
+            title={t('listing.edit.title')}
+            breadcrumbs={breadcrumbs}
+            flushMobile
+        >
             <Head title={t('listing.edit.title')} />
 
-            <div className="w-full max-w-full space-y-5 px-0 py-4 sm:space-y-6 sm:p-6">
-                <div className="px-1 sm:px-0">
+            <div className="mx-auto w-full max-w-full space-y-4 px-0 py-2 sm:space-y-6 sm:p-6 lg:max-w-4xl xl:max-w-5xl">
+                <div className="px-3 sm:px-0">
                     <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
                         {t('listing.edit.title')}
                     </h1>
@@ -303,8 +307,8 @@ export default function EditListing({
                     </Alert>
                 )}
 
-                <form onSubmit={submit} className="w-full max-w-full space-y-5 sm:space-y-6">
-                    <Card className="w-full max-w-full overflow-hidden rounded-lg p-4 sm:p-6">
+                <form onSubmit={submit} className="w-full max-w-full space-y-4 sm:space-y-6">
+                    <Card className="w-full max-w-full overflow-hidden rounded-none border-x-0 p-3 sm:rounded-lg sm:border-x sm:p-6">
                         <h2 className="mb-4 text-lg font-semibold sm:text-xl">
                             {t('listing.create.basic_info')}
                         </h2>
@@ -644,7 +648,7 @@ export default function EditListing({
                         setData={setData}
                     />
 
-                    <Card className="w-full max-w-full overflow-hidden rounded-lg p-4 sm:p-6">
+                    <Card className="w-full max-w-full overflow-hidden rounded-none border-x-0 p-3 sm:rounded-lg sm:border-x sm:p-6">
                         <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
                             <div>
                                 <h2 className="text-lg font-semibold sm:text-xl">
@@ -672,7 +676,7 @@ export default function EditListing({
                             </span>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+                        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-5">
                             {imageSlots.map((slot, index) => {
                                 const inputId = `image-slot-${index}`;
                                 const hasImage =
@@ -786,7 +790,7 @@ export default function EditListing({
                         )}
                     </Card>
 
-                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+                    <div className="flex flex-col gap-3 px-3 sm:flex-row sm:items-center sm:justify-end sm:px-0">
                         <Button
                             type="button"
                             variant="outline"

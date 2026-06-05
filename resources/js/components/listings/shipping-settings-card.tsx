@@ -58,8 +58,8 @@ export function ShippingSettingsCard({
     };
 
     return (
-        <Card className="w-full max-w-full overflow-hidden rounded-lg p-4 sm:p-6">
-            <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <Card className="w-full max-w-full overflow-hidden rounded-none border-x-0 p-3 sm:rounded-lg sm:border-x sm:p-6">
+            <div className="mb-4 flex flex-col gap-3 sm:mb-5 sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0">
                     <h2 className="flex items-center gap-2 text-lg font-semibold sm:text-xl">
                         <Truck className="h-5 w-5 text-[#0d9488]" />
@@ -82,8 +82,8 @@ export function ShippingSettingsCard({
                 </a>
             </div>
 
-            <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(280px,360px)]">
-                <div className="space-y-4">
+            <div className="grid gap-3 sm:gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(280px,360px)]">
+                <div className="space-y-3 sm:space-y-4">
                     <div className="rounded-lg border border-[#dbe7f3] bg-[#f8fbfe] p-3 sm:p-4">
                         <div className="flex items-center gap-3">
                             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#dff7f3] text-[#0f766e]">
@@ -101,7 +101,7 @@ export function ShippingSettingsCard({
                         </div>
                     </div>
 
-                    <div className="grid gap-3 md:grid-cols-2">
+                    <div className="grid gap-2 sm:gap-3 md:grid-cols-2">
                         <Button
                             type="button"
                             variant={
@@ -144,8 +144,8 @@ export function ShippingSettingsCard({
                     </div>
 
                     {data.shipping_payer === 'buyer' && (
-                        <div className="space-y-4 rounded-lg border bg-muted/30 p-3 sm:p-4">
-                            <div className="grid gap-3 md:grid-cols-3">
+                        <div className="space-y-3 rounded-lg border bg-muted/30 p-3 sm:space-y-4 sm:p-4">
+                            <div className="grid gap-2 sm:gap-3 md:grid-cols-3">
                                 <Button
                                     type="button"
                                     variant={
@@ -250,7 +250,7 @@ export function ShippingSettingsCard({
                 </div>
 
                 <div className="overflow-hidden rounded-lg border border-[#dbe7f3]">
-                    <div className="border-b border-[#dbe7f3] bg-[#f8fbfe] px-4 py-3">
+                    <div className="border-b border-[#dbe7f3] bg-[#f8fbfe] px-3 py-3 sm:px-4">
                         <div className="text-sm font-bold text-[#0b1b32]">
                             Yamato size table
                         </div>
@@ -262,13 +262,13 @@ export function ShippingSettingsCard({
                         <table className="w-full text-left text-xs">
                             <thead className="sticky top-0 bg-white text-[#5f6c84]">
                                 <tr>
-                                    <th className="px-4 py-2 font-semibold">
+                                    <th className="px-3 py-2 font-semibold sm:px-4">
                                         Size
                                     </th>
-                                    <th className="px-4 py-2 font-semibold">
+                                    <th className="px-3 py-2 font-semibold sm:px-4">
                                         Parcel
                                     </th>
-                                    <th className="px-4 py-2 font-semibold">
+                                    <th className="px-3 py-2 font-semibold sm:px-4">
                                         Weight
                                     </th>
                                 </tr>
@@ -279,13 +279,13 @@ export function ShippingSettingsCard({
                                         key={row.size}
                                         className="border-t border-[#edf2f9]"
                                     >
-                                        <td className="px-4 py-2 font-bold text-[#0f766e]">
+                                        <td className="px-3 py-2 font-bold text-[#0f766e] sm:px-4">
                                             {row.size}
                                         </td>
-                                        <td className="px-4 py-2 text-[#1a263b]">
+                                        <td className="px-3 py-2 text-[#1a263b] sm:px-4">
                                             {row.dimensions}
                                         </td>
-                                        <td className="px-4 py-2 text-[#1a263b]">
+                                        <td className="px-3 py-2 text-[#1a263b] sm:px-4">
                                             {row.weight}
                                         </td>
                                     </tr>

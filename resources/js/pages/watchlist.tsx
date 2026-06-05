@@ -35,7 +35,7 @@ export default function Watchlist({ listings }: Props) {
     };
 
     return (
-        <BazaarLayout title={t('layout.sidebar.watchlist')}>
+        <BazaarLayout title={t('layout.sidebar.watchlist')} showTitle>
             <Head title={t('layout.sidebar.watchlist')} />
 
             <div className="flex flex-col gap-6">

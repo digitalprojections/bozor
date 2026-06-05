@@ -91,7 +91,7 @@ export default function AdminUsersIndex({
     };
 
     return (
-        <BazaarLayout title="Admin Users" breadcrumbs={breadcrumbs}>
+        <BazaarLayout title="Admin Users" breadcrumbs={breadcrumbs} showTitle>
             <Head title="Admin Users" />
 
             <div className="space-y-4">

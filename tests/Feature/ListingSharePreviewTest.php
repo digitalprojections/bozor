@@ -44,9 +44,11 @@ class ListingSharePreviewTest extends TestCase
                 ->where('seo.description', 'A clean working camera with the original leather case and a bright lens.')
                 ->where('seo.canonical', $url)
                 ->where('seo.og_image', $imageUrl)
-                ->where('seo.json_ld.offers.availableAtOrFrom.@type', 'Place')
-                ->where('seo.json_ld.offers.availableAtOrFrom.name', 'Tokyo')
-                ->where('seo.json_ld.offers.availableAtOrFrom.address.addressCountry', 'JP')
+                ->where('seo.json_ld.@graph.0.@type', 'Product')
+                ->where('seo.json_ld.@graph.0.offers.availableAtOrFrom.@type', 'Place')
+                ->where('seo.json_ld.@graph.0.offers.availableAtOrFrom.name', 'Tokyo')
+                ->where('seo.json_ld.@graph.0.offers.availableAtOrFrom.address.addressCountry', 'JP')
+                ->where('seo.json_ld.@graph.1.@type', 'BreadcrumbList')
             );
     }
 }

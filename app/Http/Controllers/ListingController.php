@@ -138,7 +138,9 @@ class ListingController extends Controller
         $auctionTransactions->ensureForListing($listing);
 
         $listing->refresh();
-        $listing->load(['user', 'categories', 'latestTransaction'])->loadCount('bids')->loadMax('bids', 'amount');
+        $listing->load(['user', 'categories', 'latestTransaction'])
+            ->loadCount(['bids', 'watchedBy'])
+            ->loadMax('bids', 'amount');
         $listing->user->append(['average_rating', 'ratings_count']);
         $highestBid = $listing->bids()->orderBy('amount', 'desc')->first();
         $listing->setAttribute('minimum_bid', $listing->minimumBidAmount());
@@ -154,8 +156,7 @@ class ListingController extends Controller
         $description = str($listing->description)->squish()->limit(160)->toString();
         $canonicalUrl = route('listings.show', $listing);
         $previewImageUrl = $listing->main_image_url ?: asset('favicon.png');
-        $jsonLd = [
-            '@context' => 'https://schema.org/',
+        $productJsonLd = [
             '@type' => 'Product',
             'name' => $listing->title,
             'image' => $listing->all_image_urls,
@@ -187,12 +188,36 @@ class ListingController extends Controller
                 $address['addressLocality'] = $listing->location;
             }
 
-            $jsonLd['offers']['availableAtOrFrom'] = [
+            $productJsonLd['offers']['availableAtOrFrom'] = [
                 '@type' => 'Place',
                 'name' => $listing->location,
                 'address' => $address,
             ];
         }
+
+        $jsonLd = [
+            '@context' => 'https://schema.org',
+            '@graph' => [
+                $productJsonLd,
+                [
+                    '@type' => 'BreadcrumbList',
+                    'itemListElement' => [
+                        [
+                            '@type' => 'ListItem',
+                            'position' => 1,
+                            'name' => __('Marketplace'),
+                            'item' => route('marketplace'),
+                        ],
+                        [
+                            '@type' => 'ListItem',
+                            'position' => 2,
+                            'name' => $listing->title,
+                            'item' => $canonicalUrl,
+                        ],
+                    ],
+                ],
+            ],
+        ];
 
         return Inertia::render('listings/show', [
             'listing' => $listing,

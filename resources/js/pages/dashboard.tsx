@@ -8,6 +8,7 @@ import {
     CalendarDays,
     Edit3,
     Eye,
+    Heart,
     MapPin,
     Package,
     ReceiptText,
@@ -30,6 +31,7 @@ type DashboardListing = {
     views?: number;
     created_at?: string;
     bids_count?: number;
+    watched_by_count?: number;
     categories?: { id: number; name: string }[];
     transactions?: { id: number; status: string; amount: number }[];
 };
@@ -210,15 +212,27 @@ export default function Dashboard({
                                                     <Eye size={13} />
                                                     <span className="truncate">
                                                         {listing.views ?? 0}{' '}
-                                                        views
+                                                        {t(
+                                                            'dashboard.stats.views',
+                                                        )}
+                                                    </span>
+                                                </span>
+                                                <span className="flex min-w-0 items-center gap-1.5">
+                                                    <Heart size={13} />
+                                                    <span className="truncate">
+                                                        {listing.watched_by_count ??
+                                                            0}{' '}
+                                                        {t(
+                                                            'dashboard.stats.watchers',
+                                                        )}
                                                     </span>
                                                 </span>
                                                 <span className="flex min-w-0 items-center gap-1.5">
                                                     <ShoppingBag size={13} />
                                                     <span className="truncate">
                                                         {hasBids
-                                                            ? `${listing.bids_count} bids`
-                                                            : 'No bids'}
+                                                            ? `${listing.bids_count} ${t('listing.sidebar.bids')}`
+                                                            : `0 ${t('listing.sidebar.bids')}`}
                                                     </span>
                                                 </span>
                                                 <span className="flex min-w-0 items-center gap-1.5">

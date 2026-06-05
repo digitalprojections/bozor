@@ -147,7 +147,7 @@ export default function Marketplace({
     };
 
     return (
-        <BazaarLayout title="Marketplace" breadcrumbs={breadcrumbs}>
+        <BazaarLayout title="Marketplace" breadcrumbs={breadcrumbs} showTitle>
             <Head title="Marketplace" />
 
             <div className="space-y-6">

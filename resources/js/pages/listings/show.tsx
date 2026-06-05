@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
-import { Package, Clock, Info, FileText, Trash2 } from 'lucide-react';
+import { Package, Info, FileText, Trash2 } from 'lucide-react';
 import BazaarLayout from '@/layouts/bazaar-layout';
 import { cn } from '@/lib/utils';
 import { useTranslations } from '@/hooks/use-translations';
@@ -50,6 +50,8 @@ interface ListingProps {
         reserve_met?: boolean;
         current_high_bid: number;
         bids_count?: number;
+        watched_by_count?: number;
+        views?: number;
         shipping_payer?: 'seller' | 'buyer';
         shipping_method?: 'kuroneko_yamato';
         shipping_cost_type?: 'free' | 'fixed' | 'location_based' | 'chakubarai';
@@ -147,53 +149,6 @@ export default function Show({
                 <meta name="twitter:card" content="summary_large_image" />
                 <meta name="twitter:title" content={listing.title} />
                 <meta name="twitter:description" content={seoDescription} />
-                <script type="application/ld+json">
-                    {JSON.stringify({
-                        '@context': 'https://schema.org/',
-                        '@type': 'Product',
-                        name: listing.title,
-                        image: imageUrls,
-                        description: seoDescription,
-                        url: listingUrl,
-                        offers: {
-                            '@type': 'Offer',
-                            priceCurrency: 'JPY',
-                            price: displayPrice,
-                            availability: 'https://schema.org/InStock',
-                            url: listingUrl,
-                            areaServed: {
-                                '@type': 'Country',
-                                name: 'Japan',
-                            },
-                            eligibleRegion: listing.location
-                                ? {
-                                      '@type': 'State',
-                                      name: listing.location,
-                                  }
-                                : undefined,
-                        },
-                    })}
-                </script>
-                <script type="application/ld+json">
-                    {JSON.stringify({
-                        '@context': 'https://schema.org',
-                        '@type': 'BreadcrumbList',
-                        itemListElement: [
-                            {
-                                '@type': 'ListItem',
-                                position: 1,
-                                name: t('marketplace.title'),
-                                item: '/marketplace',
-                            },
-                            {
-                                '@type': 'ListItem',
-                                position: 2,
-                                name: listing.title,
-                                item: listingUrl,
-                            },
-                        ],
-                    })}
-                </script>
             </Head>
 
             <div className="flex flex-col gap-8">
@@ -300,33 +255,100 @@ export default function Show({
                                 )}
                             </div>
 
-                            <div className="flex flex-col justify-between gap-6 rounded-[16px] border border-[#eef5fd] bg-[#f8fbfe] p-4 sm:rounded-[20px] sm:p-6 md:flex-row md:items-center">
-                                <div className="flex flex-col gap-1">
-                                    <span className="text-[10px] font-medium tracking-wider text-[#64748b] uppercase sm:text-sm">
-                                        {listing.is_auction
-                                            ? listing.status === 'sold'
-                                                ? t('listing.show.final_price')
-                                                : t(
-                                                      'listing.show.current_price',
-                                                  )
-                                            : t('listing.create.price')}
-                                    </span>
-                                    <PriceDisplay
-                                        price={displayPrice}
-                                        size="xl"
-                                    />
-                                </div>
+                            <div
+                                id="current-price"
+                                className="scroll-mt-24 rounded-[16px] border border-[#eef5fd] bg-[#f8fbfe] p-4 transition-all target:border-[#0d9488] target:bg-[#eefdf9] target:ring-4 target:ring-[#99f6e4] sm:scroll-mt-28 sm:rounded-[20px] sm:p-6"
+                            >
+                                <div className="flex flex-col justify-between gap-6 md:flex-row md:items-center">
+                                    <div className="flex flex-col gap-1">
+                                        <span className="text-[10px] font-medium tracking-wider text-[#64748b] uppercase sm:text-sm">
+                                            {listing.is_auction
+                                                ? listing.status === 'sold'
+                                                    ? t(
+                                                          'listing.show.final_price',
+                                                      )
+                                                    : t(
+                                                          'listing.show.current_price',
+                                                      )
+                                                : t('listing.create.price')}
+                                        </span>
+                                        <PriceDisplay
+                                            price={displayPrice}
+                                            size="xl"
+                                        />
+                                    </div>
 
-                                <div className="flex flex-col gap-4 sm:flex-row sm:gap-6 md:flex-col md:items-end md:gap-3">
-                                    <div className="flex items-center gap-2">
-                                        {listing.status !== 'sold' ? (
-                                            <div className="flex items-center gap-2">
-                                                {auth?.user &&
-                                                    !auth.user.is_guest &&
-                                                    Number(listing.user.id) !==
+                                    <div className="flex flex-col gap-4 sm:flex-row sm:gap-6 md:flex-col md:items-end md:gap-3">
+                                        <div className="flex items-center gap-2">
+                                            {listing.status !== 'sold' ? (
+                                                <div className="flex items-center gap-2">
+                                                    {auth?.user &&
+                                                        !auth.user.is_guest &&
                                                         Number(
-                                                            auth.user.id,
-                                                        ) && (
+                                                            listing.user.id,
+                                                        ) !==
+                                                            Number(
+                                                                auth.user.id,
+                                                            ) && (
+                                                            <WatchButton
+                                                                listingId={
+                                                                    listing.id
+                                                                }
+                                                                isWatched={
+                                                                    is_watched
+                                                                }
+                                                            />
+                                                        )}
+                                                    {isOwner && (
+                                                        <div className="flex w-full items-center gap-2 sm:w-auto">
+                                                            <Link
+                                                                href={`/listings/${listing.id}/edit`}
+                                                                className="flex-1 sm:flex-none"
+                                                            >
+                                                                <Button
+                                                                    variant="outline"
+                                                                    size="sm"
+                                                                    className="h-9 w-full rounded-full border-[#cbd5e1] px-5 text-[#475569] sm:h-10"
+                                                                >
+                                                                    {t(
+                                                                        'common.edit',
+                                                                    )}
+                                                                </Button>
+                                                            </Link>
+                                                            {!hasBids && (
+                                                                <Button
+                                                                    variant="outline"
+                                                                    size="sm"
+                                                                    className="h-9 flex-1 rounded-full border-red-200 px-5 text-red-500 hover:bg-red-50 sm:h-10 sm:flex-none"
+                                                                    onClick={() => {
+                                                                        if (
+                                                                            confirm(
+                                                                                t(
+                                                                                    'listing.delete_confirm',
+                                                                                ),
+                                                                            )
+                                                                        ) {
+                                                                            router.delete(
+                                                                                `/listings/${listing.id}`,
+                                                                            );
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    <Trash2
+                                                                        size={
+                                                                            14
+                                                                        }
+                                                                        className="mr-1"
+                                                                    />
+                                                                    {t(
+                                                                        'common.delete',
+                                                                    )}
+                                                                </Button>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                    {(!auth?.user ||
+                                                        auth.user.is_guest) && (
                                                         <WatchButton
                                                             listingId={
                                                                 listing.id
@@ -336,88 +358,40 @@ export default function Show({
                                                             }
                                                         />
                                                     )}
-                                                {isOwner && (
-                                                    <div className="flex w-full items-center gap-2 sm:w-auto">
-                                                        <Link
-                                                            href={`/listings/${listing.id}/edit`}
-                                                            className="flex-1 sm:flex-none"
-                                                        >
-                                                            <Button
-                                                                variant="outline"
-                                                                size="sm"
-                                                                className="h-9 w-full rounded-full border-[#cbd5e1] px-5 text-[#475569] sm:h-10"
-                                                            >
-                                                                {t(
-                                                                    'common.edit',
-                                                                )}
-                                                            </Button>
-                                                        </Link>
-                                                        {!hasBids && (
-                                                            <Button
-                                                                variant="outline"
-                                                                size="sm"
-                                                                className="h-9 flex-1 rounded-full border-red-200 px-5 text-red-500 hover:bg-red-50 sm:h-10 sm:flex-none"
-                                                                onClick={() => {
-                                                                    if (
-                                                                        confirm(
-                                                                            t(
-                                                                                'listing.delete_confirm',
-                                                                            ),
-                                                                        )
-                                                                    ) {
-                                                                        router.delete(
-                                                                            `/listings/${listing.id}`,
-                                                                        );
-                                                                    }
-                                                                }}
-                                                            >
-                                                                <Trash2
-                                                                    size={14}
-                                                                    className="mr-1"
-                                                                />
-                                                                {t(
-                                                                    'common.delete',
-                                                                )}
-                                                            </Button>
-                                                        )}
-                                                    </div>
-                                                )}
-                                                {(!auth?.user ||
-                                                    auth.user.is_guest) && (
-                                                    <WatchButton
-                                                        listingId={listing.id}
-                                                        isWatched={is_watched}
-                                                    />
-                                                )}
-                                            </div>
-                                        ) : (
-                                            <SoldBadge />
-                                        )}
-                                    </div>
-
-                                    <div className="flex flex-wrap gap-3 text-[11px] font-medium tracking-wider text-[#64748b] uppercase md:flex-col md:items-end">
-                                        <div className="flex items-center gap-2">
-                                            <span>
-                                                {t('listing.show.published')}:
-                                            </span>
-                                            <span className="text-[#0f172a]">
-                                                {new Date(
-                                                    listing.created_at,
-                                                ).toLocaleDateString()}
-                                            </span>
+                                                </div>
+                                            ) : (
+                                                <SoldBadge />
+                                            )}
                                         </div>
-                                        {listing.auction_end_date && (
+
+                                        <div className="flex flex-wrap gap-3 text-[11px] font-medium tracking-wider text-[#64748b] uppercase md:flex-col md:items-end">
                                             <div className="flex items-center gap-2">
                                                 <span>
-                                                    {t('listing.show.ends')}:
+                                                    {t(
+                                                        'listing.show.published',
+                                                    )}
+                                                    :
                                                 </span>
                                                 <span className="text-[#0f172a]">
                                                     {new Date(
-                                                        listing.auction_end_date,
+                                                        listing.created_at,
                                                     ).toLocaleDateString()}
                                                 </span>
                                             </div>
-                                        )}
+                                            {listing.auction_end_date && (
+                                                <div className="flex items-center gap-2">
+                                                    <span>
+                                                        {t('listing.show.ends')}
+                                                        :
+                                                    </span>
+                                                    <span className="text-[#0f172a]">
+                                                        {new Date(
+                                                            listing.auction_end_date,
+                                                        ).toLocaleDateString()}
+                                                    </span>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -452,6 +426,20 @@ export default function Show({
                                     listing.created_at,
                                 ).toLocaleDateString()}
                             />
+                            {isOwner && (
+                                <>
+                                    <InfoRow
+                                        label={t('listing.show.views')}
+                                        value={(listing.views ?? 0).toString()}
+                                    />
+                                    <InfoRow
+                                        label={t('listing.show.watchers')}
+                                        value={(
+                                            listing.watched_by_count ?? 0
+                                        ).toString()}
+                                    />
+                                </>
+                            )}
                             <InfoRow
                                 label={t('listing.show.ends')}
                                 value={

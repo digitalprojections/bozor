@@ -127,17 +127,23 @@ export function ListingSidebar({
     >('idle');
     const listingShareUrl = React.useMemo(() => {
         if (shareUrl?.startsWith('http')) {
-            return shareUrl;
+            const url = new URL(shareUrl);
+            url.hash = 'current-price';
+
+            return url.toString();
         }
 
         if (typeof window === 'undefined') {
-            return shareUrl ?? `/listings/${listing.id}`;
+            return `${shareUrl ?? `/listings/${listing.id}`}#current-price`;
         }
 
-        return new URL(
+        const url = new URL(
             shareUrl ?? `/listings/${listing.id}`,
             window.location.origin,
-        ).toString();
+        );
+        url.hash = 'current-price';
+
+        return url.toString();
     }, [listing.id, shareUrl]);
     const shareCopied =
         shareStatus === 'copied' || copiedText === listingShareUrl;

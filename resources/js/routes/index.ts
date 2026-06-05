@@ -212,7 +212,7 @@ register.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     register.form = registerForm
 /**
 * @see \App\Http\Controllers\SitemapController::sitemap
- * @see app/Http/Controllers/SitemapController.php:13
+ * @see app/Http/Controllers/SitemapController.php:17
  * @route '/sitemap.xml'
  */
 export const sitemap = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -227,7 +227,7 @@ sitemap.definition = {
 
 /**
 * @see \App\Http\Controllers\SitemapController::sitemap
- * @see app/Http/Controllers/SitemapController.php:13
+ * @see app/Http/Controllers/SitemapController.php:17
  * @route '/sitemap.xml'
  */
 sitemap.url = (options?: RouteQueryOptions) => {
@@ -236,7 +236,7 @@ sitemap.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\SitemapController::sitemap
- * @see app/Http/Controllers/SitemapController.php:13
+ * @see app/Http/Controllers/SitemapController.php:17
  * @route '/sitemap.xml'
  */
 sitemap.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -245,7 +245,7 @@ sitemap.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\SitemapController::sitemap
- * @see app/Http/Controllers/SitemapController.php:13
+ * @see app/Http/Controllers/SitemapController.php:17
  * @route '/sitemap.xml'
  */
 sitemap.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -255,7 +255,7 @@ sitemap.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\SitemapController::sitemap
- * @see app/Http/Controllers/SitemapController.php:13
+ * @see app/Http/Controllers/SitemapController.php:17
  * @route '/sitemap.xml'
  */
     const sitemapForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -265,7 +265,7 @@ sitemap.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\SitemapController::sitemap
- * @see app/Http/Controllers/SitemapController.php:13
+ * @see app/Http/Controllers/SitemapController.php:17
  * @route '/sitemap.xml'
  */
         sitemapForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -274,7 +274,7 @@ sitemap.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\SitemapController::sitemap
- * @see app/Http/Controllers/SitemapController.php:13
+ * @see app/Http/Controllers/SitemapController.php:17
  * @route '/sitemap.xml'
  */
         sitemapForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

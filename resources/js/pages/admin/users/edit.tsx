@@ -133,7 +133,11 @@ export default function AdminUsersEdit({ account }: { account: Account }) {
             : 'Not set';
 
     return (
-        <BazaarLayout title={`Edit ${account.name}`} breadcrumbs={breadcrumbs}>
+        <BazaarLayout
+            title={`Edit ${account.name}`}
+            breadcrumbs={breadcrumbs}
+            showTitle
+        >
             <Head title={`Edit ${account.name}`} />
 
             <div className="mb-1">

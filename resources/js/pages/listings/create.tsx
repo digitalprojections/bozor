@@ -160,11 +160,15 @@ export default function CreateListing({
     };
 
     return (
-        <BazaarLayout title={t('listing.create.title')} breadcrumbs={breadcrumbs}>
+        <BazaarLayout
+            title={t('listing.create.title')}
+            breadcrumbs={breadcrumbs}
+            flushMobile
+        >
             <Head title={t('listing.create.title')} />
 
-            <div className="space-y-6 p-4 sm:p-6">
-                <div>
+            <div className="mx-auto w-full max-w-full space-y-4 px-0 py-2 sm:space-y-6 sm:p-6 lg:max-w-4xl xl:max-w-5xl">
+                <div className="px-3 sm:px-0">
                     <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
                         {t('listing.create.title')}
                     </h1>
@@ -173,9 +177,9 @@ export default function CreateListing({
                     </p>
                 </div>
 
-                <form onSubmit={submit} className="space-y-6">
+                <form onSubmit={submit} className="space-y-4 sm:space-y-6">
                     {/* Basic Information */}
-                    <Card className="p-4 sm:p-6">
+                    <Card className="rounded-none border-x-0 p-3 sm:rounded-lg sm:border-x sm:p-6">
                         <h2 className="mb-4 text-lg font-semibold sm:text-xl">
                             {t('listing.create.basic_info')}
                         </h2>
@@ -350,7 +354,7 @@ export default function CreateListing({
                             )}
 
                             {/* Auction and Buy Now */}
-                            <div className="space-y-4 rounded-lg border bg-muted/30 p-4">
+                            <div className="space-y-4 rounded-lg border bg-muted/30 p-3 sm:p-4">
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <h3 className="font-medium">{t('listing.create.auction_mode')}</h3>
@@ -461,7 +465,7 @@ export default function CreateListing({
                     />
 
                     {/* Images */}
-                    <Card className="p-4 sm:p-6">
+                    <Card className="rounded-none border-x-0 p-3 sm:rounded-lg sm:border-x sm:p-6">
                         <h2 className="mb-4 text-lg font-semibold sm:text-xl">{t('listing.create.images_title')}</h2>
 
                         <div className="space-y-4">
@@ -473,7 +477,7 @@ export default function CreateListing({
                                 <div className="mt-2">
                                     <label
                                         htmlFor="images"
-                                        className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-6 transition hover:border-gray-400 dark:border-gray-700 dark:hover:border-gray-600"
+                                        className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-4 transition hover:border-gray-400 sm:p-6 dark:border-gray-700 dark:hover:border-gray-600"
                                     >
                                         <Upload className="mb-2 h-8 w-8 text-gray-400" />
                                         <span className="text-sm text-gray-600 dark:text-gray-400">
@@ -518,7 +522,7 @@ export default function CreateListing({
                                 {imagePreviews.length > 0 && (
                                     <motion.div
                                         layout
-                                        className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5"
+                                        className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5"
                                     >
                                         {imagePreviews.map((preview, index) => {
                                             const stat = compressionStats[index];
@@ -597,7 +601,7 @@ export default function CreateListing({
                             </AnimatePresence>
                         </div>
                     </Card>
-                    <div className="flex flex-col space-y-4 px-1">
+                    <div className="flex flex-col space-y-4 px-3 sm:px-1">
                         <div className="flex items-start space-x-3">
                             <Checkbox 
                                 id="terms_accepted" 
@@ -625,7 +629,7 @@ export default function CreateListing({
                     </div>
 
                     {/* Actions */}
-                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+                    <div className="flex flex-col gap-3 px-3 sm:flex-row sm:items-center sm:justify-end sm:px-0">
                         <Button
                             type="button"
                             variant="outline"

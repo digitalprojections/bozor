@@ -46,7 +46,7 @@ class DashboardController extends Controller
                         ]);
                 },
             ])
-            ->withCount('bids')
+            ->withCount(['bids', 'watchedBy'])
             ->withMax('bids', 'amount')
             ->latest()
             ->get();

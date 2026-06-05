@@ -49,6 +49,8 @@ interface BazaarLayoutProps {
     title: string;
     breadcrumbs?: BreadcrumbItem[];
     sidebar?: ReactNode;
+    showTitle?: boolean;
+    flushMobile?: boolean;
 }
 
 export default function BazaarLayout({
@@ -56,6 +58,8 @@ export default function BazaarLayout({
     title,
     breadcrumbs = [],
     sidebar,
+    showTitle = false,
+    flushMobile = false,
 }: BazaarLayoutProps) {
     const { t } = useTranslations();
     const { auth, layoutAds = {} } = usePage().props as any;
@@ -190,22 +194,30 @@ export default function BazaarLayout({
                 </div>
             </div>
 
-            <main className="mx-auto w-full px-4 py-6 md:px-8 md:py-8">
+            <main
+                className={cn(
+                    'mx-auto w-full md:px-8 md:py-8',
+                    flushMobile ? 'px-0 py-3' : 'px-4 py-6',
+                )}
+            >
                 <AdSlot
                     placement="top_banner"
                     variant="banner"
                     className="mb-6"
                 />
 
-                <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-                    <h1 className="text-2xl font-semibold tracking-tight text-[#0b1b32] md:text-[2rem]">
-                        {title}
-                    </h1>
-                </div>
+                {showTitle && (
+                    <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+                        <h1 className="text-2xl font-semibold tracking-tight text-[#0b1b32] md:text-[2rem]">
+                            {title}
+                        </h1>
+                    </div>
+                )}
 
                 <div
                     className={cn(
-                        'grid grid-cols-1 gap-8',
+                        'grid grid-cols-1',
+                        flushMobile ? 'gap-4 md:gap-8' : 'gap-8',
                         sidebar || hasRightRailAds
                             ? 'lg:grid-cols-[240px_1fr_320px]'
                             : 'lg:grid-cols-[240px_1fr]',
@@ -218,7 +230,12 @@ export default function BazaarLayout({
                     </aside>
 
                     {/* Main Content Area */}
-                    <div className="flex min-w-0 flex-col gap-6">
+                    <div
+                        className={cn(
+                            'flex min-w-0 flex-col',
+                            flushMobile ? 'gap-4 sm:gap-6' : 'gap-6',
+                        )}
+                    >
                         {children}
                     </div>
 
