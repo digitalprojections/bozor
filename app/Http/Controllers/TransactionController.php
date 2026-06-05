@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Listing;
+use App\Models\ListingMessage;
 use App\Models\Transaction;
 use App\Models\TransactionPackage;
 use App\Notifications\Seller\ListingSold;
+use App\Notifications\MessageReceived;
 use App\Notifications\TransactionUpdated;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -46,6 +48,8 @@ class TransactionController extends Controller
             ]);
 
             $listing->update(['status' => 'sold']);
+
+            $this->attachBuyerMessagesToTransaction($transaction);
         });
 
         $this->notifySafely($listing->user, new ListingSold($listing, $transaction));
@@ -55,8 +59,9 @@ class TransactionController extends Controller
 
     public function show(Transaction $transaction)
     {
-        $transaction->load(['listing', 'seller', 'buyer', 'ratings.rater', 'package.transactions.listing']);
+        $transaction->load(['listing', 'seller', 'buyer', 'ratings.rater', 'package.transactions.listing', 'messages.questioner', 'messages.seller']);
         $canSeeFullNames = auth()->check() && in_array(auth()->id(), [$transaction->buyer_id, $transaction->seller_id], true);
+        $this->markMessageNotificationsRead($transaction);
 
         return inertia('transactions/show', [
             'transaction' => [
@@ -93,6 +98,9 @@ class TransactionController extends Controller
                     'created_at' => $rating->created_at,
                     'rater' => $this->transactionUser($rating->rater, $canSeeFullNames),
                 ]),
+                'messages' => $canSeeFullNames
+                    ? $transaction->messages->sortBy('created_at')->map(fn (ListingMessage $message) => $this->messagePayload($message))->values()
+                    : [],
             ],
         ]);
     }
@@ -297,6 +305,16 @@ class TransactionController extends Controller
         }
     }
 
+    private function attachBuyerMessagesToTransaction(Transaction $transaction): void
+    {
+        ListingMessage::query()
+            ->where('listing_id', $transaction->listing_id)
+            ->where('questioner_id', $transaction->buyer_id)
+            ->where('seller_id', $transaction->seller_id)
+            ->whereNull('transaction_id')
+            ->update(['transaction_id' => $transaction->id]);
+    }
+
     private function transactionUser($user, bool $canSeeFullName): array
     {
         return [
@@ -305,6 +323,40 @@ class TransactionController extends Controller
             'masked_name' => $user->masked_name,
             'avatar_url' => $user->avatar_url,
         ];
+    }
+
+    private function messagePayload(ListingMessage $message): array
+    {
+        return [
+            'id' => $message->id,
+            'listing_id' => $message->listing_id,
+            'transaction_id' => $message->transaction_id,
+            'question' => $message->question,
+            'answer' => $message->answer,
+            'answered_at' => $message->answered_at,
+            'created_at' => $message->created_at,
+            'questioner' => $this->transactionUser($message->questioner, true),
+            'seller' => $this->transactionUser($message->seller, true),
+        ];
+    }
+
+    private function markMessageNotificationsRead(Transaction $transaction): void
+    {
+        $user = auth()->user();
+
+        if (! $user || ! in_array($user->id, [$transaction->buyer_id, $transaction->seller_id], true)) {
+            return;
+        }
+
+        $user->unreadNotifications
+            ->filter(function ($notification) use ($transaction) {
+                if ($notification->type !== MessageReceived::class) {
+                    return false;
+                }
+
+                return (int) ($notification->data['transaction_id'] ?? 0) === (int) $transaction->id;
+            })
+            ->each->markAsRead();
     }
 
     private function createPackageForListing(Listing $listing, int $buyerId): TransactionPackage

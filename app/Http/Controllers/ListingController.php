@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Listing;
+use App\Models\ListingMessage;
 use App\Models\Transaction;
+use App\Notifications\MessageReceived;
 use App\Notifications\WatchlistItemUpdated;
 use App\Services\AuctionTransactionService;
 use App\Services\ListingService;
@@ -151,6 +153,8 @@ class ListingController extends Controller
         $listing->setAttribute('minimum_bid', $listing->minimumBidAmount());
         $listing->setAttribute('is_highest_bidder', auth()->check() && $highestBid?->user_id === auth()->id());
         $transaction = $this->visibleTransactionFor($listing);
+        $messages = $this->messagesForListing($listing, $transaction);
+        $this->markMessageNotificationsRead($listing, $transaction);
 
         $recommendations = $listingService->getRecommendations(
             auth()->user(),
@@ -245,6 +249,7 @@ class ListingController extends Controller
                 'buyer_id' => $transaction->buyer_id,
                 'seller_id' => $transaction->seller_id,
             ] : null,
+            'messages' => $messages,
             'is_watched' => auth()->check() ? auth()->user()->watchedListings()->where('listing_id', $listing->id)->exists() : false,
             'recommendations' => $recommendations,
             'seo' => [
@@ -281,6 +286,79 @@ class ListingController extends Controller
             ->where('status', '!=', Transaction::STATUS_CANCELLED)
             ->latest()
             ->first();
+    }
+
+    private function messagesForListing(Listing $listing, ?Transaction $transaction): array
+    {
+        if ($listing->status !== 'active' && ! $transaction) {
+            return [];
+        }
+
+        $messages = ListingMessage::query()
+            ->with(['questioner', 'seller'])
+            ->where('listing_id', $listing->id)
+            ->where(function ($query) use ($listing, $transaction) {
+                if ($listing->status === 'active') {
+                    $query->whereNull('transaction_id');
+                }
+
+                if ($transaction) {
+                    $query->orWhere('transaction_id', $transaction->id);
+                }
+            })
+            ->oldest()
+            ->get();
+
+        return $messages->map(fn (ListingMessage $message) => $this->messagePayload($message, (bool) $transaction))->values()->all();
+    }
+
+    private function messagePayload(ListingMessage $message, bool $canSeeFullNames): array
+    {
+        return [
+            'id' => $message->id,
+            'listing_id' => $message->listing_id,
+            'transaction_id' => $message->transaction_id,
+            'question' => $message->question,
+            'answer' => $message->answer,
+            'answered_at' => $message->answered_at,
+            'created_at' => $message->created_at,
+            'questioner' => [
+                'id' => $message->questioner->id,
+                'name' => $canSeeFullNames ? $message->questioner->name : $message->questioner->masked_name,
+                'avatar_url' => $message->questioner->avatar_url,
+            ],
+            'seller' => [
+                'id' => $message->seller->id,
+                'name' => $canSeeFullNames ? $message->seller->name : $message->seller->masked_name,
+                'avatar_url' => $message->seller->avatar_url,
+            ],
+        ];
+    }
+
+    private function markMessageNotificationsRead(Listing $listing, ?Transaction $transaction): void
+    {
+        $user = auth()->user();
+
+        if (! $user) {
+            return;
+        }
+
+        $user->unreadNotifications
+            ->filter(function ($notification) use ($listing, $transaction) {
+                if ($notification->type !== MessageReceived::class) {
+                    return false;
+                }
+
+                $data = $notification->data;
+
+                return (int) ($data['listing_id'] ?? 0) === (int) $listing->id
+                    && (
+                        ! $transaction
+                        || empty($data['transaction_id'])
+                        || (int) $data['transaction_id'] === (int) $transaction->id
+                    );
+            })
+            ->each->markAsRead();
     }
 
     /**

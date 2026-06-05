@@ -43,6 +43,8 @@ class User extends Authenticatable
         'address_line1',
         'address_line2',
         'phone',
+        'disabled_at',
+        'disabled_reason',
     ];
 
     /**
@@ -82,6 +84,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
             'terms_accepted_at' => 'datetime',
+            'disabled_at' => 'datetime',
         ];
     }
 
@@ -100,6 +103,31 @@ class User extends Authenticatable
     public function verificationRequests()
     {
         return $this->hasMany(VerificationRequest::class);
+    }
+
+    public function reportsFiled()
+    {
+        return $this->hasMany(ListingReport::class, 'reporter_id');
+    }
+
+    public function reportsReceived()
+    {
+        return $this->hasMany(ListingReport::class, 'reported_user_id');
+    }
+
+    public function listingQuestions()
+    {
+        return $this->hasMany(ListingMessage::class, 'questioner_id');
+    }
+
+    public function listingAnswers()
+    {
+        return $this->hasMany(ListingMessage::class, 'seller_id');
+    }
+
+    public function isDisabled(): bool
+    {
+        return $this->disabled_at !== null;
     }
 
     public function purchases()

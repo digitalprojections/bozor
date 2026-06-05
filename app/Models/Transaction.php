@@ -68,6 +68,11 @@ class Transaction extends Model
         return $this->hasMany(Rating::class);
     }
 
+    public function messages()
+    {
+        return $this->hasMany(ListingMessage::class);
+    }
+
     public function package()
     {
         return $this->belongsTo(TransactionPackage::class, 'transaction_package_id');

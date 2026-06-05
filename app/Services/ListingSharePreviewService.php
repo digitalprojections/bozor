@@ -53,6 +53,7 @@ class ListingSharePreviewService
             ->first(fn ($path) => is_string($path) && $path !== '');
         $updatedAt = $listing->updated_at?->timestamp ?? time();
         $fingerprint = substr(sha1(implode('|', [
+            'v2-large-price-stamp',
             $listing->id,
             $listing->display_price,
             $updatedAt,
@@ -117,23 +118,95 @@ class ListingSharePreviewService
 
     private function paintPriceBadge(mixed $canvas, Listing $listing, int $width, int $height): void
     {
-        $shadow = imagecolorallocatealpha($canvas, 2, 6, 23, 28);
-        $panel = imagecolorallocatealpha($canvas, 2, 6, 23, 8);
+        $shadow = imagecolorallocatealpha($canvas, 2, 6, 23, 18);
+        $panel = imagecolorallocatealpha($canvas, 2, 6, 23, 4);
         $white = imagecolorallocate($canvas, 255, 255, 255);
         $muted = imagecolorallocate($canvas, 226, 232, 240);
         $accent = imagecolorallocate($canvas, 20, 184, 166);
 
-        imagefilledrectangle($canvas, 0, $height - 116, $width, $height, $shadow);
-        imagefilledrectangle($canvas, 0, $height - 104, $width, $height, $panel);
-        imagefilledrectangle($canvas, 0, $height - 104, 7, $height, $accent);
+        $panelTop = (int) round($height * 0.56);
 
-        imagestring($canvas, 3, 24, $height - 90, strtoupper(config('app.name', 'Bozor Japan')), $muted);
-        imagestring($canvas, 5, 24, $height - 63, 'JPY '.number_format($listing->display_price), $white);
+        imagefilledrectangle($canvas, 0, $panelTop - 18, $width, $height, $shadow);
+        imagefilledrectangle($canvas, 0, $panelTop, $width, $height, $panel);
+        imagefilledrectangle($canvas, 0, $panelTop, 10, $height, $accent);
+
+        $priceLabel = $this->priceLabelFor($listing);
+        $price = 'JPY '.number_format($listing->display_price);
+
+        $this->drawScaledText($canvas, strtoupper($priceLabel), 3, 26, $panelTop + 20, 2, $muted);
+        $this->drawScaledText($canvas, $price, 5, 26, $panelTop + 54, 4, $white);
 
         $location = filled($listing->location)
             ? Str::ascii((string) $listing->location)
             : 'Japan marketplace';
-        imagestring($canvas, 3, 24, $height - 28, Str::limit($location, 58, ''), $muted);
+        $this->drawScaledText($canvas, Str::limit($location, 58, ''), 3, 26, $height - 34, 1, $muted);
+
+        if ($listing->is_auction && $listing->buy_now_price) {
+            $buyNow = 'BUY NOW JPY '.number_format($listing->buy_now_price);
+            $this->drawScaledText($canvas, $buyNow, 3, $width - 210, $height - 34, 1, $muted);
+        }
+    }
+
+    private function priceLabelFor(Listing $listing): string
+    {
+        if ($listing->status === 'sold') {
+            return 'Final price';
+        }
+
+        if ($listing->is_auction) {
+            return 'Current price';
+        }
+
+        return 'Price';
+    }
+
+    private function drawScaledText(
+        mixed $canvas,
+        string $text,
+        int $font,
+        int $x,
+        int $y,
+        int $scale,
+        int $color,
+    ): void {
+        if ($scale <= 1) {
+            imagestring($canvas, $font, $x, $y, $text, $color);
+
+            return;
+        }
+
+        $textWidth = imagefontwidth($font) * strlen($text);
+        $textHeight = imagefontheight($font);
+        $source = imagecreatetruecolor($textWidth, $textHeight);
+
+        if (! $source) {
+            imagestring($canvas, $font, $x, $y, $text, $color);
+
+            return;
+        }
+
+        $transparent = imagecolorallocatealpha($source, 0, 0, 0, 127);
+        imagefill($source, 0, 0, $transparent);
+        imagecolortransparent($source, $transparent);
+
+        $rgba = imagecolorsforindex($canvas, $color);
+        $sourceColor = imagecolorallocate($source, $rgba['red'], $rgba['green'], $rgba['blue']);
+        imagestring($source, $font, 0, 0, $text, $sourceColor);
+
+        imagecopyresampled(
+            $canvas,
+            $source,
+            $x,
+            $y,
+            0,
+            0,
+            $textWidth * $scale,
+            $textHeight * $scale,
+            $textWidth,
+            $textHeight
+        );
+
+        imagedestroy($source);
     }
 
     private function openSourceImage(Listing $listing): mixed

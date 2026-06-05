@@ -8,6 +8,10 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { BreadcrumbItem, User as UserType } from '@/types';
 import { TRANSACTION_STATUS, type TransactionStatus } from '@/types/transaction-status';
+import {
+    MessageThread,
+    type ListingMessage,
+} from '@/components/listings/message-thread';
 
 interface Rating {
     id: number;
@@ -71,6 +75,7 @@ interface Transaction {
         name: string;
     };
     ratings: Rating[];
+    messages: ListingMessage[];
 }
 
 export default function Show({ transaction }: { transaction: Transaction }) {
@@ -346,6 +351,16 @@ export default function Show({ transaction }: { transaction: Transaction }) {
                             </p>
                         </div>
                     </div>
+                )}
+
+                {isParticipant && (
+                    <MessageThread
+                        messages={transaction.messages}
+                        transactionId={transaction.id}
+                        sellerId={transaction.seller_id}
+                        buyerId={transaction.buyer_id}
+                        privateThread
+                    />
                 )}
 
                 {/* Rating Section - Participant Only */}

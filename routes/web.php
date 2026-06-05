@@ -6,6 +6,8 @@ use App\Http\Controllers\Auth\SocialiteController;
 use App\Http\Controllers\BidController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ListingController;
+use App\Http\Controllers\ListingMessageController;
+use App\Http\Controllers\ListingReportController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\ProfileController;
@@ -72,6 +74,9 @@ Route::middleware(['real-user'])->group(function () {
     // Watchlist routes
     Route::get('/watchlist', [WatchlistController::class, 'index'])->name('watchlist.index');
     Route::post('/watchlist/{listing}/toggle', [WatchlistController::class, 'toggle'])->name('watchlist.toggle');
+    Route::post('/listings/{listing}/reports', [ListingReportController::class, 'store'])->name('listings.reports.store');
+    Route::post('/listings/{listing}/messages', [ListingMessageController::class, 'storeForListing'])->name('listings.messages.store');
+    Route::patch('/listing-messages/{message}/answer', [ListingMessageController::class, 'answer'])->name('listing-messages.answer');
 
     // Verification routes
     Route::post('verification/request', [VerificationRequestController::class, 'store'])->name('verification.store');
@@ -94,6 +99,7 @@ Route::middleware(['real-user'])->group(function () {
         Route::post('/transactions/{transaction}/cancel', [TransactionController::class, 'cancel'])->name('transactions.cancel');
         Route::post('/transactions/{transaction}/mark-as-shipped', [TransactionController::class, 'markAsShipped'])->name('transactions.mark-as-shipped');
         Route::post('/transactions/{transaction}/mark-as-received', [TransactionController::class, 'markAsReceived'])->name('transactions.mark-as-received');
+        Route::post('/transactions/{transaction}/messages', [ListingMessageController::class, 'storeForTransaction'])->name('transactions.messages.store');
         Route::post('/transactions/packages/consolidate', [TransactionController::class, 'consolidatePackages'])->name('transactions.packages.consolidate');
         Route::post('/transactions/{transaction}/rate', [RatingController::class, 'store'])->name('transactions.rate');
 
@@ -119,6 +125,11 @@ Route::middleware(['auth', 'admin'])
         Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
         Route::patch('/users/{user}', [UserController::class, 'update'])->name('users.update');
         Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+
+        Route::get('/reports', [\App\Http\Controllers\Admin\ListingReportController::class, 'index'])->name('reports.index');
+        Route::patch('/reports/{report}', [\App\Http\Controllers\Admin\ListingReportController::class, 'update'])->name('reports.update');
+        Route::post('/reports/{report}/listing-action', [\App\Http\Controllers\Admin\ListingReportController::class, 'listingAction'])->name('reports.listing-action');
+        Route::post('/reports/{report}/users/{user}/action', [\App\Http\Controllers\Admin\ListingReportController::class, 'userAction'])->name('reports.user-action');
 
         Route::get('/verifications', [VerificationController::class, 'index'])->name('verifications.index');
         Route::get('/verifications/{id}', [VerificationController::class, 'show'])->name('verifications.show');

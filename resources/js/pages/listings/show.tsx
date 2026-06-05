@@ -13,6 +13,10 @@ import { usePage, router } from '@inertiajs/react';
 import { SoldBadge } from '@/components/listings/sold-badge';
 import { WatchButton } from '@/components/listings/watch-button';
 import { PriceDisplay } from '@/components/listings/price-display';
+import {
+    MessageThread,
+    type ListingMessage,
+} from '@/components/listings/message-thread';
 import type { BreadcrumbItem } from '@/types';
 import { ITEM_CONDITIONS } from '@/types/item-conditions';
 
@@ -66,6 +70,7 @@ interface ListingProps {
         seller_id: number;
     } | null;
     recommendations?: any[];
+    messages?: ListingMessage[];
     is_watched?: boolean;
     seo?: {
         title?: string;
@@ -73,6 +78,9 @@ interface ListingProps {
         canonical?: string;
         url?: string;
         og_image?: string;
+        og_image_alt?: string;
+        og_image_width?: number;
+        og_image_height?: number;
     };
 }
 
@@ -80,6 +88,7 @@ export default function Show({
     listing,
     transaction = null,
     recommendations = [],
+    messages = [],
     is_watched = false,
     seo,
 }: ListingProps) {
@@ -101,6 +110,7 @@ export default function Show({
     const seoDescription =
         seo?.description ?? listing.description.substring(0, 160);
     const seoImage = seo?.og_image ?? imageUrls[0];
+    const seoImageAlt = seo?.og_image_alt ?? listing.title;
     const hasBids = (listing.bids_count ?? 0) > 0;
     const isOwner =
         auth?.user &&
@@ -129,6 +139,7 @@ export default function Show({
                     listing={listing}
                     transaction={transaction}
                     shareUrl={listingUrl}
+                    shareImageUrl={seoImage}
                 />
             }
         >
@@ -143,7 +154,21 @@ export default function Show({
                 {seoImage && (
                     <>
                         <meta property="og:image" content={seoImage} />
+                        <meta property="og:image:alt" content={seoImageAlt} />
+                        {seo?.og_image_width && (
+                            <meta
+                                property="og:image:width"
+                                content={seo.og_image_width.toString()}
+                            />
+                        )}
+                        {seo?.og_image_height && (
+                            <meta
+                                property="og:image:height"
+                                content={seo.og_image_height.toString()}
+                            />
+                        )}
                         <meta name="twitter:image" content={seoImage} />
+                        <meta name="twitter:image:alt" content={seoImageAlt} />
                     </>
                 )}
                 <meta name="twitter:card" content="summary_large_image" />
@@ -499,6 +524,15 @@ export default function Show({
                         </div>
                     </CardContent>
                 </Card>
+
+                <MessageThread
+                    messages={messages}
+                    listingId={listing.id}
+                    transactionId={transaction?.id}
+                    sellerId={listing.user.id}
+                    buyerId={transaction?.buyer_id}
+                    privateThread={Boolean(transaction)}
+                />
 
                 {/* Recommendations Section */}
                 <RecommendationsSection recommendations={recommendations} />

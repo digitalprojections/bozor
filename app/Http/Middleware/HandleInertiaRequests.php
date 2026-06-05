@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Services\AdService;
 use App\Http\Middleware\EnsureAdmin;
+use App\Models\ListingReport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\File;
@@ -50,6 +51,14 @@ class HandleInertiaRequests extends Middleware
                 'is_admin' => EnsureAdmin::isAdminEmail($request->user()?->email),
                 'logged_in_with_google' => $request->session()->get('auth.login_provider') === 'google',
             ],
+            'adminPendingReportsCount' => fn () => EnsureAdmin::isAdminEmail($request->user()?->email)
+                ? ListingReport::whereIn('status', [ListingReport::STATUS_PENDING, ListingReport::STATUS_REVIEWING])->count()
+                : 0,
+            'unreadMessageNotificationsCount' => fn () => $request->user()
+                ? $request->user()->unreadNotifications()
+                    ->where('type', \App\Notifications\MessageReceived::class)
+                    ->count()
+                : 0,
             'sidebarOpen' => !$request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'locale' => $locale,
             'translations' => $this->loadTranslationsForLocale($locale, $fallback),

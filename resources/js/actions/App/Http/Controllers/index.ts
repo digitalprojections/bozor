@@ -3,6 +3,8 @@ import Auth from './Auth'
 import SitemapController from './SitemapController'
 import MarketplaceController from './MarketplaceController'
 import WatchlistController from './WatchlistController'
+import ListingReportController from './ListingReportController'
+import ListingMessageController from './ListingMessageController'
 import VerificationRequestController from './VerificationRequestController'
 import ListingController from './ListingController'
 import BidController from './BidController'
@@ -18,6 +20,8 @@ Auth: Object.assign(Auth, Auth),
 SitemapController: Object.assign(SitemapController, SitemapController),
 MarketplaceController: Object.assign(MarketplaceController, MarketplaceController),
 WatchlistController: Object.assign(WatchlistController, WatchlistController),
+ListingReportController: Object.assign(ListingReportController, ListingReportController),
+ListingMessageController: Object.assign(ListingMessageController, ListingMessageController),
 VerificationRequestController: Object.assign(VerificationRequestController, VerificationRequestController),
 ListingController: Object.assign(ListingController, ListingController),
 BidController: Object.assign(BidController, BidController),

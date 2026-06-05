@@ -3,6 +3,7 @@ import { Link } from '@inertiajs/react';
 import {
     Check,
     CreditCard,
+    Flag,
     Share2,
     ShoppingBag,
     Trophy,
@@ -14,6 +15,17 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { useForm, usePage } from '@inertiajs/react';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { synth } from '@/lib/synth-service';
 import { TermsAcceptanceModal } from '@/components/terms-acceptance-modal';
 import { SoldBadge } from '@/components/listings/sold-badge';
@@ -68,12 +80,14 @@ interface ListingSidebarProps {
         seller_id: number;
     } | null;
     shareUrl?: string;
+    shareImageUrl?: string | null;
 }
 
 export function ListingSidebar({
     listing,
     transaction,
     shareUrl,
+    shareImageUrl,
 }: ListingSidebarProps) {
     const { t } = useTranslations();
     const { auth, is_watched } = usePage().props as any;
@@ -102,6 +116,14 @@ export function ListingSidebar({
     const { data, setData, post, processing, errors } = useForm({
         amount: suggestedBidAmount,
     });
+    const reportForm = useForm({
+        reason: 'misleading_information',
+        details: '',
+        acknowledged: false as boolean,
+    });
+    const reportFormErrors = reportForm.errors as typeof reportForm.errors & {
+        report?: string;
+    };
     const previousSuggestedBidAmount = React.useRef(suggestedBidAmount);
 
     React.useEffect(() => {
@@ -121,6 +143,7 @@ export function ListingSidebar({
         null | (() => void)
     >(null);
     const [loginRequiredOpen, setLoginRequiredOpen] = React.useState(false);
+    const [reportOpen, setReportOpen] = React.useState(false);
     const [copiedText, copy] = useClipboard();
     const [shareStatus, setShareStatus] = React.useState<
         'idle' | 'copied' | 'failed'
@@ -169,15 +192,25 @@ export function ListingSidebar({
     };
 
     const shareListing = async () => {
-        const shareData = {
+        const shareText = `${listing.description}\nCurrent price: ¥${currentPrice.toLocaleString()}`;
+        const shareData: ShareData = {
             title: listing.title,
-            text: listing.description,
+            text: shareText,
             url: listingShareUrl,
         };
 
         if (navigator.share) {
             try {
-                await navigator.share(shareData);
+                const shareImage = await getShareImageFile(
+                    shareImageUrl,
+                    listing.id,
+                );
+                const shareDataWithImage =
+                    shareImage && navigator.canShare?.({ files: [shareImage] })
+                        ? { ...shareData, files: [shareImage] }
+                        : shareData;
+
+                await navigator.share(shareDataWithImage);
                 return;
             } catch (error) {
                 if ((error as DOMException).name === 'AbortError') {
@@ -201,6 +234,28 @@ export function ListingSidebar({
                     onSuccess: () => synth.playFanfare(),
                 });
             }
+        });
+    };
+
+    const openReportDialog = () => {
+        if (!auth?.user || auth.user.is_guest) {
+            setLoginRequiredOpen(true);
+            return;
+        }
+
+        setReportOpen(true);
+    };
+
+    const submitReport = (event: React.FormEvent) => {
+        event.preventDefault();
+
+        reportForm.post(`/listings/${listing.id}/reports`, {
+            preserveScroll: true,
+            onSuccess: () => {
+                reportForm.reset();
+                reportForm.setData('reason', 'misleading_information');
+                setReportOpen(false);
+            },
         });
     };
 
@@ -426,6 +481,18 @@ export function ListingSidebar({
                             {t('listing.sidebar.link_copy_failed')}
                         </p>
                     )}
+                    {!isOwner && (
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={openReportDialog}
+                            className="h-10 w-full rounded-full border-red-200 text-sm font-semibold text-red-600 hover:bg-red-50 hover:text-red-700 sm:h-12"
+                            aria-label="Report listing"
+                        >
+                            <Flag size={16} />
+                            Report listing
+                        </Button>
+                    )}
                 </CardContent>
             </Card>
 
@@ -535,6 +602,140 @@ export function ListingSidebar({
                 open={loginRequiredOpen}
                 onOpenChange={setLoginRequiredOpen}
             />
+            <Dialog open={reportOpen} onOpenChange={setReportOpen}>
+                <DialogContent className="max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle>Report this listing</DialogTitle>
+                        <DialogDescription>
+                            Reports are reviewed by administrators before
+                            action is taken.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <form onSubmit={submitReport} className="space-y-4">
+                        <Alert className="border-amber-200 bg-amber-50 text-amber-900">
+                            <Flag />
+                            <AlertTitle>Important warning</AlertTitle>
+                            <AlertDescription>
+                                Bad listings can lead to listing removal,
+                                account limits, or account deletion. Wrongful
+                                or malicious reports can be punished the same
+                                way. Submit a report only when you can explain
+                                the problem clearly.
+                            </AlertDescription>
+                        </Alert>
+
+                        {reportFormErrors.report && (
+                            <div className="rounded border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-700">
+                                {reportFormErrors.report}
+                            </div>
+                        )}
+
+                        <div className="space-y-1.5">
+                            <label className="text-sm font-semibold text-[#1a263b]">
+                                Reason
+                            </label>
+                            <select
+                                value={reportForm.data.reason}
+                                onChange={(event) =>
+                                    reportForm.setData(
+                                        'reason',
+                                        event.target.value,
+                                    )
+                                }
+                                className="h-10 w-full rounded-md border border-[#cbd5e1] bg-white px-3 text-sm"
+                            >
+                                <option value="prohibited_item">
+                                    Prohibited item
+                                </option>
+                                <option value="counterfeit">
+                                    Counterfeit or fake item
+                                </option>
+                                <option value="fraud_or_scam">
+                                    Fraud or scam
+                                </option>
+                                <option value="misleading_information">
+                                    Misleading information
+                                </option>
+                                <option value="unsafe_or_illegal">
+                                    Unsafe or illegal content
+                                </option>
+                                <option value="wrong_category">
+                                    Wrong category
+                                </option>
+                                <option value="other">Other</option>
+                            </select>
+                            {reportForm.errors.reason && (
+                                <p className="text-xs text-red-600">
+                                    {reportForm.errors.reason}
+                                </p>
+                            )}
+                        </div>
+
+                        <div className="space-y-1.5">
+                            <label className="text-sm font-semibold text-[#1a263b]">
+                                Details
+                            </label>
+                            <Textarea
+                                value={reportForm.data.details}
+                                onChange={(event) =>
+                                    reportForm.setData(
+                                        'details',
+                                        event.target.value,
+                                    )
+                                }
+                                placeholder="Explain exactly what is wrong with this listing."
+                                className="min-h-28"
+                            />
+                            {reportForm.errors.details && (
+                                <p className="text-xs text-red-600">
+                                    {reportForm.errors.details}
+                                </p>
+                            )}
+                        </div>
+
+                        <label className="flex items-start gap-3 rounded-md border border-[#e2e8f0] bg-[#f8fafc] p-3 text-sm leading-relaxed text-[#334155]">
+                            <Checkbox
+                                checked={reportForm.data.acknowledged}
+                                onCheckedChange={(checked) =>
+                                    reportForm.setData(
+                                        'acknowledged',
+                                        checked === true,
+                                    )
+                                }
+                                className="mt-0.5"
+                            />
+                            <span>
+                                I understand that false, malicious, or careless
+                                reports can result in penalties against my
+                                account.
+                            </span>
+                        </label>
+                        {reportForm.errors.acknowledged && (
+                            <p className="text-xs text-red-600">
+                                {reportForm.errors.acknowledged}
+                            </p>
+                        )}
+
+                        <DialogFooter>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setReportOpen(false)}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                type="submit"
+                                disabled={reportForm.processing}
+                                className="bg-red-600 text-white hover:bg-red-700"
+                            >
+                                Submit report
+                            </Button>
+                        </DialogFooter>
+                    </form>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
@@ -543,6 +744,43 @@ function getSuggestedBidAmount(currentPrice: number): number {
     const increment = Math.max(1, Math.ceil(currentPrice * 0.05));
 
     return currentPrice + increment;
+}
+
+async function getShareImageFile(
+    shareImageUrl: string | null | undefined,
+    listingId: number,
+): Promise<File | null> {
+    if (!shareImageUrl || typeof window === 'undefined') {
+        return null;
+    }
+
+    try {
+        const url = new URL(shareImageUrl, window.location.origin);
+
+        if (url.origin !== window.location.origin) {
+            return null;
+        }
+
+        const response = await fetch(url.toString());
+
+        if (!response.ok) {
+            return null;
+        }
+
+        const blob = await response.blob();
+        const type = blob.type || 'image/jpeg';
+        const extension = type.includes('png') ? 'png' : 'jpg';
+
+        return new File(
+            [blob],
+            `bozor-listing-${listingId}-share.${extension}`,
+            {
+                type,
+            },
+        );
+    } catch {
+        return null;
+    }
 }
 
 function getShippingSummary(listing: ListingSidebarProps['listing']): {

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Listing;
+use App\Models\ListingMessage;
 use App\Models\Transaction;
 use App\Models\TransactionPackage;
 use Illuminate\Support\Facades\DB;
@@ -54,6 +55,8 @@ class AuctionTransactionService
 
             $lockedListing->update(['status' => 'sold']);
 
+            $this->attachBuyerMessagesToTransaction($transaction);
+
             return $transaction;
         });
     }
@@ -85,5 +88,15 @@ class AuctionTransactionService
             'shipping_cost_type' => 'free',
             'shipping_cost' => 0,
         ];
+    }
+
+    private function attachBuyerMessagesToTransaction(Transaction $transaction): void
+    {
+        ListingMessage::query()
+            ->where('listing_id', $transaction->listing_id)
+            ->where('questioner_id', $transaction->buyer_id)
+            ->where('seller_id', $transaction->seller_id)
+            ->whereNull('transaction_id')
+            ->update(['transaction_id' => $transaction->id]);
     }
 }

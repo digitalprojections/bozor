@@ -142,6 +142,16 @@ class Listing extends Model
         return $this->hasMany(Transaction::class);
     }
 
+    public function reports()
+    {
+        return $this->hasMany(ListingReport::class);
+    }
+
+    public function messages()
+    {
+        return $this->hasMany(ListingMessage::class);
+    }
+
     public function latestTransaction()
     {
         return $this->hasOne(Transaction::class)

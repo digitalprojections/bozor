@@ -23,6 +23,7 @@ import {
     LogOut,
     Menu,
     UsersRound,
+    Flag,
 } from 'lucide-react';
 import React, { ReactNode } from 'react';
 import { useTranslations } from '@/hooks/use-translations';
@@ -301,10 +302,12 @@ function SidebarLink({
     icon: Icon,
     label,
     href = '#',
+    badge,
 }: {
     icon: any;
     label: string;
     href?: string;
+    badge?: number;
 }) {
     const { url } = usePage();
     const { auth } = usePage().props as any;
@@ -320,6 +323,8 @@ function SidebarLink({
         '/settings/password',
         '/settings/two-factor',
         '/listings/create',
+        '/admin/users',
+        '/admin/reports',
     ].some((path) => href === path || href.startsWith(`${path}/`));
     const isGuest = !auth?.user || auth.user.is_guest;
 
@@ -350,6 +355,11 @@ function SidebarLink({
                     )}
                 />
                 <span className="flex-1">{label}</span>
+                {badge ? (
+                    <span className="rounded-full bg-red-600 px-2 py-0.5 text-[10px] font-bold text-white">
+                        {badge}
+                    </span>
+                ) : null}
                 <ChevronRight
                     size={14}
                     className={cn(
@@ -371,6 +381,10 @@ function SidebarLink({
 function DefaultSidebar() {
     const { t } = useTranslations();
     const { auth } = usePage().props as any;
+    const {
+        adminPendingReportsCount = 0,
+        unreadMessageNotificationsCount = 0,
+    } = usePage().props as any;
     const user = auth.user && !auth.user.is_guest ? auth.user : null;
     const isAdmin = !!auth.is_admin;
 
@@ -385,11 +399,19 @@ function DefaultSidebar() {
 
             <SidebarSection title={t('layout.sidebar.activity')}>
                 {isAdmin && (
-                    <SidebarLink
-                        icon={UsersRound}
-                        label="Admin Users"
-                        href="/admin/users"
-                    />
+                    <>
+                        <SidebarLink
+                            icon={Flag}
+                            label="Reports"
+                            href="/admin/reports"
+                            badge={adminPendingReportsCount}
+                        />
+                        <SidebarLink
+                            icon={UsersRound}
+                            label="Admin Users"
+                            href="/admin/users"
+                        />
+                    </>
                 )}
                 <SidebarLink
                     icon={LayoutDashboard}
@@ -425,6 +447,12 @@ function DefaultSidebar() {
             {user && (
                 <>
                     <SidebarSection title={t('layout.sidebar.extra')}>
+                        <SidebarLink
+                            icon={MessageCircle}
+                            label={t('messages.sidebar') || 'Messages'}
+                            href="/dashboard"
+                            badge={unreadMessageNotificationsCount}
+                        />
                         <SidebarLink
                             icon={Search}
                             label={t('layout.sidebar.history')}

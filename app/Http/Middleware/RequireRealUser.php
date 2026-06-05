@@ -18,6 +18,20 @@ class RequireRealUser
     {
         $user = $request->user();
 
+        if ($user && $user->disabled_at !== null) {
+            auth()->logout();
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'message' => __('This account has been disabled by an administrator.'),
+                ], 403);
+            }
+
+            return redirect()->route('login')->withErrors([
+                'auth' => __('This account has been disabled by an administrator.'),
+            ]);
+        }
+
         if ($user && ! $user->is_guest) {
             return $next($request);
         }
