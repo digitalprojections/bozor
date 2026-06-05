@@ -8,6 +8,7 @@ use App\Models\Transaction;
 use App\Notifications\WatchlistItemUpdated;
 use App\Services\AuctionTransactionService;
 use App\Services\ListingService;
+use App\Services\ListingSharePreviewService;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -133,8 +134,12 @@ class ListingController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Listing $listing, ListingService $listingService, AuctionTransactionService $auctionTransactions): Response
-    {
+    public function show(
+        Listing $listing,
+        ListingService $listingService,
+        AuctionTransactionService $auctionTransactions,
+        ListingSharePreviewService $sharePreview,
+    ): Response {
         $auctionTransactions->ensureForListing($listing);
 
         $listing->refresh();
@@ -153,14 +158,25 @@ class ListingController extends Controller
             10
         );
 
+        $priceLabel = 'JPY '.number_format($listing->display_price);
         $description = str($listing->description)->squish()->limit(160)->toString();
+        $shareDescription = str("Current price {$priceLabel}. {$description}")->limit(200)->toString();
         $canonicalUrl = route('listings.show', $listing);
-        $previewImageUrl = $listing->main_image_url ?: asset('favicon.png');
+        $previewImageUrl = $sharePreview->imageUrlFor($listing) ?: $listing->main_image_url ?: asset('favicon.png');
+        $previewImageAlt = $sharePreview->altTextFor($listing);
         $productJsonLd = [
             '@type' => 'Product',
             'name' => $listing->title,
-            'image' => $listing->all_image_urls,
-            'description' => $description,
+            'image' => [
+                [
+                    '@type' => 'ImageObject',
+                    'url' => $previewImageUrl,
+                    'caption' => $previewImageAlt,
+                    'width' => config('share_previews.width', 600),
+                    'height' => config('share_previews.height', 315),
+                ],
+            ],
+            'description' => $shareDescription,
             'url' => $canonicalUrl,
             'offers' => [
                 '@type' => 'Offer',
@@ -233,11 +249,18 @@ class ListingController extends Controller
             'recommendations' => $recommendations,
             'seo' => [
                 'title' => $listing->title.' | '.config('app.name'),
-                'description' => $description,
+                'description' => $shareDescription,
                 'canonical' => $canonicalUrl,
                 'url' => $canonicalUrl,
                 'og_type' => 'product',
                 'og_image' => $previewImageUrl,
+                'og_image_alt' => $previewImageAlt,
+                'og_image_width' => config('share_previews.width', 600),
+                'og_image_height' => config('share_previews.height', 315),
+                'price_amount' => $listing->display_price,
+                'price_currency' => 'JPY',
+                'geo_placename' => $listing->location,
+                'geo_region' => $listing->public_prefecture,
                 'twitter_card' => 'summary_large_image',
                 'json_ld' => $jsonLd,
             ],

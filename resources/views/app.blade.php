@@ -38,6 +38,7 @@
             $seoDescription = $seo['description'] ?? 'Free registration and no sales fees! The ultimate marketplace for individuals and small businesses in Japan. Buy and sell items easily without hidden costs.';
             $seoUrl = $seo['url'] ?? $seo['canonical'] ?? request()->url();
             $seoImage = $seo['og_image'] ?? asset('favicon.png');
+            $seoImageAlt = $seo['og_image_alt'] ?? $seoTitle;
             $seoType = $seo['og_type'] ?? 'website';
             $twitterCard = $seo['twitter_card'] ?? 'summary_large_image';
         @endphp
@@ -51,10 +52,30 @@
         <meta property="og:site_name" content="{{ config('app.name', 'Bozor Japan') }}">
         <meta property="og:image" content="{{ $seoImage }}">
         <meta property="og:image:secure_url" content="{{ $seoImage }}">
+        <meta property="og:image:alt" content="{{ $seoImageAlt }}">
+        @if(!empty($seo['og_image_width']))
+            <meta property="og:image:width" content="{{ $seo['og_image_width'] }}">
+        @endif
+        @if(!empty($seo['og_image_height']))
+            <meta property="og:image:height" content="{{ $seo['og_image_height'] }}">
+        @endif
+        @if(!empty($seo['price_amount']))
+            <meta property="product:price:amount" content="{{ $seo['price_amount'] }}">
+        @endif
+        @if(!empty($seo['price_currency']))
+            <meta property="product:price:currency" content="{{ $seo['price_currency'] }}">
+        @endif
+        @if(!empty($seo['geo_placename']))
+            <meta name="geo.placename" content="{{ $seo['geo_placename'] }}">
+        @endif
+        @if(!empty($seo['geo_region']))
+            <meta name="geo.region" content="{{ $seo['geo_region'] }}">
+        @endif
         <meta name="twitter:card" content="{{ $twitterCard }}">
         <meta name="twitter:title" content="{{ $seoTitle }}">
         <meta name="twitter:description" content="{{ $seoDescription }}">
         <meta name="twitter:image" content="{{ $seoImage }}">
+        <meta name="twitter:image:alt" content="{{ $seoImageAlt }}">
 
         @if(!empty($seo['json_ld']))
             <script type="application/ld+json">@json($seo['json_ld'], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)</script>
