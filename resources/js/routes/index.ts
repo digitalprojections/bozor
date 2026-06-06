@@ -432,7 +432,7 @@ home.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     home.form = homeForm
 /**
 * @see \App\Http\Controllers\MarketplaceController::marketplace
- * @see app/Http/Controllers/MarketplaceController.php:17
+ * @see app/Http/Controllers/MarketplaceController.php:19
  * @route '/marketplace'
  */
 export const marketplace = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -447,7 +447,7 @@ marketplace.definition = {
 
 /**
 * @see \App\Http\Controllers\MarketplaceController::marketplace
- * @see app/Http/Controllers/MarketplaceController.php:17
+ * @see app/Http/Controllers/MarketplaceController.php:19
  * @route '/marketplace'
  */
 marketplace.url = (options?: RouteQueryOptions) => {
@@ -456,7 +456,7 @@ marketplace.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\MarketplaceController::marketplace
- * @see app/Http/Controllers/MarketplaceController.php:17
+ * @see app/Http/Controllers/MarketplaceController.php:19
  * @route '/marketplace'
  */
 marketplace.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -465,7 +465,7 @@ marketplace.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\MarketplaceController::marketplace
- * @see app/Http/Controllers/MarketplaceController.php:17
+ * @see app/Http/Controllers/MarketplaceController.php:19
  * @route '/marketplace'
  */
 marketplace.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -475,7 +475,7 @@ marketplace.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\MarketplaceController::marketplace
- * @see app/Http/Controllers/MarketplaceController.php:17
+ * @see app/Http/Controllers/MarketplaceController.php:19
  * @route '/marketplace'
  */
     const marketplaceForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -485,7 +485,7 @@ marketplace.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\MarketplaceController::marketplace
- * @see app/Http/Controllers/MarketplaceController.php:17
+ * @see app/Http/Controllers/MarketplaceController.php:19
  * @route '/marketplace'
  */
         marketplaceForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -494,7 +494,7 @@ marketplace.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\MarketplaceController::marketplace
- * @see app/Http/Controllers/MarketplaceController.php:17
+ * @see app/Http/Controllers/MarketplaceController.php:19
  * @route '/marketplace'
  */
         marketplaceForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

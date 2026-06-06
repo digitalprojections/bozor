@@ -145,7 +145,7 @@ Create `/home/ec2-user/bozor-staging/.env.staging` from `.env.staging.example` o
 
 ### One-Command Deploy
 
-The production sequence builds the app image, tags it, pushes it to DockerHub, pins the EC2 `.env` to that exact tag, pulls it on EC2, recreates the stack, runs migrations/cache commands, and verifies `/health`.
+The production sequence builds the app image, tags it, pushes it to DockerHub, pins the EC2 `.env` to that exact tag, prunes unused remote Docker images, pulls it on EC2, recreates the stack, runs migrations/cache commands, and verifies `/health`.
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/deploy-production.ps1
@@ -156,6 +156,8 @@ This is a wrapper around `scripts/deploy-dockerhub.ps1`. Use the lower-level scr
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/deploy-dockerhub.ps1 -ImageTag manual-tag
 ```
+
+Remote image pruning is enabled by default and only removes images not used by any container. Pass `-SkipRemoteImagePrune` to the lower-level script if you need to preserve unused images temporarily.
 
 Before deploying, make sure:
 - Docker Desktop is running locally

@@ -322,6 +322,24 @@ class TransactionController extends Controller
             'name' => $canSeeFullName ? $user->name : $user->masked_name,
             'masked_name' => $user->masked_name,
             'avatar_url' => $user->avatar_url,
+            'contact' => $canSeeFullName ? $this->transactionUserContact($user) : null,
+        ];
+    }
+
+    private function transactionUserContact($user): array
+    {
+        $nameParts = preg_split('/\s+/', trim($user->name), 2) ?: [];
+
+        return [
+            'full_name' => $user->name,
+            'first_name' => $nameParts[0] ?? $user->name,
+            'family_name' => $nameParts[1] ?? '',
+            'postal_code' => $user->postal_code,
+            'prefecture' => $user->prefecture,
+            'city' => $user->city,
+            'address_line1' => $user->address_line1,
+            'address_line2' => $user->address_line2,
+            'phone' => $user->phone,
         ];
     }
 

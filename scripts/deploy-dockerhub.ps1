@@ -12,6 +12,7 @@ param(
     [string]$AppContainerName = "bozor-app",
     [string]$HealthUrl = "https://bazaarjapan.link/health",
     [string]$PublicNetworkName = "bozor-public",
+    [switch]$SkipRemoteImagePrune,
     [switch]$UploadCaddyConfig
 )
 
@@ -63,6 +64,11 @@ if ($UploadCaddyConfig) {
 
 Write-Host "Pinning remote APP_IMAGE=$image"
 ssh -i $KeyPath $remote "cd $RemoteDir && touch $RemoteEnvFile && sed -i '/^APP_IMAGE=/d' $RemoteEnvFile && printf '\nAPP_IMAGE=$image\n' >> $RemoteEnvFile"
+
+if (-not $SkipRemoteImagePrune) {
+    Write-Host "Pruning unused remote Docker images before pull"
+    ssh -i $KeyPath $remote "docker image prune -a -f && df -h /"
+}
 
 Write-Host "Pulling and recreating stack"
 ssh -i $KeyPath $remote "docker network create $PublicNetworkName 2>/dev/null || true && cd $RemoteDir && docker-compose --env-file $RemoteEnvFile -p $ComposeProjectName -f $ComposeFile pull app && docker-compose --env-file $RemoteEnvFile -p $ComposeProjectName -f $ComposeFile up -d --force-recreate"

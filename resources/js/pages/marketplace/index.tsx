@@ -5,14 +5,8 @@ import { MarketplaceHeader } from '@/components/marketplace-header';
 import { SearchAndFilters } from '@/components/search-and-filters';
 import { ListingsGrid } from '@/components/listings-grid';
 import { RecommendationsSection } from '@/components/listings/recommendations-section';
+import { useTranslations } from '@/hooks/use-translations';
 import type { BreadcrumbItem } from '@/types';
-
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Marketplace',
-        href: '/marketplace',
-    },
-];
 
 interface Stats {
     active_listings: number;
@@ -88,7 +82,14 @@ export default function Marketplace({
     filters: Filters;
     watched_ids?: number[];
 }) {
+    const { t } = useTranslations();
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+    const breadcrumbs: BreadcrumbItem[] = [
+        {
+            title: t('marketplace.title'),
+            href: '/marketplace',
+        },
+    ];
 
     const handleSearch = (search: string) => {
         router.get(
@@ -147,8 +148,8 @@ export default function Marketplace({
     };
 
     return (
-        <BazaarLayout title="Marketplace" breadcrumbs={breadcrumbs} showTitle>
-            <Head title="Marketplace" />
+        <BazaarLayout title={t('marketplace.title')} breadcrumbs={breadcrumbs} showTitle>
+            <Head title={t('marketplace.title')} />
 
             <div className="space-y-6">
                 {stats && <MarketplaceHeader stats={stats} />}

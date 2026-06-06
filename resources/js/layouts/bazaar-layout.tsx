@@ -70,18 +70,18 @@ export default function BazaarLayout({
     const hasRightRailAds = (ads.right_rail?.length ?? 0) > 0;
 
     return (
-        <div className="min-h-screen bg-[#f4f6fa] text-[#1a263b]">
+        <div className="min-h-screen bg-[#f4f6fa] text-[#1a263b] dark:bg-[#0b1120] dark:text-[#e5edf6]">
             <Head title={title} />
 
             {/* Header */}
-            <header className="sticky top-0 z-50 border-b border-[#e8e7e5] bg-white shadow-sm">
+            <header className="sticky top-0 z-50 border-b border-[#e8e7e5] bg-white shadow-sm dark:border-[#1f2a3d] dark:bg-[#111827]">
                 <div className="mx-auto flex h-16 w-full items-center justify-between px-4 md:px-8">
                     <div className="flex flex-1 items-center gap-4 md:gap-8">
                         <div className="flex items-center gap-2 lg:hidden">
                             <Sheet>
                                 <SheetTrigger asChild>
                                     <button
-                                        className="rounded-md p-2 text-[#1a263b] hover:bg-gray-100"
+                                        className="rounded-md p-2 text-[#1a263b] hover:bg-gray-100 dark:text-[#e5edf6] dark:hover:bg-[#1f2a3d]"
                                         aria-label="Open menu"
                                     >
                                         <Menu size={24} />
@@ -89,9 +89,9 @@ export default function BazaarLayout({
                                 </SheetTrigger>
                                 <SheetContent
                                     side="left"
-                                    className="w-[280px] bg-white p-0"
+                                    className="w-[280px] bg-white p-0 dark:bg-[#111827]"
                                 >
-                                    <SheetHeader className="border-b p-4 text-left">
+                                    <SheetHeader className="border-b p-4 text-left dark:border-[#1f2a3d]">
                                         <SheetTitle className="flex items-center gap-2">
                                             <AppLogo />
                                         </SheetTitle>
@@ -114,9 +114,9 @@ export default function BazaarLayout({
                                 placeholder={t(
                                     'layout.header.search_placeholder',
                                 )}
-                                className="w-full rounded-full border border-[#cfddee] bg-[#f8fafd] py-2 pr-10 pl-4 text-sm focus:ring-2 focus:ring-[#0d9488]/20 focus:outline-none"
+                                className="w-full rounded-full border border-[#cfddee] bg-[#f8fafd] py-2 pr-10 pl-4 text-sm text-[#1a263b] focus:ring-2 focus:ring-[#0d9488]/20 focus:outline-none dark:border-[#2f3d52] dark:bg-[#0b1120] dark:text-[#e5edf6] dark:placeholder:text-[#8ca1b9]"
                             />
-                            <button className="absolute top-1/2 right-3 -translate-y-1/2 text-[#5f6b7a]">
+                            <button className="absolute top-1/2 right-3 -translate-y-1/2 text-[#5f6b7a] dark:text-[#8ca1b9]">
                                 <Search size={18} />
                             </button>
                         </div>
@@ -126,13 +126,13 @@ export default function BazaarLayout({
                         <LocaleSwitcher
                             variant="ghost"
                             size="sm"
-                            className="text-[#5f6b7a] hover:text-[#0d9488]"
+                            className="text-[#5f6b7a] hover:text-[#0d9488] dark:text-[#b8c7d9] dark:hover:text-[#5eead4]"
                         />
                         {user ? (
                             <>
                                 <Link
                                     href="/dashboard"
-                                    className="hidden text-sm font-semibold text-[#1a263b] transition-colors hover:text-[#0d9488] sm:block"
+                                    className="hidden text-sm font-semibold text-[#1a263b] transition-colors hover:text-[#0d9488] sm:block dark:text-[#e5edf6] dark:hover:text-[#5eead4]"
                                 >
                                     {t('layout.header.my_listings')}
                                 </Link>
@@ -146,7 +146,7 @@ export default function BazaarLayout({
                                             />
                                             {formatRating(user?.average_rating)}
                                         </div>
-                                        <div className="text-[9px] leading-none text-[#5f6c84]">
+                                        <div className="text-[9px] leading-none text-[#5f6c84] dark:text-[#8ca1b9]">
                                             ({user?.ratings_count || 0})
                                         </div>
                                     </div>
@@ -157,12 +157,12 @@ export default function BazaarLayout({
                                         fallbackClassName="bg-[#d9e2ef] text-xs font-semibold text-[#3a5670]"
                                         mascotSize={30}
                                     />
-                                    <span className="hidden font-bold text-[#0b1b32] lg:inline">
+                                    <span className="hidden font-bold text-[#0b1b32] lg:inline dark:text-[#f8fafc]">
                                         {user?.masked_name || user?.name}
                                     </span>
                                     <button
                                         onClick={() => router.post('/logout')}
-                                        className="ml-1 flex items-center gap-1 text-xs text-[#5f6c84] transition-colors hover:text-red-500"
+                                        className="ml-1 flex items-center gap-1 text-xs text-[#5f6c84] transition-colors hover:text-red-500 dark:text-[#8ca1b9] dark:hover:text-red-300"
                                         title={t('common.logout')}
                                     >
                                         <LogOut size={15} />
@@ -184,7 +184,7 @@ export default function BazaarLayout({
             </header>
 
             {/* Breadcrumbs Section */}
-            <div className="border-b border-[#f0f2f5] bg-white py-2">
+            <div className="border-b border-[#f0f2f5] bg-white py-2 dark:border-[#1f2a3d] dark:bg-[#111827]">
                 <div className="mx-auto w-full px-4 md:px-8">
                     <Breadcrumbs breadcrumbs={breadcrumbs} />
                 </div>
@@ -218,7 +218,7 @@ export default function BazaarLayout({
 
                 {showTitle && (
                     <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-                        <h1 className="text-2xl font-semibold tracking-tight text-[#0b1b32] md:text-[2rem]">
+                        <h1 className="text-2xl font-semibold tracking-tight text-[#0b1b32] md:text-[2rem] dark:text-[#f8fafc]">
                             {title}
                         </h1>
                     </div>
@@ -260,26 +260,26 @@ export default function BazaarLayout({
             </main>
 
             {/* Footer */}
-            <footer className="mt-12 border-t border-[#e1e9f2] bg-white py-12">
+            <footer className="mt-12 border-t border-[#e1e9f2] bg-white py-12 dark:border-[#1f2a3d] dark:bg-[#111827]">
                 <div className="mx-auto w-full space-y-4 px-4 text-center md:px-8">
                     <AdSlot
                         placement="footer"
                         variant="footer"
                         className="mx-auto mb-8 max-w-4xl text-left"
                     />
-                    <p className="text-sm text-[#7f8fa4]">
+                    <p className="text-sm text-[#7f8fa4] dark:text-[#9fb0c5]">
                         {t('layout.footer.disclaimer')}
                     </p>
-                    <div className="flex justify-center gap-6 text-sm font-medium text-[#5f6c84]">
+                    <div className="flex justify-center gap-6 text-sm font-medium text-[#5f6c84] dark:text-[#b8c7d9]">
                         <Link
                             href="/terms"
-                            className="transition-colors hover:text-[#0d9488]"
+                            className="transition-colors hover:text-[#0d9488] dark:hover:text-[#5eead4]"
                         >
                             {t('layout.footer.terms')}
                         </Link>
                         <Link
                             href="/privacy"
-                            className="transition-colors hover:text-[#0d9488]"
+                            className="transition-colors hover:text-[#0d9488] dark:hover:text-[#5eead4]"
                         >
                             {t('layout.footer.privacy')}
                         </Link>
@@ -299,7 +299,7 @@ function SidebarSection({
 }) {
     return (
         <div className="flex flex-col">
-            <h3 className="px-4 py-2 text-xs font-bold tracking-wider text-[#5f6c84] uppercase">
+            <h3 className="px-4 py-2 text-xs font-bold tracking-wider text-[#5f6c84] uppercase dark:text-[#8ca1b9]">
                 {title}
             </h3>
             <div className="flex flex-col">{children}</div>
@@ -327,6 +327,7 @@ function SidebarLink({
         '/dashboard',
         '/dashboard/won-items',
         '/dashboard/sold-items',
+        '/messages',
         '/watchlist',
         '/settings/profile',
         '/settings/password',
@@ -352,15 +353,17 @@ function SidebarLink({
                 className={cn(
                     'group flex items-center gap-3 rounded-lg px-4 py-2 text-[0.95rem] font-medium transition-all',
                     isActive
-                        ? 'bg-white text-[#0d9488] shadow-sm'
-                        : 'text-[#1a263b] hover:bg-white hover:shadow-sm',
+                        ? 'bg-white text-[#0d9488] shadow-sm dark:bg-[#162033] dark:text-[#5eead4]'
+                        : 'text-[#1a263b] hover:bg-white hover:shadow-sm dark:text-[#d7e1ee] dark:hover:bg-[#162033]',
                 )}
             >
                 <Icon
                     size={18}
                     className={cn(
                         'transition-colors',
-                        isActive ? 'text-[#0d9488]' : 'text-[#3a5f8b]',
+                        isActive
+                            ? 'text-[#0d9488] dark:text-[#5eead4]'
+                            : 'text-[#3a5f8b] dark:text-[#8fb6e8]',
                     )}
                 />
                 <span className="flex-1">{label}</span>
@@ -466,7 +469,7 @@ function DefaultSidebar() {
                         <SidebarLink
                             icon={MessageCircle}
                             label={t('layout.sidebar.messages')}
-                            href="/dashboard"
+                            href="/messages"
                             badge={unreadMessageNotificationsCount}
                         />
                         <SidebarLink

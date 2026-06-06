@@ -19,6 +19,19 @@ class ProfileDeleteRequest extends FormRequest
     {
         return [
             'password' => $this->currentPasswordRules(),
+            'confirmation_text' => ['required', 'string', 'in:DELETE'],
+        ];
+    }
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'confirmation_text.in' => __('Please type DELETE exactly to confirm account deletion.'),
         ];
     }
 }

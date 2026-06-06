@@ -1,6 +1,6 @@
 import React from 'react';
 import { router, useForm, usePage } from '@inertiajs/react';
-import { MessageCircle, Send } from 'lucide-react';
+import { MessageCircle, Send, Store, UserRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
@@ -141,10 +141,29 @@ function MessageBubble({
     date: string | null;
     answer?: boolean;
 }) {
+    const { t } = useTranslations();
+
     return (
-        <div className="flex flex-col gap-1">
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-bold text-[#64748b]">
-                <span>{answer ? 'A' : 'Q'}.</span>
+        <div
+            className={`flex flex-col gap-1.5 ${
+                answer ? 'items-end' : 'items-start'
+            }`}
+        >
+            <div
+                className={`flex max-w-[92%] flex-wrap items-center gap-x-2 gap-y-1 text-xs font-bold ${
+                    answer ? 'justify-end text-[#0f766e]' : 'text-[#2563eb]'
+                }`}
+            >
+                <span
+                    className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 ${
+                        answer
+                            ? 'bg-[#ccfbf1] text-[#0f766e]'
+                            : 'bg-[#dbeafe] text-[#1d4ed8]'
+                    }`}
+                >
+                    {answer ? <Store size={12} /> : <UserRound size={12} />}
+                    {answer ? t('messages.seller') : t('messages.buyer')}
+                </span>
                 <span>{label}</span>
                 {date && (
                     <span className="font-medium text-[#94a3b8]">
@@ -152,7 +171,13 @@ function MessageBubble({
                     </span>
                 )}
             </div>
-            <div className="whitespace-pre-wrap rounded-lg bg-white p-3 text-sm leading-relaxed text-[#1d2b41]">
+            <div
+                className={`max-w-[92%] whitespace-pre-wrap rounded-2xl border p-3 text-sm leading-relaxed shadow-sm ${
+                    answer
+                        ? 'rounded-tr-sm border-[#99f6e4] bg-[#ecfdf5] text-[#12352f]'
+                        : 'rounded-tl-sm border-[#bfdbfe] bg-white text-[#1d2b41]'
+                }`}
+            >
                 {body}
             </div>
         </div>

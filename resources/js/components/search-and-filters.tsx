@@ -32,6 +32,8 @@ interface SearchAndFiltersProps {
     currentCity: string;
     hideSold: boolean;
     freeShipping: boolean;
+    showHideSold?: boolean;
+    showNewestMessagesSort?: boolean;
     viewMode: 'grid' | 'list';
     onSearch: (search: string) => void;
     onCategoryChange: (categoryId: number | null) => void;
@@ -53,6 +55,8 @@ export function SearchAndFilters({
     currentCity,
     hideSold,
     freeShipping,
+    showHideSold = true,
+    showNewestMessagesSort = false,
     viewMode,
     onSearch,
     onCategoryChange,
@@ -169,6 +173,12 @@ export function SearchAndFilters({
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
+                            {showNewestMessagesSort && (
+                                <SelectItem value="newest_messages">
+                                    {t('marketplace.filters.newest_messages') ||
+                                        'Newest messages'}
+                                </SelectItem>
+                            )}
                             <SelectItem value="newest">{t('marketplace.filters.sort_newest')}</SelectItem>
                             <SelectItem value="oldest">{t('marketplace.filters.sort_oldest')}</SelectItem>
                             <SelectItem value="price_low">
@@ -180,15 +190,17 @@ export function SearchAndFilters({
                         </SelectContent>
                     </Select>
 
-                    <label className="flex h-10 w-full cursor-pointer items-center gap-2 rounded-md border bg-white px-3 text-sm text-[#333333] sm:w-auto">
-                        <Checkbox
-                            checked={hideSold}
-                            onCheckedChange={(checked) =>
-                                onHideSoldChange(checked === true)
-                            }
-                        />
-                        <span>{t('marketplace.filters.hide_sold')}</span>
-                    </label>
+                    {showHideSold && (
+                        <label className="flex h-10 w-full cursor-pointer items-center gap-2 rounded-md border bg-white px-3 text-sm text-[#333333] sm:w-auto">
+                            <Checkbox
+                                checked={hideSold}
+                                onCheckedChange={(checked) =>
+                                    onHideSoldChange(checked === true)
+                                }
+                            />
+                            <span>{t('marketplace.filters.hide_sold')}</span>
+                        </label>
+                    )}
 
                     <label className="flex h-10 w-full cursor-pointer items-center gap-2 rounded-md border border-emerald-200 bg-emerald-50 px-3 text-sm font-medium text-emerald-800 sm:w-auto">
                         <Checkbox

@@ -7,12 +7,8 @@ import { PlacementPreview } from '@/components/ads/placement-preview';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { useTranslations } from '@/hooks/use-translations';
 import type { BreadcrumbItem } from '@/types';
-
-const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Advertising', href: '/advertising' },
-    { title: 'New ad request', href: '/advertising/campaigns/create' },
-];
 
 export default function AdvertisingCreate({
     packages,
@@ -21,7 +17,12 @@ export default function AdvertisingCreate({
     packages: Record<string, { label: string; price_jpy: number; duration_days: number; placement: string }>;
     placements: Record<string, { label: string; creative: string }>;
 }) {
+    const { t } = useTranslations();
     const { errors } = usePage().props as any;
+    const breadcrumbs: BreadcrumbItem[] = [
+        { title: t('advertising.title'), href: '/advertising' },
+        { title: t('advertising.campaigns.new_request'), href: '/advertising/campaigns/create' },
+    ];
     const packageKeys = Object.keys(packages);
     const [packageKey, setPackageKey] = useState(packageKeys[0] ?? '');
     const [title, setTitle] = useState('');
@@ -46,12 +47,12 @@ export default function AdvertisingCreate({
     };
 
     return (
-        <BazaarLayout title="New ad request" breadcrumbs={breadcrumbs} showTitle>
-            <Head title="New ad request" />
+        <BazaarLayout title={t('advertising.campaigns.new_request')} breadcrumbs={breadcrumbs} showTitle>
+            <Head title={t('advertising.campaigns.new_request')} />
 
             <form onSubmit={submit} className="grid gap-4 lg:grid-cols-[1fr_320px]">
                 <section className="space-y-3 rounded border border-[#dce5ef] bg-white p-4 shadow-sm">
-                    <Field label="Package" error={errors?.package_key}>
+                    <Field label={t('advertising.fields.package')} error={errors?.package_key}>
                         <select
                             value={packageKey}
                             onChange={(event) => setPackageKey(event.target.value)}
@@ -67,26 +68,26 @@ export default function AdvertisingCreate({
                     </Field>
 
                     <div className="grid gap-3 md:grid-cols-2">
-                        <Field label="Ad title" error={errors?.title}>
+                        <Field label={t('advertising.fields.ad_title')} error={errors?.title}>
                             <Input value={title} onChange={(event) => setTitle(event.target.value)} maxLength={120} required />
                         </Field>
-                        <Field label="Destination URL" error={errors?.target_url}>
+                        <Field label={t('advertising.fields.destination_url')} error={errors?.target_url}>
                             <Input value={targetUrl} onChange={(event) => setTargetUrl(event.target.value)} placeholder="https://example.com" required />
                         </Field>
                     </div>
 
-                    <Field label="Ad text shown to users" error={errors?.description}>
+                    <Field label={t('advertising.fields.ad_text')} error={errors?.description}>
                         <Textarea value={description} onChange={(event) => setDescription(event.target.value)} maxLength={500} className="min-h-28" required />
                     </Field>
 
-                    <Field label="Preferred start date" error={errors?.starts_at}>
+                    <Field label={t('advertising.fields.preferred_start_date')} error={errors?.starts_at}>
                         <Input type="date" value={startsAt} onChange={(event) => setStartsAt(event.target.value)} />
                     </Field>
 
-                    <Field label="Creative image" error={errors?.image}>
+                    <Field label={t('advertising.fields.creative_image')} error={errors?.image}>
                         <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded border border-dashed border-[#b8c6d8] bg-[#f8fafc] px-4 py-8 text-center text-sm text-[#5f6c84] hover:bg-[#f2f6fb]">
                             <ImagePlus size={24} className="text-[#3a5f8b]" />
-                            <span>{image ? image.name : 'Upload JPG, PNG, or WebP up to 2MB'}</span>
+                            <span>{image ? image.name : t('advertising.fields.upload_image_hint')}</span>
                             <input
                                 type="file"
                                 accept="image/jpeg,image/png,image/webp"
@@ -97,38 +98,38 @@ export default function AdvertisingCreate({
                     </Field>
 
                     <Button type="submit" className="rounded-[4px]">
-                        Create ad request
+                        {t('advertising.campaigns.create_request')}
                     </Button>
                 </section>
 
                 <aside className="space-y-3">
                     <div className="rounded border border-[#dce5ef] bg-white p-4 shadow-sm">
-                        <h2 className="text-sm font-bold text-[#0b1b32]">Selected package</h2>
+                        <h2 className="text-sm font-bold text-[#0b1b32]">{t('advertising.packages.selected')}</h2>
                         {selectedPackage && (
                             <div className="mt-3 space-y-2 text-sm text-[#5f6c84]">
                                 <div className="font-semibold text-[#0b1b32]">{selectedPackage.label}</div>
-                                <div>Placement: {selectedPlacement?.label ?? selectedPackage.placement}</div>
-                                <div>Ad format: {selectedPlacement?.creative ?? 'standard'}</div>
-                                <div>Duration: {selectedPackage.duration_days} days</div>
+                                <div>{t('advertising.packages.placement', { placement: selectedPlacement?.label ?? selectedPackage.placement })}</div>
+                                <div>{t('advertising.packages.ad_format', { format: selectedPlacement?.creative ?? t('advertising.format.standard') })}</div>
+                                <div>{t('advertising.packages.duration_days', { days: selectedPackage.duration_days })}</div>
                                 <div className="text-lg font-bold text-[#0f766e]">
                                     ¥{selectedPackage.price_jpy.toLocaleString()}
                                 </div>
                                 <PlacementPreview
                                     placement={selectedPackage.placement}
-                                    label="Where this ad appears"
+                                    label={t('advertising.placement_where')}
                                 />
                                 <p className="text-xs leading-relaxed text-[#64748b]">
-                                    All active paid ads in the same placement rotate every 8 seconds.
+                                    {t('advertising.packages.rotates_notice')}
                                 </p>
                             </div>
                         )}
                     </div>
 
                     <div className="rounded border border-[#dce5ef] bg-white p-4 shadow-sm">
-                        <h2 className="text-sm font-bold text-[#0b1b32]">Preview image</h2>
+                        <h2 className="text-sm font-bold text-[#0b1b32]">{t('advertising.preview_image')}</h2>
                         <div className="mt-3 flex aspect-[4/3] items-center justify-center overflow-hidden rounded border border-[#d8e2ee] bg-[#f0f5fd]">
                             {previewUrl ? (
-                                <img src={previewUrl} alt="Ad preview" className="h-full w-full object-cover" />
+                                <img src={previewUrl} alt={t('advertising.ad_preview')} className="h-full w-full object-cover" />
                             ) : (
                                 <ImagePlus className="text-[#a3b6cc]" size={28} />
                             )}

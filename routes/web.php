@@ -109,6 +109,7 @@ Route::middleware(['real-user'])->group(function () {
         Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('dashboard/won-items', [DashboardController::class, 'wonItems'])->name('dashboard.won-items');
         Route::get('dashboard/sold-items', [DashboardController::class, 'soldItems'])->name('dashboard.sold-items');
+        Route::get('messages', [MarketplaceController::class, 'messages'])->name('messages.index');
 
         Route::get('/advertising', [AdvertiserController::class, 'index'])->name('advertising.index');
         Route::post('/advertising/apply', [AdvertiserController::class, 'apply'])->name('advertising.apply');

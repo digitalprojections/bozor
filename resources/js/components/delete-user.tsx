@@ -1,5 +1,5 @@
 import { Form } from '@inertiajs/react';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
@@ -19,7 +19,13 @@ import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileCo
 
 export default function DeleteUser() {
     const passwordInput = useRef<HTMLInputElement>(null);
+    const confirmationInput = useRef<HTMLInputElement>(null);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [confirmationText, setConfirmationText] = useState('');
     const { t } = useTranslations();
+    const requiredConfirmationText = 'DELETE';
+    const isDeleteConfirmationMissing =
+        !confirmationText || confirmationText !== requiredConfirmationText;
 
     return (
         <div className="space-y-6">
@@ -36,7 +42,16 @@ export default function DeleteUser() {
                     </p>
                 </div>
 
-                <Dialog>
+                <Dialog
+                    open={isDeleteDialogOpen}
+                    onOpenChange={(open) => {
+                        setIsDeleteDialogOpen(open);
+
+                        if (!open) {
+                            setConfirmationText('');
+                        }
+                    }}
+                >
                     <DialogTrigger asChild>
                         <Button
                             variant="destructive"
@@ -58,16 +73,27 @@ export default function DeleteUser() {
                             options={{
                                 preserveScroll: true,
                             }}
-                            onError={() => passwordInput.current?.focus()}
+                            onError={(errors) => {
+                                if (errors.confirmation_text) {
+                                    confirmationInput.current?.focus();
+
+                                    return;
+                                }
+
+                                passwordInput.current?.focus();
+                            }}
                             resetOnSuccess
                             className="space-y-6"
                         >
                             {({ resetAndClearErrors, processing, errors }) => (
                                 <>
+                                    <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-200/10 dark:bg-red-700/10 dark:text-red-100">
+                                        {t('profile.delete_account.final_warning')}
+                                    </div>
+
                                     <div className="grid gap-2">
                                         <Label
                                             htmlFor="password"
-                                            className="sr-only"
                                         >
                                             {t('auth.password')}
                                         </Label>
@@ -84,13 +110,49 @@ export default function DeleteUser() {
                                         <InputError message={errors.password} />
                                     </div>
 
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="confirmation_text">
+                                            {t('profile.delete_account.confirmation_label')}
+                                        </Label>
+
+                                        <Input
+                                            id="confirmation_text"
+                                            type="text"
+                                            name="confirmation_text"
+                                            ref={confirmationInput}
+                                            value={confirmationText}
+                                            onChange={(event) =>
+                                                setConfirmationText(
+                                                    event.target.value,
+                                                )
+                                            }
+                                            placeholder={requiredConfirmationText}
+                                            autoComplete="off"
+                                            aria-describedby="delete-confirmation-help"
+                                        />
+
+                                        <p
+                                            id="delete-confirmation-help"
+                                            className="text-muted-foreground text-sm"
+                                        >
+                                            {t(
+                                                'profile.delete_account.confirmation_help',
+                                            )}
+                                        </p>
+
+                                        <InputError
+                                            message={errors.confirmation_text}
+                                        />
+                                    </div>
+
                                     <DialogFooter className="gap-2">
                                         <DialogClose asChild>
                                             <Button
                                                 variant="secondary"
-                                                onClick={() =>
-                                                    resetAndClearErrors()
-                                                }
+                                                onClick={() => {
+                                                    setConfirmationText('');
+                                                    resetAndClearErrors();
+                                                }}
                                             >
                                                 {t('common.cancel')}
                                             </Button>
@@ -98,11 +160,18 @@ export default function DeleteUser() {
 
                                         <Button
                                             variant="destructive"
-                                            disabled={processing}
+                                            disabled={
+                                                processing ||
+                                                isDeleteConfirmationMissing
+                                            }
                                             asChild
                                         >
                                             <button
                                                 type="submit"
+                                                disabled={
+                                                    processing ||
+                                                    isDeleteConfirmationMissing
+                                                }
                                                 data-test="confirm-delete-user-button"
                                             >
                                                 {t('profile.delete_account.button')}

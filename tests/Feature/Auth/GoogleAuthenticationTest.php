@@ -71,6 +71,18 @@ class GoogleAuthenticationTest extends TestCase
         $this->assertFalse($user->has_local_password);
     }
 
+    public function test_google_login_ignores_intended_urls_on_other_hosts(): void
+    {
+        $this->fakeGoogleUser('new-buyer@example.com', 'New Buyer', 'https://example.com/new-avatar.jpg');
+
+        $this
+            ->withSession(['url.intended' => 'https://staging.bazaarjapan.link/dashboard'])
+            ->get('/auth/google/callback')
+            ->assertRedirect(route('marketplace'));
+
+        $this->assertAuthenticated();
+    }
+
     private function fakeGoogleUser(string $email, string $name, string $avatar): void
     {
         $googleUser = Mockery::mock();

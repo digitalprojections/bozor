@@ -178,6 +178,7 @@ class ProfileUpdateTest extends TestCase
             ->actingAs($user)
             ->delete(route('profile.destroy'), [
                 'password' => 'password',
+                'confirmation_text' => 'DELETE',
             ]);
 
         $response
@@ -197,10 +198,30 @@ class ProfileUpdateTest extends TestCase
             ->from(route('profile.edit'))
             ->delete(route('profile.destroy'), [
                 'password' => 'wrong-password',
+                'confirmation_text' => 'DELETE',
             ]);
 
         $response
             ->assertSessionHasErrors('password')
+            ->assertRedirect(route('profile.edit'));
+
+        $this->assertNotNull($user->fresh());
+    }
+
+    public function test_delete_account_requires_exact_confirmation_text()
+    {
+        $user = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->from(route('profile.edit'))
+            ->delete(route('profile.destroy'), [
+                'password' => 'password',
+                'confirmation_text' => 'delete',
+            ]);
+
+        $response
+            ->assertSessionHasErrors('confirmation_text')
             ->assertRedirect(route('profile.edit'));
 
         $this->assertNotNull($user->fresh());

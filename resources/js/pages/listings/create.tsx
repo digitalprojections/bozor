@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
-import { Upload, X, Package, Sparkles } from 'lucide-react';
+import { AlertCircle, Upload, X, Package, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CategoryMultiSelect } from '@/components/category-multi-select';
 import { ImageCompressor, type CompressionResult } from '@/lib/image-compressor';
@@ -36,8 +36,12 @@ interface Category {
 
 export default function CreateListing({
     categories,
+    profileSetupComplete = true,
+    missingProfileFields = [],
 }: {
     categories: Category[];
+    profileSetupComplete?: boolean;
+    missingProfileFields?: string[];
 }) {
     const { t } = useTranslations();
     const { auth } = usePage().props as any;
@@ -76,6 +80,7 @@ export default function CreateListing({
     const [imagePreviews, setImagePreviews] = useState<string[]>([]);
     const [compressionStats, setCompressionStats] = useState<CompressionResult[]>([]);
     const [isCompressing, setIsCompressing] = useState(false);
+    const isProfileLocked = !profileSetupComplete;
 
     const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(e.target.files || []);
@@ -144,6 +149,10 @@ export default function CreateListing({
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (isProfileLocked) {
+            return;
+        }
         
         if (!data.terms_accepted) {
             alert(t('terms.must_accept'));
@@ -177,7 +186,51 @@ export default function CreateListing({
                     </p>
                 </div>
 
+                {isProfileLocked && (
+                    <Card className="rounded-none border-x-0 border-amber-200 bg-amber-50 p-4 shadow-sm sm:rounded-lg sm:border-x sm:p-6">
+                        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                            <div className="flex gap-3">
+                                <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-700">
+                                    <AlertCircle className="h-5 w-5" />
+                                </div>
+                                <div className="space-y-2">
+                                    <h2 className="text-base font-bold text-amber-950 sm:text-lg">
+                                        {t('listing.create.profile_required_title')}
+                                    </h2>
+                                    <p className="max-w-2xl text-sm leading-relaxed text-amber-900">
+                                        {t('listing.create.profile_required_desc')}
+                                    </p>
+                                    {missingProfileFields.length > 0 && (
+                                        <div className="flex flex-wrap gap-2 pt-1">
+                                            {missingProfileFields.map((field) => (
+                                                <span
+                                                    key={field}
+                                                    className="rounded-full bg-white px-2.5 py-1 text-xs font-bold text-amber-800 ring-1 ring-amber-200"
+                                                >
+                                                    {field}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            <Button
+                                asChild
+                                className="shrink-0 bg-amber-700 text-white hover:bg-amber-800"
+                            >
+                                <Link href="/settings/profile">
+                                    {t('listing.create.update_profile')}
+                                </Link>
+                            </Button>
+                        </div>
+                    </Card>
+                )}
+
                 <form onSubmit={submit} className="space-y-4 sm:space-y-6">
+                    <fieldset
+                        disabled={isProfileLocked}
+                        className={isProfileLocked ? 'pointer-events-none space-y-4 opacity-60 sm:space-y-6' : 'space-y-4 sm:space-y-6'}
+                    >
                     {/* Basic Information */}
                     <Card className="rounded-none border-x-0 p-3 sm:rounded-lg sm:border-x sm:p-6">
                         <h2 className="mb-4 text-lg font-semibold sm:text-xl">
@@ -627,6 +680,7 @@ export default function CreateListing({
                             {t('terms.platform_free_notice')}
                         </p>
                     </div>
+                    </fieldset>
 
                     {/* Actions */}
                     <div className="flex flex-col gap-3 px-3 sm:flex-row sm:items-center sm:justify-end sm:px-0">
@@ -643,7 +697,7 @@ export default function CreateListing({
                         <Button
                             type="submit"
                             variant="outline"
-                            disabled={processing}
+                            disabled={processing || isProfileLocked}
                             onClick={() => { statusRef.current = 'draft'; }}
                             className="w-full sm:w-auto"
                         >
@@ -651,7 +705,7 @@ export default function CreateListing({
                         </Button>
                         <Button
                             type="submit"
-                            disabled={processing}
+                            disabled={processing || isProfileLocked}
                             onClick={() => { statusRef.current = 'active'; }}
                             className="w-full sm:w-auto"
                         >

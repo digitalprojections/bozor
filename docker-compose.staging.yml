@@ -8,6 +8,7 @@ services:
     restart: always
     working_dir: /var/www/html
     environment:
+      APP_NAME: ${APP_NAME:-Bozor Staging}
       APP_ENV: ${APP_ENV:-staging}
       APP_DEBUG: ${APP_DEBUG:-false}
       APP_KEY: ${APP_KEY}

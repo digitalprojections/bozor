@@ -45,6 +45,21 @@ class AuthenticationTest extends TestCase
         $response->assertRedirect(route('dashboard', absolute: false));
     }
 
+    public function test_login_ignores_intended_urls_on_other_hosts()
+    {
+        $user = User::factory()->create();
+
+        $response = $this
+            ->withSession(['url.intended' => 'https://staging.bazaarjapan.link/dashboard'])
+            ->post(route('login.store'), [
+                'email' => $user->email,
+                'password' => 'password',
+            ]);
+
+        $this->assertAuthenticated();
+        $response->assertRedirect(route('dashboard', absolute: false));
+    }
+
     public function test_users_with_two_factor_enabled_are_redirected_to_two_factor_challenge()
     {
         if (! Features::canManageTwoFactorAuthentication()) {

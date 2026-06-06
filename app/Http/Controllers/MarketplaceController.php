@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Listing;
+use App\Notifications\MessageReceived;
 use App\Services\ListingService;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -116,6 +118,153 @@ class MarketplaceController extends Controller
                 'description' => __('Browse and buy products from individuals and small businesses across Japan. Free registration and zero sales fees!'),
             ],
         ]);
+    }
+
+    public function messages(Request $request): Response
+    {
+        $user = $request->user();
+        $messageSummaries = $this->unreadMessageSummaries($request);
+        $listingIds = array_keys($messageSummaries);
+
+        $categories = Category::withCount('listings')->get();
+        $locationOptions = $this->locationOptions($request);
+
+        $listingsQuery = Listing::with(['user', 'categories', 'latestTransaction'])
+            ->withCount('bids')
+            ->withMax('bids', 'amount')
+            ->items()
+            ->where('status', '!=', 'disabled')
+            ->where('status', '!=', 'draft')
+            ->whereIn('id', $listingIds);
+
+        if ($request->boolean('free_shipping')) {
+            $listingsQuery->freeShipping();
+        }
+
+        if ($request->filled('search')) {
+            $listingsQuery->where(function ($q) use ($request) {
+                $q->where('title', 'like', "%{$request->search}%")
+                    ->orWhere('description', 'like', "%{$request->search}%")
+                    ->orWhere('location', 'like', "%{$request->search}%")
+                    ->orWhere('public_prefecture', 'like', "%{$request->search}%")
+                    ->orWhere('public_city', 'like', "%{$request->search}%");
+            });
+        }
+
+        if ($request->filled('prefecture')) {
+            $listingsQuery->where('public_prefecture', $request->string('prefecture')->toString());
+        }
+
+        if ($request->filled('city')) {
+            $listingsQuery->where('public_city', $request->string('city')->toString());
+        }
+
+        if ($request->filled('category')) {
+            $listingsQuery->whereHas('categories', function ($q) use ($request) {
+                $q->where('categories.id', $request->category);
+            });
+        }
+
+        match ($request->input('sort', 'newest_messages')) {
+            'price_low' => $listingsQuery->orderBy('price', 'asc'),
+            'price_high' => $listingsQuery->orderBy('price', 'desc'),
+            'oldest' => $listingsQuery->orderBy('created_at', 'asc'),
+            'newest' => $listingsQuery->latest(),
+            default => $this->orderByUnreadMessageDate($listingsQuery, $messageSummaries),
+        };
+
+        /** @var LengthAwarePaginator $listings */
+        $listings = $listingsQuery->paginate(24)->withQueryString();
+
+        $listings->getCollection()->transform(function (Listing $listing) use ($messageSummaries) {
+            $summary = $messageSummaries[$listing->id] ?? null;
+
+            if ($summary) {
+                $listing->setAttribute('unread_messages_count', $summary['unread_count']);
+                $listing->setAttribute('message_url', $summary['url']);
+                $listing->setAttribute('latest_message_at', $summary['latest_at']);
+            }
+
+            return $listing;
+        });
+
+        return Inertia::render('messages/index', [
+            'categories' => $categories,
+            'locationOptions' => $locationOptions,
+            'listings' => $listings,
+            'watched_ids' => $user ? $user->watchedListings()->pluck('listing_id')->toArray() : [],
+            'filters' => [
+                'search' => $request->search,
+                'category' => $request->category,
+                'sort' => $request->input('sort', 'newest_messages'),
+                'free_shipping' => $request->boolean('free_shipping'),
+                'prefecture' => $request->input('prefecture'),
+                'city' => $request->input('city'),
+            ],
+            'seo' => [
+                'title' => __('Messages').' | '.config('app.name'),
+                'description' => __('Items with unread messages.'),
+            ],
+        ]);
+    }
+
+    /**
+     * @return array<int, array{unread_count: int, latest_at: string, url: string}>
+     */
+    private function unreadMessageSummaries(Request $request): array
+    {
+        $summaries = [];
+
+        $request->user()
+            ->unreadNotifications()
+            ->where('type', MessageReceived::class)
+            ->latest()
+            ->get()
+            ->each(function ($notification) use (&$summaries) {
+                $data = $notification->data;
+                $listingId = (int) ($data['listing_id'] ?? 0);
+
+                if (! $listingId) {
+                    return;
+                }
+
+                $transactionId = (int) ($data['transaction_id'] ?? 0);
+                $url = $transactionId
+                    ? route('transactions.show', $transactionId, false)
+                    : route('listings.show', $listingId, false);
+
+                if (! isset($summaries[$listingId])) {
+                    $summaries[$listingId] = [
+                        'unread_count' => 0,
+                        'latest_at' => $notification->created_at->toISOString(),
+                        'url' => $url,
+                    ];
+                }
+
+                $summaries[$listingId]['unread_count']++;
+            });
+
+        return $summaries;
+    }
+
+    /**
+     * @param  array<int, array{latest_at: string}>  $messageSummaries
+     */
+    private function orderByUnreadMessageDate($query, array $messageSummaries): void
+    {
+        if ($messageSummaries === []) {
+            $query->latest();
+
+            return;
+        }
+
+        $ids = array_keys($messageSummaries);
+        $case = collect($ids)
+            ->values()
+            ->map(fn ($id, $index) => 'when '.(int) $id.' then '.(int) $index)
+            ->implode(' ');
+
+        $query->orderByRaw("case listings.id {$case} else ".count($ids).' end');
     }
 
     /**

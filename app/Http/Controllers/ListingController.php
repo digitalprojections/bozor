@@ -31,12 +31,15 @@ class ListingController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): Response
+    public function create(Request $request): Response
     {
         $categories = Category::with('children')->whereNull('parent_id')->get();
+        $profileAddressStatus = $this->sellerAddressStatus($request);
 
         return Inertia::render('listings/create', [
             'categories' => $categories,
+            'profileSetupComplete' => $profileAddressStatus['complete'],
+            'missingProfileFields' => $profileAddressStatus['missing'],
         ]);
     }
 
@@ -543,22 +546,40 @@ class ListingController extends Controller
             return;
         }
 
+        $profileAddressStatus = $this->sellerAddressStatus($request);
+
+        if (! $profileAddressStatus['complete']) {
+            throw ValidationException::withMessages([
+                'location' => __('Complete your personal address in profile settings before publishing a listing.'),
+            ]);
+        }
+    }
+
+    /**
+     * @return array{complete: bool, missing: array<int, string>}
+     */
+    private function sellerAddressStatus(Request $request): array
+    {
         $user = $request->user();
         $requiredAddressFields = [
-            'postal_code',
-            'prefecture',
-            'city',
-            'address_line1',
-            'phone',
+            'postal_code' => __('Postal Code'),
+            'prefecture' => __('Prefecture'),
+            'city' => __('City'),
+            'address_line1' => __('Address Line 1'),
+            'phone' => __('Phone'),
         ];
+        $missing = [];
 
-        foreach ($requiredAddressFields as $field) {
+        foreach ($requiredAddressFields as $field => $label) {
             if (blank($user?->{$field})) {
-                throw ValidationException::withMessages([
-                    'location' => __('Complete your personal address in profile settings before publishing a listing.'),
-                ]);
+                $missing[] = $label;
             }
         }
+
+        return [
+            'complete' => $missing === [],
+            'missing' => $missing,
+        ];
     }
 
     /**

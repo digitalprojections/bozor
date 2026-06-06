@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Support\SafeIntendedRedirect;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
@@ -21,7 +22,7 @@ class SocialiteController extends Controller
         return Socialite::driver('google')->redirect();
     }
 
-    public function handleGoogleCallback()
+    public function handleGoogleCallback(Request $request, SafeIntendedRedirect $redirect)
     {
         try {
             $googleUser = Socialite::driver('google')->user();
@@ -63,6 +64,6 @@ class SocialiteController extends Controller
         Auth::login($user, true);
         request()->session()->put('auth.login_provider', 'google');
 
-        return redirect()->intended(route('marketplace'));
+        return $redirect->to($request, route('marketplace'));
     }
 }

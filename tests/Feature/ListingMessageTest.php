@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Notifications\MessageReceived;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Str;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
@@ -155,6 +156,47 @@ class ListingMessageTest extends TestCase
         ]);
     }
 
+    public function test_messages_page_lists_only_items_with_unread_message_notifications(): void
+    {
+        $this->withoutVite();
+
+        $seller = User::factory()->create();
+        $buyer = User::factory()->create();
+        $otherSeller = User::factory()->create();
+        $listingWithMessage = $this->createListing($seller, [
+            'title' => 'Unread listing item',
+        ]);
+        $listingWithoutUnread = $this->createListing($seller, [
+            'title' => 'Already read item',
+        ]);
+        $otherListing = $this->createListing($otherSeller, [
+            'title' => 'Other seller item',
+        ]);
+        $transaction = Transaction::create([
+            'listing_id' => $listingWithMessage->id,
+            'buyer_id' => $buyer->id,
+            'seller_id' => $seller->id,
+            'amount' => 1000,
+            'status' => Transaction::STATUS_PENDING_PAYMENT,
+        ]);
+
+        $this->createMessageNotification($seller, $listingWithMessage, $transaction);
+        $this->createMessageNotification($seller, $listingWithMessage, $transaction);
+        $this->createMessageNotification($seller, $listingWithoutUnread, null, read: true);
+        $this->createMessageNotification($buyer, $otherListing);
+
+        $this->actingAs($seller)
+            ->get(route('messages.index'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('messages/index')
+                ->has('listings.data', 1)
+                ->where('listings.data.0.id', $listingWithMessage->id)
+                ->where('listings.data.0.unread_messages_count', 2)
+                ->where('listings.data.0.message_url', route('transactions.show', $transaction, false))
+            );
+    }
+
     private function createListing(User $seller, array $attributes = []): Listing
     {
         $category = Category::create([
@@ -168,5 +210,28 @@ class ListingMessageTest extends TestCase
             'condition' => 'used_good',
             'status' => 'active',
         ], $attributes));
+    }
+
+    private function createMessageNotification(
+        User $user,
+        Listing $listing,
+        ?Transaction $transaction = null,
+        bool $read = false,
+    ): void {
+        $user->notifications()->create([
+            'id' => (string) Str::uuid(),
+            'type' => MessageReceived::class,
+            'data' => [
+                'event' => 'listing_question_created',
+                'message_id' => 1,
+                'listing_id' => $listing->id,
+                'listing_title' => $listing->title,
+                'transaction_id' => $transaction?->id,
+                'questioner_id' => $transaction?->buyer_id ?? $user->id,
+                'seller_id' => $listing->user_id,
+                'sender_name' => 'Sender',
+            ],
+            'read_at' => $read ? now() : null,
+        ]);
     }
 }

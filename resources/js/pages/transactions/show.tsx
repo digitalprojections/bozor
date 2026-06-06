@@ -1,9 +1,10 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { useState } from 'react';
 import BazaarLayout from '@/layouts/bazaar-layout';
 import { useTranslations } from '@/hooks/use-translations';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Package, Truck, CheckCircle, Clock, User, ArrowLeft, CreditCard, Receipt, AlertCircle, Info, Star, Boxes } from 'lucide-react';
+import { Package, Truck, CheckCircle, Clock, User, ArrowLeft, CreditCard, Receipt, AlertCircle, Info, Star, Boxes, Copy, MapPin, Phone, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { BreadcrumbItem, User as UserType } from '@/types';
@@ -25,6 +26,18 @@ interface Rating {
         name: string;
     };
     created_at: string;
+}
+
+interface TransactionContact {
+    full_name: string;
+    first_name: string;
+    family_name: string;
+    postal_code: string | null;
+    prefecture: string | null;
+    city: string | null;
+    address_line1: string | null;
+    address_line2: string | null;
+    phone: string | null;
 }
 
 interface Transaction {
@@ -69,10 +82,12 @@ interface Transaction {
         id: number;
         name: string;
         avatar_url: string;
+        contact: TransactionContact | null;
     };
     buyer: {
         id: number;
         name: string;
+        contact: TransactionContact | null;
     };
     ratings: Rating[];
     messages: ListingMessage[];
@@ -99,6 +114,8 @@ export default function Show({ transaction }: { transaction: Transaction }) {
     const packageShippingMethod = transaction.package?.shipping_method ?? transaction.shipping_method;
     const packageTrackingNumber = transaction.package?.tracking_number ?? transaction.tracking_number;
     const packageItems = transaction.package?.items ?? [];
+    const shippingContact = isSeller ? transaction.buyer.contact : transaction.seller.contact;
+    const shippingContactRole = isSeller ? (t('transaction.buyer') || 'Buyer') : (t('transaction.details.seller') || 'Seller');
 
     const handleMarkAsPaid = () => {
         if (confirm(t('transaction.mark_as_paid_confirm') || 'Are you sure you have completed the payment for this item?')) {
@@ -351,6 +368,45 @@ export default function Show({ transaction }: { transaction: Transaction }) {
                             </p>
                         </div>
                     </div>
+                )}
+
+                {isParticipant && shippingContact && (
+                    <Card className="rounded-[24px] border-[#dbeafe] bg-gradient-to-br from-white to-[#f8fbff] shadow-sm overflow-hidden">
+                        <CardHeader className="px-6 py-5 border-b border-[#e8eef8]">
+                            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                <div>
+                                    <h2 className="font-bold text-lg text-[#0b1b32] flex items-center gap-2">
+                                        <MapPin size={20} className="text-[#0d9488]" />
+                                        {t('transaction.contact.shipping_label') || 'Shipping label details'}
+                                    </h2>
+                                    <p className="mt-1 text-sm text-[#64748b]">
+                                        {shippingContactRole} #{isSeller ? transaction.buyer_id : transaction.seller_id}
+                                    </p>
+                                </div>
+                                <CopyField
+                                    label={t('transaction.contact.full_address') || 'Full address'}
+                                    value={formatFullAddress(shippingContact)}
+                                    compact
+                                />
+                            </div>
+                        </CardHeader>
+                        <CardContent className="p-6">
+                            <div className="grid gap-3 sm:grid-cols-2">
+                                <CopyField label={t('transaction.contact.first_name') || 'First name'} value={shippingContact.first_name} />
+                                <CopyField label={t('transaction.contact.family_name') || 'Family name'} value={shippingContact.family_name} />
+                                <CopyField label={t('Postal Code') || 'Postal Code'} value={shippingContact.postal_code} />
+                                <CopyField label={t('Prefecture') || 'Prefecture'} value={shippingContact.prefecture} />
+                                <CopyField label={t('City') || 'City'} value={shippingContact.city} />
+                                <CopyField label={t('Address Line 1') || 'Address Line 1'} value={shippingContact.address_line1} />
+                                <CopyField label={t('Address Line 2') || 'Address Line 2'} value={shippingContact.address_line2} />
+                                <CopyField
+                                    label={t('Phone') || 'Phone'}
+                                    value={shippingContact.phone}
+                                    icon={<Phone size={14} />}
+                                />
+                            </div>
+                        </CardContent>
+                    </Card>
                 )}
 
                 {isParticipant && (
@@ -709,4 +765,70 @@ function formatPackageCost(pkg: NonNullable<Transaction['package']>): string {
     }
 
     return 'Free shipping';
+}
+
+function formatFullAddress(contact: TransactionContact): string {
+    return [
+        contact.postal_code,
+        contact.prefecture,
+        contact.city,
+        contact.address_line1,
+        contact.address_line2,
+    ].filter(Boolean).join(' ');
+}
+
+function CopyField({
+    label,
+    value,
+    compact = false,
+    icon,
+}: {
+    label: string;
+    value: string | null;
+    compact?: boolean;
+    icon?: React.ReactNode;
+}) {
+    const [copied, setCopied] = useState(false);
+    const textValue = value?.trim() ?? '';
+    const displayValue = textValue || 'N/A';
+    const canCopy = textValue !== '';
+
+    const copyValue = async () => {
+        if (!canCopy) {
+            return;
+        }
+
+        await navigator.clipboard.writeText(textValue);
+        setCopied(true);
+        window.setTimeout(() => setCopied(false), 1200);
+    };
+
+    return (
+        <button
+            type="button"
+            onClick={copyValue}
+            disabled={!canCopy}
+            className={cn(
+                "group flex min-w-0 items-center justify-between gap-3 rounded-xl border border-[#e2e8f0] bg-white text-left shadow-sm transition hover:border-[#99f6e4] hover:bg-[#f8fffd] disabled:cursor-not-allowed disabled:opacity-70",
+                compact ? "px-3 py-2" : "px-4 py-3"
+            )}
+            title={canCopy ? `Copy ${label}` : undefined}
+        >
+            <span className="min-w-0">
+                <span className="flex items-center gap-1.5 text-[0.68rem] font-bold uppercase text-[#64748b]">
+                    {icon}
+                    {label}
+                </span>
+                <span className={cn(
+                    "mt-1 block truncate font-semibold text-[#172033]",
+                    compact ? "max-w-[12rem] text-xs" : "text-sm"
+                )}>
+                    {displayValue}
+                </span>
+            </span>
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#f1f5f9] text-[#64748b] transition group-hover:bg-[#ccfbf1] group-hover:text-[#0f766e]">
+                {copied ? <Check size={15} /> : <Copy size={15} />}
+            </span>
+        </button>
+    );
 }
