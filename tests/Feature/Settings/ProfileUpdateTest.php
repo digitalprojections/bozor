@@ -119,7 +119,7 @@ class ProfileUpdateTest extends TestCase
         $user->refresh();
 
         $this->assertSame('mascot', $user->avatar_source);
-        $this->assertSame('https://api.dicebear.com/7.x/bottts/svg?seed=%257B%2522characterType%2522%253A%2522blob%2522%257D', $user->avatar_url);
+        $this->assertStringStartsWith('https://api.dicebear.com/7.x/bottts/svg?seed=%7B%22characterType%22%3A%22blob%22%7D', $user->avatar_url);
     }
 
     public function test_removing_uploaded_avatar_falls_back_to_google_avatar()
