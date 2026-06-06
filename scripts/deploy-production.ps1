@@ -28,7 +28,7 @@ $args = @(
     "-EnvironmentName",
     "production",
     "-ComposeProjectName",
-    "bozor",
+    "ec2-user",
     "-RemoteEnvFile",
     ".env",
     "-AppContainerName",
