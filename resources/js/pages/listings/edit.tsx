@@ -11,6 +11,7 @@ import {
     ImageOff,
     Package,
     Sparkles,
+    Star,
     Upload,
     X,
 } from 'lucide-react';
@@ -83,6 +84,9 @@ const isNewImageSlot = (
     slot: ImageSlot,
 ): slot is Extract<ImageSlot, { kind: 'new' }> => slot.kind === 'new';
 
+const isVisibleImageSlot = (slot: ImageSlot): boolean =>
+    slot.kind === 'new' || (slot.kind === 'existing' && !slot.failed);
+
 const buildInitialImageSlots = (listing: Listing): ImageSlot[] => {
     const existingPaths = (listing.images ?? [])
         .filter(Boolean)
@@ -114,6 +118,37 @@ const toDatetimeLocal = (value: string | null): string => {
 
     const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
     return localDate.toISOString().slice(0, 16);
+};
+
+const mainImageSelectionForSlot = (
+    slots: ImageSlot[],
+    index: number | null,
+): string | null => {
+    if (index === null) {
+        return null;
+    }
+
+    const slot = slots[index];
+
+    if (!slot || !isVisibleImageSlot(slot)) {
+        return null;
+    }
+
+    if (slot.kind === 'existing') {
+        return `existing:${slot.path}`;
+    }
+
+    const newImageIndex = slots
+        .slice(0, index + 1)
+        .filter(isNewImageSlot).length - 1;
+
+    return newImageIndex >= 0 ? `new:${newImageIndex}` : null;
+};
+
+const firstVisibleImageSlotIndex = (slots: ImageSlot[]): number | null => {
+    const index = slots.findIndex(isVisibleImageSlot);
+
+    return index >= 0 ? index : null;
 };
 
 export default function EditListing({
@@ -151,6 +186,7 @@ export default function EditListing({
             .filter(isKeptExistingImageSlot)
             .map((slot) => slot.path),
         images: [] as File[],
+        main_image_selection: mainImageSelectionForSlot(initialImageSlots, 0),
     });
 
     const statusRef = useRef<'draft' | 'active'>(
@@ -158,6 +194,9 @@ export default function EditListing({
     );
     const [imageSlots, setImageSlots] =
         useState<ImageSlot[]>(initialImageSlots);
+    const [mainImageSlotIndex, setMainImageSlotIndex] = useState<number | null>(
+        firstVisibleImageSlotIndex(initialImageSlots),
+    );
     const [isCompressing, setIsCompressing] = useState(false);
 
     const syncImageData = (slots: ImageSlot[]) => {
@@ -168,6 +207,10 @@ export default function EditListing({
         setData(
             'images',
             slots.filter(isNewImageSlot).map((slot) => slot.file),
+        );
+        setData(
+            'main_image_selection',
+            mainImageSelectionForSlot(slots, mainImageSlotIndex),
         );
     };
 
@@ -207,6 +250,9 @@ export default function EditListing({
                         : slot,
                 ),
             );
+            if (mainImageSlotIndex === null) {
+                setMainImageSlotIndex(index);
+            }
         } catch (error) {
             console.error('Compression failed:', error);
             alert('Failed to process this image. Please try again.');
@@ -221,6 +267,15 @@ export default function EditListing({
                 slotIndex === index ? { kind: 'empty' } : slot,
             ),
         );
+        if (mainImageSlotIndex === index) {
+            setMainImageSlotIndex(
+                firstVisibleImageSlotIndex(
+                    imageSlots.map((slot, slotIndex) =>
+                        slotIndex === index ? { kind: 'empty' } : slot,
+                    ),
+                ),
+            );
+        }
     };
 
     const markImageBroken = (index: number) => {
@@ -231,6 +286,17 @@ export default function EditListing({
                     : slot,
             ),
         );
+        if (mainImageSlotIndex === index) {
+            setMainImageSlotIndex(
+                firstVisibleImageSlotIndex(
+                    imageSlots.map((slot, slotIndex) =>
+                        slotIndex === index && slot.kind === 'existing'
+                            ? { ...slot, failed: true }
+                            : slot,
+                    ),
+                ),
+            );
+        }
     };
 
     const updatePublicLocation = (
@@ -269,6 +335,12 @@ export default function EditListing({
             _method: 'PATCH',
             status: statusRef.current,
             auction_timezone_offset: new Date().getTimezoneOffset(),
+            main_image_selection:
+                mainImageSelectionForSlot(imageSlots, mainImageSlotIndex) ??
+                mainImageSelectionForSlot(
+                    imageSlots,
+                    firstVisibleImageSlotIndex(imageSlots),
+                ),
         }));
         post(`/listings/${listing.id}`, {
             forceFormData: true,
@@ -690,6 +762,10 @@ export default function EditListing({
                                           : null;
                                 const isBroken =
                                     slot.kind === 'existing' && slot.failed;
+                                const isMainImage =
+                                    mainImageSlotIndex === index &&
+                                    hasImage &&
+                                    !isBroken;
 
                                 return (
                                     <div
@@ -745,6 +821,30 @@ export default function EditListing({
                                                     </span>
                                                 )}
                                             </div>
+                                        )}
+
+                                        {hasImage && (
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    setMainImageSlotIndex(index)
+                                                }
+                                                className={`absolute top-2 left-2 flex h-8 w-8 items-center justify-center rounded-full shadow-sm transition ${
+                                                    isMainImage
+                                                        ? 'bg-amber-400 text-[#3b2a00]'
+                                                        : 'bg-black/60 text-white opacity-100 hover:bg-black/75 sm:opacity-0 sm:group-hover:opacity-100'
+                                                }`}
+                                                aria-label={`Set photo ${index + 1} as main image`}
+                                            >
+                                                <Star
+                                                    className="h-4 w-4"
+                                                    fill={
+                                                        isMainImage
+                                                            ? 'currentColor'
+                                                            : 'none'
+                                                    }
+                                                />
+                                            </button>
                                         )}
 
                                         {hasImage && (

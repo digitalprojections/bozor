@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
-import { AlertCircle, Upload, X, Package, Sparkles } from 'lucide-react';
+import { AlertCircle, Upload, X, Package, Sparkles, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CategoryMultiSelect } from '@/components/category-multi-select';
 import { ImageCompressor, type CompressionResult } from '@/lib/image-compressor';
@@ -57,6 +57,7 @@ export default function CreateListing({
         public_prefecture: auth.user?.prefecture || '',
         public_city: auth.user?.city || '',
         images: [] as File[],
+        main_image_index: null as number | null,
         status: 'draft',
         condition: '' as ItemCondition | '',
         is_auction: false,
@@ -100,6 +101,9 @@ export default function CreateListing({
             const newPreviews = results.map((r) => r.previewUrl);
 
             setData('images', [...data.images, ...compressedFiles]);
+            if (data.images.length === 0 && compressedFiles.length > 0) {
+                setData('main_image_index', 0);
+            }
             setImagePreviews((prev) => [...prev, ...newPreviews]);
             setCompressionStats((prev) => [...prev, ...results]);
 
@@ -114,9 +118,17 @@ export default function CreateListing({
     };
 
     const removeImage = (index: number) => {
+        const nextImages = data.images.filter((_, i) => i !== index);
+        setData('images', nextImages);
         setData(
-            'images',
-            data.images.filter((_, i) => i !== index)
+            'main_image_index',
+            data.main_image_index === index
+                ? nextImages.length > 0
+                    ? 0
+                    : null
+                : data.main_image_index !== null && data.main_image_index > index
+                  ? data.main_image_index - 1
+                  : data.main_image_index,
         );
         setImagePreviews((prev) => prev.filter((_, i) => i !== index));
         setCompressionStats((prev) => prev.filter((_, i) => i !== index));
@@ -164,6 +176,8 @@ export default function CreateListing({
             ...data,
             status: statusRef.current,
             auction_timezone_offset: new Date().getTimezoneOffset(),
+            main_image_index:
+                data.main_image_index ?? (data.images.length > 0 ? 0 : null),
         }));
         post('/listings');
     };
@@ -608,6 +622,33 @@ export default function CreateListing({
                                                             </div>
                                                         </div>
                                                     )}
+
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            setData(
+                                                                'main_image_index',
+                                                                index,
+                                                            )
+                                                        }
+                                                        className={`absolute left-2 top-2 flex h-8 w-8 items-center justify-center rounded-full shadow-sm transition ${
+                                                            data.main_image_index ===
+                                                            index
+                                                                ? 'bg-amber-400 text-[#3b2a00]'
+                                                                : 'bg-black/60 text-white opacity-100 hover:bg-black/75 sm:opacity-0 sm:group-hover:opacity-100'
+                                                        }`}
+                                                        aria-label={`Set photo ${index + 1} as main image`}
+                                                    >
+                                                        <Star
+                                                            className="h-4 w-4"
+                                                            fill={
+                                                                data.main_image_index ===
+                                                                index
+                                                                    ? 'currentColor'
+                                                                    : 'none'
+                                                            }
+                                                        />
+                                                    </button>
 
                                                     <button
                                                         type="button"

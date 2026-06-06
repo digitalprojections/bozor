@@ -59,7 +59,7 @@ services:
     restart: always
     environment:
       APP_DOMAIN: ${APP_DOMAIN}
-      APP_UPSTREAM: ${APP_UPSTREAM:-app:80}
+      APP_UPSTREAM: ${APP_UPSTREAM:-bozor-app:80}
       STAGING_APP_DOMAIN: ${STAGING_APP_DOMAIN:-staging.bazaarjapan.link}
       STAGING_APP_UPSTREAM: ${STAGING_APP_UPSTREAM:-bozor-staging-app:80}
     ports:

@@ -67,6 +67,7 @@ class ListingController extends Controller
             'public_city' => 'nullable|string|max:100',
             'images' => 'nullable|array|max:5',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'main_image_index' => 'nullable|integer|min:0|max:4',
             'status' => 'in:draft,active',
             'condition' => 'required|in:new,like_new,used_good,used_fair,for_parts',
             'buy_now_price' => 'nullable|integer|min:1',
@@ -107,6 +108,10 @@ class ListingController extends Controller
                 $imagePaths[] = $path;
             }
         }
+        $imagePaths = $this->moveMainImageIndexToFront(
+            $imagePaths,
+            $validated['main_image_index'] ?? null,
+        );
 
         $auctionEndDate = $this->normalizeAuctionEndDate($request, $isAuction);
         $shipping = $this->normalizeShipping($validated);
@@ -415,6 +420,7 @@ class ListingController extends Controller
             'existing_images.*' => 'string',
             'images' => 'nullable|array|max:5',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'main_image_selection' => 'nullable|string|max:512',
             'shipping_payer' => 'required|in:seller,buyer',
             'shipping_method' => 'required|in:kuroneko_yamato',
             'shipping_cost_type' => 'required|in:free,fixed,location_based,chakubarai',
@@ -456,6 +462,12 @@ class ListingController extends Controller
         }
 
         $imagePaths = array_values(array_slice([...$existingImages, ...$newImagePaths], 0, 5));
+        $imagePaths = $this->moveSelectedMainImageToFront(
+            $imagePaths,
+            $existingImages,
+            $newImagePaths,
+            $validated['main_image_selection'] ?? null,
+        );
 
         foreach (array_diff($currentImages, $existingImages) as $removedImagePath) {
             Storage::disk('public')->delete($removedImagePath);
@@ -677,5 +689,74 @@ class ListingController extends Controller
             'shipping_cost_type' => $costType,
             'shipping_cost' => $costType === 'fixed' ? (int) $validated['shipping_cost'] : null,
         ];
+    }
+
+    /**
+     * @param  array<int, string>  $imagePaths
+     * @return array<int, string>
+     */
+    private function moveMainImageIndexToFront(array $imagePaths, mixed $mainImageIndex): array
+    {
+        if ($mainImageIndex === null || $mainImageIndex === '') {
+            return $imagePaths;
+        }
+
+        $index = (int) $mainImageIndex;
+
+        if (! array_key_exists($index, $imagePaths)) {
+            return $imagePaths;
+        }
+
+        return $this->moveImagePathToFront($imagePaths, $imagePaths[$index]);
+    }
+
+    /**
+     * @param  array<int, string>  $imagePaths
+     * @param  array<int, string>  $existingImages
+     * @param  array<int, string>  $newImagePaths
+     * @return array<int, string>
+     */
+    private function moveSelectedMainImageToFront(
+        array $imagePaths,
+        array $existingImages,
+        array $newImagePaths,
+        ?string $mainImageSelection,
+    ): array {
+        if (blank($mainImageSelection)) {
+            return $imagePaths;
+        }
+
+        if (str_starts_with($mainImageSelection, 'existing:')) {
+            $path = substr($mainImageSelection, strlen('existing:'));
+
+            return in_array($path, $existingImages, true)
+                ? $this->moveImagePathToFront($imagePaths, $path)
+                : $imagePaths;
+        }
+
+        if (preg_match('/^new:(\d+)$/', $mainImageSelection, $matches) !== 1) {
+            return $imagePaths;
+        }
+
+        $path = $newImagePaths[(int) $matches[1]] ?? null;
+
+        return $path
+            ? $this->moveImagePathToFront($imagePaths, $path)
+            : $imagePaths;
+    }
+
+    /**
+     * @param  array<int, string>  $imagePaths
+     * @return array<int, string>
+     */
+    private function moveImagePathToFront(array $imagePaths, string $mainImagePath): array
+    {
+        return array_values([
+            $mainImagePath,
+            ...array_values(array_filter(
+                $imagePaths,
+                fn (string $path) => $path !== $mainImagePath,
+            )),
+        ]);
     }
 }
