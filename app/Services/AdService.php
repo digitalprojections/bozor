@@ -30,8 +30,7 @@ class AdService
     {
         $ads = [];
 
-        foreach (config('advertising.placements', []) as $placement => $settings) {
-            $limit = (int) ($settings['limit'] ?? 1);
+        foreach (array_keys(config('advertising.placements', [])) as $placement) {
             $ads[$placement] = AdCampaign::query()
                 ->displayable($placement)
                 ->with('advertiserProfile:id,business_name')
@@ -48,7 +47,6 @@ class AdService
                 ])
                 ->orderByDesc('priority')
                 ->inRandomOrder()
-                ->take($limit)
                 ->get()
                 ->map(fn (AdCampaign $campaign) => [
                     'id' => $campaign->id,
@@ -70,8 +68,7 @@ class AdService
     {
         $ads = [];
 
-        foreach (config('advertising.placements', []) as $placement => $settings) {
-            $limit = (int) ($settings['limit'] ?? 1);
+        foreach (array_keys(config('advertising.placements', [])) as $placement) {
             $ads[$placement] = Listing::query()
                 ->activeAdvertisements($placement)
                 ->with('user:id,name,store_name')
@@ -90,7 +87,6 @@ class AdService
                 ])
                 ->orderByDesc('ad_priority')
                 ->inRandomOrder()
-                ->take($limit)
                 ->get()
                 ->map(fn (Listing $listing) => [
                     'id' => $listing->id,

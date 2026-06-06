@@ -3,6 +3,7 @@ import { FormEvent, useState } from 'react';
 import type { ReactNode } from 'react';
 import { CalendarDays, CreditCard, Megaphone, Plus, Trash2 } from 'lucide-react';
 import BazaarLayout from '@/layouts/bazaar-layout';
+import { PlacementPreview } from '@/components/ads/placement-preview';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -119,11 +120,11 @@ export default function AdvertisingIndex({
                                     <Input type="email" value={contactEmail} onChange={(event) => setContactEmail(event.target.value)} required />
                                 </Field>
                                 <Field label="Contact phone" error={errors?.contact_phone}>
-                                    <Input value={contactPhone} onChange={(event) => setContactPhone(event.target.value)} />
+                                    <Input value={contactPhone} onChange={(event) => setContactPhone(event.target.value)} required />
                                 </Field>
                             </div>
                             <Field label="Business description" error={errors?.business_description}>
-                                <Textarea value={businessDescription} onChange={(event) => setBusinessDescription(event.target.value)} className="min-h-24" />
+                                <Textarea value={businessDescription} onChange={(event) => setBusinessDescription(event.target.value)} className="min-h-24" required />
                             </Field>
                             {advertiserProfile?.admin_notes && (
                                 <div className="rounded border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
@@ -145,6 +146,7 @@ export default function AdvertisingIndex({
                                     <h2 className="text-lg font-bold text-[#0b1b32]">Packages</h2>
                                     <p className="mt-1 text-sm text-[#5f6c84]">
                                         Fixed-duration, single-payment placements for launch.
+                                        All active paid campaigns in the same placement rotate every 8 seconds.
                                     </p>
                                 </div>
                                 <Button asChild className="rounded-[4px]">
@@ -154,16 +156,26 @@ export default function AdvertisingIndex({
                                     </Link>
                                 </Button>
                             </div>
-                            <div className="mt-4 grid gap-2 md:grid-cols-2 xl:grid-cols-4">
+                            <div className="mt-4 grid gap-2 lg:grid-cols-2">
                                 {Object.entries(packages).map(([key, pkg]) => (
-                                    <div key={key} className="rounded border border-[#edf2f7] bg-[#fbfdff] p-3">
-                                        <div className="text-sm font-bold text-[#0b1b32]">{pkg.label}</div>
-                                        <div className="mt-1 text-xs text-[#667085]">
-                                            {placements[pkg.placement]?.creative ?? 'standard'} creative
+                                    <div key={key} className="grid gap-3 rounded border border-[#edf2f7] bg-[#fbfdff] p-3 sm:grid-cols-[1fr_180px]">
+                                        <div>
+                                            <div className="text-sm font-bold text-[#0b1b32]">{pkg.label}</div>
+                                            <div className="mt-1 text-xs text-[#667085]">
+                                                {placements[pkg.placement]?.label ?? pkg.placement} · {placements[pkg.placement]?.creative ?? 'standard'} ad format
+                                            </div>
+                                            <div className="mt-1 text-xs text-[#667085]">
+                                                Rotates with all other active paid ads in this placement.
+                                            </div>
+                                            <div className="mt-2 text-lg font-bold text-[#0f766e]">
+                                                ¥{pkg.price_jpy.toLocaleString()}
+                                            </div>
                                         </div>
-                                        <div className="mt-2 text-lg font-bold text-[#0f766e]">
-                                            ¥{pkg.price_jpy.toLocaleString()}
-                                        </div>
+                                        <PlacementPreview
+                                            placement={pkg.placement}
+                                            label="Placement preview"
+                                            className="self-start"
+                                        />
                                     </div>
                                 ))}
                             </div>
@@ -193,7 +205,7 @@ function CampaignRow({
     packages,
 }: {
     campaign: AdCampaign;
-    packages: Record<string, { label: string }>;
+    packages: Record<string, { label: string; placement: string }>;
 }) {
     const [paymentReference, setPaymentReference] = useState(campaign.order?.payment_reference ?? '');
 
@@ -234,7 +246,13 @@ function CampaignRow({
                             <CalendarDays size={12} />
                             {campaign.starts_at ? formatDate(campaign.starts_at) : 'Admin scheduled'}
                         </span>
+                        {campaign.ends_at && (
+                            <span>Ends {formatDate(campaign.ends_at)}</span>
+                        )}
                     </div>
+                    <p className="mt-2 text-xs font-medium text-[#64748b]">
+                        {visibilityMessage(campaign)}
+                    </p>
                     {campaign.admin_notes && (
                         <div className="mt-2 rounded border border-amber-200 bg-amber-50 px-2 py-1 text-xs text-amber-800">
                             {campaign.admin_notes}
@@ -293,6 +311,30 @@ function formatDate(date: string) {
         day: 'numeric',
         year: 'numeric',
     }).format(new Date(date));
+}
+
+function visibilityMessage(campaign: AdCampaign) {
+    const now = Date.now();
+    const startsAt = campaign.starts_at ? new Date(campaign.starts_at).getTime() : null;
+    const endsAt = campaign.ends_at ? new Date(campaign.ends_at).getTime() : null;
+
+    if (campaign.status !== 'active') {
+        return `Not live yet: campaign status is ${formatStatus(campaign.status)}.`;
+    }
+
+    if (campaign.order?.status !== 'paid') {
+        return `Not live yet: payment status is ${formatStatus(campaign.order?.status ?? 'unpaid')}.`;
+    }
+
+    if (startsAt && startsAt > now) {
+        return `Scheduled: starts ${formatDate(campaign.starts_at as string)}.`;
+    }
+
+    if (endsAt && endsAt < now) {
+        return `Not live: campaign ended ${formatDate(campaign.ends_at as string)}.`;
+    }
+
+    return 'Live now: active, paid, and inside its scheduled dates. It rotates with all ads in the same placement.';
 }
 
 function statusClass(status: string) {

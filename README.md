@@ -28,6 +28,7 @@ Users can list items for auction or direct sale, place bids, buy now, manage the
 ### Prerequisites
 - PHP 8.4+, Composer
 - Node.js 20+, npm
+- Docker Desktop, for the one-command local Docker stack
 
 ### Steps
 
@@ -61,6 +62,25 @@ php artisan queue:work
 
 Visit **http://127.0.0.1:8000**
 
+### Local Docker
+
+Run the local Docker-only stack with PostgreSQL:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/deploy-local.ps1
+```
+
+Defaults:
+- App: `http://localhost:8080`
+- PostgreSQL host port: `5433`
+- Compose project: `bozorlocal`
+
+Optional ports:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/deploy-local.ps1 -HttpPort 8081 -DbPort 5434
+```
+
 ---
 
 ## Key Features
@@ -91,7 +111,7 @@ Visit **http://127.0.0.1:8000**
 
 ---
 
-## AWS Deployment
+## Production Docker Deployment
 
 ### Architecture
 ```
@@ -100,14 +120,35 @@ DockerHub image → EC2 Docker Compose (app + PostgreSQL + Redis + Caddy)
                        SES (transactional email)
 ```
 
-### 1. IAM User
+### One-Command Deploy
+
+The production sequence builds the app image, tags it, pushes it to DockerHub, pins the EC2 `.env` to that exact tag, pulls it on EC2, recreates the stack, runs migrations/cache commands, and verifies `/health`.
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/deploy-production.ps1
+```
+
+This is a wrapper around `scripts/deploy-dockerhub.ps1`. Use the lower-level script only when you need custom parameters:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/deploy-dockerhub.ps1 -ImageTag manual-tag
+```
+
+Before deploying, make sure:
+- Docker Desktop is running locally
+- DockerHub login is active locally
+- `bozorkey.pem` exists in the repo root, or pass `-KeyPath`
+- EC2 has `docker-compose` installed
+- `/home/ec2-user/.env` has the production secrets
+
+### IAM User
 Create an IAM user with programmatic access and attach:
 - `AmazonS3FullAccess` (or scoped to your bucket)
 - `AmazonSESFullAccess`
 
 Save the access key and secret — these become GitHub secrets.
 
-### 2. S3 Bucket
+### S3 Bucket
 1. Create a bucket (e.g. `bozor-uploads`) in your target region
 2. **Block all public access** (uploads are served via pre-signed URLs or public prefix policy)
 3. Add a bucket policy to allow public read on `listings/*` (listing images):
@@ -124,39 +165,30 @@ Save the access key and secret — these become GitHub secrets.
 }
 ```
 
-### 3. SES (Simple Email Service)
+### SES (Simple Email Service)
 1. Go to SES → Verified Identities → **Verify your domain**
 2. Add the DNS records (DKIM, MAIL FROM) to your domain registrar
 3. Request **production access** (to send to any address, not just verified ones)
 
-### 4. EC2 Instance
-1. Launch an **Ubuntu 24.04** instance (t3.small or larger)
+### EC2 Instance
+1. Launch an EC2 instance (t3.small or larger)
 2. Security group inbound rules: SSH (22), HTTP (80), HTTPS (443)
 3. Create and download a **key pair** (`.pem`)
 4. Assign an **Elastic IP**
 5. Point your domain's A record to the Elastic IP
 
-### 5. Server Bootstrap
-```bash
-# SSH into your instance
-ssh -i your-key.pem ubuntu@<ELASTIC_IP>
-
-# Download and run the bootstrap script
-curl -O https://raw.githubusercontent.com/YOUR_ORG/bozor/main/scripts/bootstrap-ec2.sh
-sudo bash bootstrap-ec2.sh
-```
-
-The script installs Nginx, PHP 8.4, Composer, Node 20, clones the repo, sets up SSL via Certbot, and creates a systemd service for the queue worker.
-
-> Edit `DOMAIN` and `REPO_URL` at the top of the script before running.
-
-### 6. `.env` on the Server
-After the bootstrap script pauses, edit `/var/www/bozor/.env`:
+### `.env` on the Server
+Production deploy reads `/home/ec2-user/.env` on EC2:
 
 ```env
 APP_ENV=production
 APP_DEBUG=false
-APP_URL=https://yourdomain.com
+APP_URL=https://bazaarjapan.link
+APP_DOMAIN=bazaarjapan.link
+
+DB_DATABASE=...
+DB_USERNAME=...
+DB_PASSWORD=...
 
 FILESYSTEM_DISK=s3
 MAIL_MAILER=ses
@@ -170,24 +202,6 @@ AWS_URL=https://bozor-uploads.s3.ap-northeast-1.amazonaws.com
 MAIL_FROM_ADDRESS=noreply@yourdomain.com
 MAIL_FROM_NAME=Bozor
 ```
-
-### 7. GitHub Actions Secrets
-Add these in **Settings → Secrets and variables → Actions**:
-
-| Secret | Value |
-|---|---|
-| `EC2_HOST` | Elastic IP |
-| `EC2_USER` | `ubuntu` |
-| `EC2_SSH_KEY` | Contents of `.pem` file |
-| `AWS_ACCESS_KEY_ID` | IAM key |
-| `AWS_SECRET_ACCESS_KEY` | IAM secret |
-| `AWS_DEFAULT_REGION` | e.g. `ap-northeast-1` |
-| `AWS_BUCKET` | S3 bucket name |
-| `APP_KEY` | `php artisan key:generate --show` |
-| `APP_URL` | `https://yourdomain.com` |
-| `MAIL_FROM_ADDRESS` | SES-verified address |
-
-Push to `main` to trigger the first automated deployment.
 
 ---
 
@@ -215,6 +229,12 @@ git add resources/js/routes/index.ts.example && git commit -m "chore: update rou
 # Dev
 php artisan serve && npm run dev
 php artisan queue:work          # Email notification worker
+
+# Local Docker
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/deploy-local.ps1
+
+# Production DockerHub -> EC2
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/deploy-production.ps1
 
 # Wayfinder (always restore index.ts after running)
 php artisan wayfinder:generate

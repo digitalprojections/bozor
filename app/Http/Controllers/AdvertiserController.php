@@ -26,8 +26,8 @@ class AdvertiserController extends Controller
             'business_name' => ['required', 'string', 'max:255'],
             'website_url' => ['nullable', 'url', 'max:500'],
             'contact_email' => ['required', 'email', 'max:255'],
-            'contact_phone' => ['nullable', 'string', 'max:32'],
-            'business_description' => ['nullable', 'string', 'max:2000'],
+            'contact_phone' => ['required', 'string', 'max:32'],
+            'business_description' => ['required', 'string', 'max:2000'],
         ]);
 
         $profile = $request->user()->advertiserProfile;

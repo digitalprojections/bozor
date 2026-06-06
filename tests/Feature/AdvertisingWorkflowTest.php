@@ -38,6 +38,20 @@ class AdvertisingWorkflowTest extends TestCase
         ]);
     }
 
+    public function test_contact_phone_and_business_description_are_required_for_advertiser_application(): void
+    {
+        $user = User::factory()->create();
+
+        $this
+            ->actingAs($user)
+            ->post(route('advertising.apply'), [
+                'business_name' => 'Tokyo Camera Shop',
+                'website_url' => 'https://example.com',
+                'contact_email' => 'ads@example.com',
+            ])
+            ->assertSessionHasErrors(['contact_phone', 'business_description']);
+    }
+
     public function test_approved_advertiser_can_create_campaign_and_submit_payment_reference(): void
     {
         $user = User::factory()->create();
@@ -131,6 +145,46 @@ class AdvertisingWorkflowTest extends TestCase
         $this->assertCount(1, $ads['top_banner']);
         $this->assertSame('Used cameras this week', $ads['top_banner'][0]['title']);
         $this->assertSame('Tokyo Camera Shop', $ads['top_banner'][0]['advertiser']);
+    }
+
+    public function test_service_returns_all_active_paid_campaigns_for_slot_rotation(): void
+    {
+        $user = User::factory()->create();
+        $profile = AdvertiserProfile::create([
+            'user_id' => $user->id,
+            'business_name' => 'Tokyo Camera Shop',
+            'contact_email' => 'ads@example.com',
+            'status' => AdvertiserProfile::STATUS_APPROVED,
+        ]);
+
+        foreach (['Used cameras this week', 'Lens cleaning service', 'Tripods and bags'] as $title) {
+            $campaign = AdCampaign::create([
+                'advertiser_profile_id' => $profile->id,
+                'user_id' => $user->id,
+                'title' => $title,
+                'description' => 'Shop inspected used camera gear.',
+                'target_url' => 'https://example.com/cameras',
+                'placement' => 'top_banner',
+                'package_key' => 'top_banner_week',
+                'status' => AdCampaign::STATUS_ACTIVE,
+                'starts_at' => now()->subHour(),
+                'ends_at' => now()->addWeek(),
+                'price_jpy' => 9800,
+            ]);
+            $campaign->order()->create([
+                'user_id' => $user->id,
+                'amount_jpy' => 9800,
+                'status' => AdOrder::STATUS_PAID,
+            ]);
+        }
+
+        $ads = app(AdService::class)->layoutAds();
+
+        $this->assertCount(3, $ads['top_banner']);
+        $this->assertEqualsCanonicalizing(
+            ['Used cameras this week', 'Lens cleaning service', 'Tripods and bags'],
+            collect($ads['top_banner'])->pluck('title')->all(),
+        );
     }
 
     public function test_admin_can_view_advertising_queue(): void

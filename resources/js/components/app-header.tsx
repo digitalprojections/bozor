@@ -1,6 +1,6 @@
 import { Link, usePage } from '@inertiajs/react';
 import { useTranslations } from '@/hooks/use-translations';
-import { BookOpen, Folder, LayoutGrid, LogIn, Menu, Search, Star, UserPlus } from 'lucide-react';
+import { BookOpen, Folder, LayoutGrid, LogIn, Menu, Search, Star } from 'lucide-react';
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { Button } from '@/components/ui/button';
 import {
@@ -34,7 +34,7 @@ import { cn, toUrl } from '@/lib/utils';
 import { formatRating } from '@/lib/format';
 import type { BreadcrumbItem, NavItem } from '@/types';
 import AppLogo from './app-logo';
-import { dashboard, home, login, register } from '@/routes';
+import { dashboard, home, login } from '@/routes';
 
 type Props = {
     breadcrumbs?: BreadcrumbItem[];
@@ -142,13 +142,6 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                                                     <LogIn className="h-5 w-5" />
                                                     <span>{t('common.login') as string}</span>
                                                 </Link>
-                                                <Link
-                                                    href={register().url}
-                                                    className="flex items-center space-x-2 font-medium"
-                                                >
-                                                    <UserPlus className="h-5 w-5" />
-                                                    <span>{t('common.register') as string}</span>
-                                                </Link>
                                             </div>
                                         )}
                                     </div>
@@ -241,13 +234,8 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                         {(!auth.user || auth.user.is_guest) ? (
                             <div className="flex items-center gap-2 mr-2">
                                 <Link href={login().url}>
-                                    <Button variant="ghost" size="sm" className="hidden sm:inline-flex">
-                                        {t('common.login') as string}
-                                    </Button>
-                                </Link>
-                                <Link href={register().url}>
                                     <Button size="sm" className="hidden sm:inline-flex">
-                                        {t('common.register') as string}
+                                        {t('common.login') as string}
                                     </Button>
                                 </Link>
                             </div>

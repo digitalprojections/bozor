@@ -173,15 +173,9 @@ export default function BazaarLayout({
                             <div className="flex items-center gap-2 sm:gap-3">
                                 <Link
                                     href="/login"
-                                    className="text-sm font-semibold text-[#1a263b] transition-colors hover:text-[#0d9488]"
-                                >
-                                    {t('common.login')}
-                                </Link>
-                                <Link
-                                    href="/register"
                                     className="inline-flex h-8 items-center justify-center rounded-sm bg-[#0d9488] px-3 text-xs font-bold text-white shadow-sm transition hover:bg-[#0f766e] sm:h-9 sm:px-4 sm:text-sm"
                                 >
-                                    {t('common.register')}
+                                    {t('common.login')}
                                 </Link>
                             </div>
                         )}
@@ -457,7 +451,7 @@ function DefaultSidebar() {
                     <SidebarSection title={t('layout.sidebar.extra')}>
                         <SidebarLink
                             icon={MessageCircle}
-                            label={t('messages.sidebar') || 'Messages'}
+                            label={t('layout.sidebar.messages')}
                             href="/dashboard"
                             badge={unreadMessageNotificationsCount}
                         />

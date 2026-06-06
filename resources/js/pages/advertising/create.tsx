@@ -3,6 +3,7 @@ import { FormEvent, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import { ImagePlus } from 'lucide-react';
 import BazaarLayout from '@/layouts/bazaar-layout';
+import { PlacementPreview } from '@/components/ads/placement-preview';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -74,7 +75,7 @@ export default function AdvertisingCreate({
                         </Field>
                     </div>
 
-                    <Field label="Ad copy" error={errors?.description}>
+                    <Field label="Ad text shown to users" error={errors?.description}>
                         <Textarea value={description} onChange={(event) => setDescription(event.target.value)} maxLength={500} className="min-h-28" required />
                     </Field>
 
@@ -107,11 +108,18 @@ export default function AdvertisingCreate({
                             <div className="mt-3 space-y-2 text-sm text-[#5f6c84]">
                                 <div className="font-semibold text-[#0b1b32]">{selectedPackage.label}</div>
                                 <div>Placement: {selectedPlacement?.label ?? selectedPackage.placement}</div>
-                                <div>Creative: {selectedPlacement?.creative ?? 'standard'}</div>
+                                <div>Ad format: {selectedPlacement?.creative ?? 'standard'}</div>
                                 <div>Duration: {selectedPackage.duration_days} days</div>
                                 <div className="text-lg font-bold text-[#0f766e]">
                                     ¥{selectedPackage.price_jpy.toLocaleString()}
                                 </div>
+                                <PlacementPreview
+                                    placement={selectedPackage.placement}
+                                    label="Where this ad appears"
+                                />
+                                <p className="text-xs leading-relaxed text-[#64748b]">
+                                    All active paid ads in the same placement rotate every 8 seconds.
+                                </p>
                             </div>
                         )}
                     </div>

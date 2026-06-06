@@ -1,5 +1,6 @@
 import { Head, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
+import type { ReactNode } from 'react';
 import { CalendarDays, CreditCard, Megaphone, ShieldCheck } from 'lucide-react';
 import BazaarLayout from '@/layouts/bazaar-layout';
 import { Badge } from '@/components/ui/badge';
@@ -104,25 +105,29 @@ export default function AdminAdvertisingIndex({
 
                 <section className="rounded border border-[#dce5ef] bg-white p-3 shadow-sm">
                     <div className="grid gap-2 md:grid-cols-[1fr_1fr_auto]">
-                        <select value={profileStatus} onChange={(event) => setProfileStatus(event.target.value)} className="h-9 rounded-md border border-[#cbd5e1] bg-white px-3 text-sm">
-                            <option value="pending">Pending profiles</option>
-                            <option value="approved">Approved profiles</option>
-                            <option value="rejected">Rejected profiles</option>
-                            <option value="suspended">Suspended profiles</option>
-                            <option value="all">All profiles</option>
-                        </select>
-                        <select value={campaignStatus} onChange={(event) => setCampaignStatus(event.target.value)} className="h-9 rounded-md border border-[#cbd5e1] bg-white px-3 text-sm">
-                            <option value="open">Open campaigns</option>
-                            <option value="pending_payment">Pending payment</option>
-                            <option value="pending_review">Pending review</option>
-                            <option value="scheduled">Scheduled</option>
-                            <option value="active">Active</option>
-                            <option value="paused">Paused</option>
-                            <option value="rejected">Rejected</option>
-                            <option value="expired">Expired</option>
-                            <option value="all">All campaigns</option>
-                        </select>
-                        <Button type="button" onClick={applyFilters} className="rounded-[4px]">Filter</Button>
+                        <TinyField label="Advertiser applications">
+                            <select value={profileStatus} onChange={(event) => setProfileStatus(event.target.value)} className="h-9 rounded-md border border-[#cbd5e1] bg-white px-3 text-sm">
+                                <option value="pending">Pending profiles</option>
+                                <option value="approved">Approved profiles</option>
+                                <option value="rejected">Rejected profiles</option>
+                                <option value="suspended">Suspended profiles</option>
+                                <option value="all">All profiles</option>
+                            </select>
+                        </TinyField>
+                        <TinyField label="Ad campaigns">
+                            <select value={campaignStatus} onChange={(event) => setCampaignStatus(event.target.value)} className="h-9 rounded-md border border-[#cbd5e1] bg-white px-3 text-sm">
+                                <option value="open">Open campaigns</option>
+                                <option value="pending_payment">Pending payment</option>
+                                <option value="pending_review">Pending review</option>
+                                <option value="scheduled">Scheduled</option>
+                                <option value="active">Active</option>
+                                <option value="paused">Paused</option>
+                                <option value="rejected">Rejected</option>
+                                <option value="expired">Expired</option>
+                                <option value="all">All campaigns</option>
+                            </select>
+                        </TinyField>
+                        <Button type="button" onClick={applyFilters} className="self-end rounded-[4px]">Filter</Button>
                     </div>
                 </section>
 
@@ -194,13 +199,17 @@ function ProfileRow({ profile }: { profile: Profile }) {
                     )}
                 </div>
                 <div className="space-y-2">
-                    <select value={status} onChange={(event) => setStatus(event.target.value)} className="h-9 w-full rounded-md border border-[#cbd5e1] bg-white px-3 text-sm">
-                        <option value="pending">Pending</option>
-                        <option value="approved">Approved</option>
-                        <option value="rejected">Rejected</option>
-                        <option value="suspended">Suspended</option>
-                    </select>
-                    <Textarea value={adminNotes} onChange={(event) => setAdminNotes(event.target.value)} placeholder="Admin notes" className="min-h-20" />
+                    <TinyField label="Application status">
+                        <select value={status} onChange={(event) => setStatus(event.target.value)} className="h-9 w-full rounded-md border border-[#cbd5e1] bg-white px-3 text-sm">
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="rejected">Rejected</option>
+                            <option value="suspended">Suspended</option>
+                        </select>
+                    </TinyField>
+                    <TinyField label="Admin notes">
+                        <Textarea value={adminNotes} onChange={(event) => setAdminNotes(event.target.value)} className="min-h-20" />
+                    </TinyField>
                     <Button type="button" size="sm" onClick={save} className="h-8 rounded-[4px]">Save profile</Button>
                 </div>
             </div>
@@ -261,7 +270,7 @@ function CampaignRow({
                         <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-[#667085]">
                             <span>{campaign.advertiser_profile.business_name}</span>
                             <span>{pkg?.label ?? campaign.package_key}</span>
-                            <span>{placement?.label ?? campaign.placement} | {placement?.creative ?? 'standard'}</span>
+                            <span>{placement?.label ?? campaign.placement} | {placement?.creative ?? 'standard'} ad format</span>
                             <span>¥{campaign.price_jpy.toLocaleString()}</span>
                             {campaign.order?.payment_reference && (
                                 <span className="flex items-center gap-1">
@@ -278,29 +287,41 @@ function CampaignRow({
                 </div>
                 <div className="space-y-2">
                     <div className="grid gap-2 sm:grid-cols-2">
-                        <select value={status} onChange={(event) => setStatus(event.target.value)} className="h-9 rounded-md border border-[#cbd5e1] bg-white px-3 text-sm">
-                            <option value="pending_payment">Pending payment</option>
-                            <option value="pending_review">Pending review</option>
-                            <option value="scheduled">Scheduled</option>
-                            <option value="active">Active</option>
-                            <option value="paused">Paused</option>
-                            <option value="rejected">Rejected</option>
-                            <option value="expired">Expired</option>
-                        </select>
-                        <select value={orderStatus} onChange={(event) => setOrderStatus(event.target.value)} className="h-9 rounded-md border border-[#cbd5e1] bg-white px-3 text-sm">
-                            <option value="unpaid">Unpaid</option>
-                            <option value="pending_confirmation">Pending confirmation</option>
-                            <option value="paid">Paid</option>
-                            <option value="cancelled">Cancelled</option>
-                            <option value="refunded">Refunded</option>
-                        </select>
+                        <TinyField label="Campaign status">
+                            <select value={status} onChange={(event) => setStatus(event.target.value)} className="h-9 rounded-md border border-[#cbd5e1] bg-white px-3 text-sm">
+                                <option value="pending_payment">Pending payment</option>
+                                <option value="pending_review">Pending review</option>
+                                <option value="scheduled">Scheduled</option>
+                                <option value="active">Active</option>
+                                <option value="paused">Paused</option>
+                                <option value="rejected">Rejected</option>
+                                <option value="expired">Expired</option>
+                            </select>
+                        </TinyField>
+                        <TinyField label="Payment status">
+                            <select value={orderStatus} onChange={(event) => setOrderStatus(event.target.value)} className="h-9 rounded-md border border-[#cbd5e1] bg-white px-3 text-sm">
+                                <option value="unpaid">Unpaid</option>
+                                <option value="pending_confirmation">Pending confirmation</option>
+                                <option value="paid">Paid</option>
+                                <option value="cancelled">Cancelled</option>
+                                <option value="refunded">Refunded</option>
+                            </select>
+                        </TinyField>
                     </div>
                     <div className="grid gap-2 sm:grid-cols-2">
-                        <Input type="datetime-local" value={startsAt} onChange={(event) => setStartsAt(event.target.value)} />
-                        <Input type="datetime-local" value={endsAt} onChange={(event) => setEndsAt(event.target.value)} />
+                        <TinyField label="Starts at">
+                            <Input type="datetime-local" value={startsAt} onChange={(event) => setStartsAt(event.target.value)} />
+                        </TinyField>
+                        <TinyField label="Ends at">
+                            <Input type="datetime-local" value={endsAt} onChange={(event) => setEndsAt(event.target.value)} />
+                        </TinyField>
                     </div>
-                    <Input type="number" min="0" max="1000" value={priority} onChange={(event) => setPriority(event.target.value)} placeholder="Priority" />
-                    <Textarea value={adminNotes} onChange={(event) => setAdminNotes(event.target.value)} placeholder="Admin notes" className="min-h-20" />
+                    <TinyField label="Display priority">
+                        <Input type="number" min="0" max="1000" value={priority} onChange={(event) => setPriority(event.target.value)} />
+                    </TinyField>
+                    <TinyField label="Admin notes">
+                        <Textarea value={adminNotes} onChange={(event) => setAdminNotes(event.target.value)} className="min-h-20" />
+                    </TinyField>
                     <Button type="button" size="sm" onClick={save} className="h-8 rounded-[4px]">Save campaign</Button>
                 </div>
             </div>
@@ -340,6 +361,15 @@ function Empty({ text }: { text: string }) {
         <div className="rounded border border-[#dce5ef] bg-white px-4 py-10 text-center text-sm text-[#667085]">
             {text}
         </div>
+    );
+}
+
+function TinyField({ label, children }: { label: string; children: ReactNode }) {
+    return (
+        <label className="grid gap-1 text-[11px] font-semibold text-[#64748b]">
+            <span>{label}</span>
+            {children}
+        </label>
     );
 }
 
