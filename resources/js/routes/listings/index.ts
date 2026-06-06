@@ -573,7 +573,7 @@ buyNow.post = (args: { listing: string | number | { id: string | number } } | [l
     
     buyNow.form = buyNowForm
 /**
- * @see routes/web.php:112
+ * @see routes/web.php:122
  * @route '/listings'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -587,7 +587,7 @@ index.definition = {
 } satisfies RouteDefinition<["get","head"]>
 
 /**
- * @see routes/web.php:112
+ * @see routes/web.php:122
  * @route '/listings'
  */
 index.url = (options?: RouteQueryOptions) => {
@@ -595,7 +595,7 @@ index.url = (options?: RouteQueryOptions) => {
 }
 
 /**
- * @see routes/web.php:112
+ * @see routes/web.php:122
  * @route '/listings'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -603,7 +603,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     method: 'get',
 })
 /**
- * @see routes/web.php:112
+ * @see routes/web.php:122
  * @route '/listings'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -612,7 +612,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
     /**
- * @see routes/web.php:112
+ * @see routes/web.php:122
  * @route '/listings'
  */
     const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -621,7 +621,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     })
 
             /**
- * @see routes/web.php:112
+ * @see routes/web.php:122
  * @route '/listings'
  */
         indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -629,7 +629,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
             method: 'get',
         })
             /**
- * @see routes/web.php:112
+ * @see routes/web.php:122
  * @route '/listings'
  */
         indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

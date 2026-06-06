@@ -24,6 +24,7 @@ import {
     Menu,
     UsersRound,
     Flag,
+    Megaphone,
 } from 'lucide-react';
 import React, { ReactNode } from 'react';
 import { useTranslations } from '@/hooks/use-translations';
@@ -383,6 +384,7 @@ function DefaultSidebar() {
     const { auth } = usePage().props as any;
     const {
         adminPendingReportsCount = 0,
+        adminPendingAdvertisingCount = 0,
         unreadMessageNotificationsCount = 0,
     } = usePage().props as any;
     const user = auth.user && !auth.user.is_guest ? auth.user : null;
@@ -410,6 +412,12 @@ function DefaultSidebar() {
                             icon={UsersRound}
                             label="Admin Users"
                             href="/admin/users"
+                        />
+                        <SidebarLink
+                            icon={Megaphone}
+                            label="Admin Ads"
+                            href="/admin/advertising"
+                            badge={adminPendingAdvertisingCount}
                         />
                     </>
                 )}
@@ -452,6 +460,11 @@ function DefaultSidebar() {
                             label={t('messages.sidebar') || 'Messages'}
                             href="/dashboard"
                             badge={unreadMessageNotificationsCount}
+                        />
+                        <SidebarLink
+                            icon={Megaphone}
+                            label="Advertising"
+                            href="/advertising"
                         />
                         <SidebarLink
                             icon={Search}

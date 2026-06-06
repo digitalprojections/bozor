@@ -11,6 +11,8 @@ import BidController from './BidController'
 import TransactionController from './TransactionController'
 import RatingController from './RatingController'
 import DashboardController from './DashboardController'
+import AdvertiserController from './AdvertiserController'
+import AdCampaignController from './AdCampaignController'
 import Settings from './Settings'
 import Admin from './Admin'
 import ProfileController from './ProfileController'
@@ -28,6 +30,8 @@ BidController: Object.assign(BidController, BidController),
 TransactionController: Object.assign(TransactionController, TransactionController),
 RatingController: Object.assign(RatingController, RatingController),
 DashboardController: Object.assign(DashboardController, DashboardController),
+AdvertiserController: Object.assign(AdvertiserController, AdvertiserController),
+AdCampaignController: Object.assign(AdCampaignController, AdCampaignController),
 Settings: Object.assign(Settings, Settings),
 Admin: Object.assign(Admin, Admin),
 ProfileController: Object.assign(ProfileController, ProfileController),

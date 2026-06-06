@@ -93,6 +93,21 @@ class User extends Authenticatable
         return $this->hasMany(Listing::class)->where('listing_type', 'item');
     }
 
+    public function advertiserProfile()
+    {
+        return $this->hasOne(AdvertiserProfile::class);
+    }
+
+    public function adCampaigns()
+    {
+        return $this->hasMany(AdCampaign::class);
+    }
+
+    public function adOrders()
+    {
+        return $this->hasMany(AdOrder::class);
+    }
+
     public function soldListings()
     {
         return $this->hasMany(Listing::class)

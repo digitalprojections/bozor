@@ -1,7 +1,10 @@
 <?php
 
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\AdvertisingController as AdminAdvertisingController;
 use App\Http\Controllers\Admin\VerificationController;
+use App\Http\Controllers\AdCampaignController;
+use App\Http\Controllers\AdvertiserController;
 use App\Http\Controllers\Auth\SocialiteController;
 use App\Http\Controllers\BidController;
 use App\Http\Controllers\DashboardController;
@@ -106,6 +109,13 @@ Route::middleware(['real-user'])->group(function () {
         Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('dashboard/won-items', [DashboardController::class, 'wonItems'])->name('dashboard.won-items');
         Route::get('dashboard/sold-items', [DashboardController::class, 'soldItems'])->name('dashboard.sold-items');
+
+        Route::get('/advertising', [AdvertiserController::class, 'index'])->name('advertising.index');
+        Route::post('/advertising/apply', [AdvertiserController::class, 'apply'])->name('advertising.apply');
+        Route::get('/advertising/campaigns/create', [AdCampaignController::class, 'create'])->name('advertising.campaigns.create');
+        Route::post('/advertising/campaigns', [AdCampaignController::class, 'store'])->name('advertising.campaigns.store');
+        Route::post('/advertising/campaigns/{campaign}/payment', [AdCampaignController::class, 'submitPayment'])->name('advertising.campaigns.payment');
+        Route::delete('/advertising/campaigns/{campaign}', [AdCampaignController::class, 'destroy'])->name('advertising.campaigns.destroy');
     });
 });
 
@@ -125,6 +135,10 @@ Route::middleware(['auth', 'admin'])
         Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
         Route::patch('/users/{user}', [UserController::class, 'update'])->name('users.update');
         Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+
+        Route::get('/advertising', [AdminAdvertisingController::class, 'index'])->name('advertising.index');
+        Route::patch('/advertising/profiles/{profile}', [AdminAdvertisingController::class, 'updateProfile'])->name('advertising.profiles.update');
+        Route::patch('/advertising/campaigns/{campaign}', [AdminAdvertisingController::class, 'updateCampaign'])->name('advertising.campaigns.update');
 
         Route::get('/reports', [\App\Http\Controllers\Admin\ListingReportController::class, 'index'])->name('reports.index');
         Route::patch('/reports/{report}', [\App\Http\Controllers\Admin\ListingReportController::class, 'update'])->name('reports.update');

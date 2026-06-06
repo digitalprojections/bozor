@@ -4,10 +4,13 @@ namespace App\Http\Middleware;
 
 use App\Services\AdService;
 use App\Http\Middleware\EnsureAdmin;
+use App\Models\AdCampaign;
+use App\Models\AdvertiserProfile;
 use App\Models\ListingReport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Schema;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -53,6 +56,12 @@ class HandleInertiaRequests extends Middleware
             ],
             'adminPendingReportsCount' => fn () => EnsureAdmin::isAdminEmail($request->user()?->email)
                 ? ListingReport::whereIn('status', [ListingReport::STATUS_PENDING, ListingReport::STATUS_REVIEWING])->count()
+                : 0,
+            'adminPendingAdvertisingCount' => fn () => EnsureAdmin::isAdminEmail($request->user()?->email)
+                && Schema::hasTable('advertiser_profiles')
+                && Schema::hasTable('ad_campaigns')
+                    ? AdvertiserProfile::where('status', AdvertiserProfile::STATUS_PENDING)->count()
+                        + AdCampaign::whereIn('status', [AdCampaign::STATUS_PENDING_PAYMENT, AdCampaign::STATUS_PENDING_REVIEW])->count()
                 : 0,
             'unreadMessageNotificationsCount' => fn () => $request->user()
                 ? $request->user()->unreadNotifications()
