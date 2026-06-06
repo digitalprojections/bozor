@@ -1,6 +1,6 @@
 import { Transition } from '@headlessui/react';
 import { Form, Head, Link, usePage } from '@inertiajs/react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { AvatarUpload } from '@/components/avatar-upload';
 import DeleteUser from '@/components/delete-user';
 import Heading from '@/components/heading';
@@ -45,19 +45,6 @@ export default function Profile({
     const [bannerFile, setBannerFile] = useState<File | null>(null);
     const [removeBanner, setRemoveBanner] = useState(false);
 
-    // Reset avatar state when status changes (indicating successful save)
-    useEffect(() => {
-        if (status && (avatarFile !== null || removeAvatar !== false || bannerFile !== null || removeBanner !== false)) {
-            const timer = setTimeout(() => {
-                setAvatarFile(null);
-                setRemoveAvatar(false);
-                setBannerFile(null);
-                setRemoveBanner(false);
-            }, 0);
-            return () => clearTimeout(timer);
-        }
-    }, [status, avatarFile, removeAvatar, bannerFile, removeBanner]);
-
     return (
         <BazaarLayout title="Profile Settings" breadcrumbs={breadcrumbs}>
             <Head title="Profile settings" />
@@ -81,6 +68,12 @@ export default function Profile({
                         })}
                         options={{
                             preserveScroll: true,
+                        }}
+                        onSuccess={() => {
+                            setAvatarFile(null);
+                            setRemoveAvatar(false);
+                            setBannerFile(null);
+                            setRemoveBanner(false);
                         }}
                         className="space-y-6"
                     >
@@ -222,7 +215,7 @@ export default function Profile({
                                         disabled={processing}
                                         data-test="update-profile-button"
                                     >
-                                        Save
+                                        {t('common.save')}
                                     </Button>
 
                                     <Transition
@@ -232,8 +225,8 @@ export default function Profile({
                                         leave="transition ease-in-out"
                                         leaveTo="opacity-0"
                                     >
-                                        <p className="text-sm text-neutral-600">
-                                            Saved
+                                        <p className="text-sm font-medium text-[#166534]">
+                                            {t('common.saved')}
                                         </p>
                                     </Transition>
                                 </div>
@@ -369,8 +362,20 @@ export default function Profile({
                                         <Button
                                             disabled={processing}
                                         >
-                                            {t('common.save') || 'Save'}
+                                            {t('common.save')}
                                         </Button>
+
+                                        <Transition
+                                            show={recentlySuccessful}
+                                            enter="transition ease-in-out"
+                                            enterFrom="opacity-0"
+                                            leave="transition ease-in-out"
+                                            leaveTo="opacity-0"
+                                        >
+                                            <p className="text-sm font-medium text-[#166534]">
+                                                {t('common.saved')}
+                                            </p>
+                                        </Transition>
                                     </div>
                                 </div>
                             </>

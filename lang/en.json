@@ -1,5 +1,7 @@
 {
     "common.app_name": "Bozor",
+    "common.save": "Save",
+    "common.saved": "Saved",
     "common.dashboard": "Dashboard",
     "common.log_in": "Log in",
     "common.login": "Log in",

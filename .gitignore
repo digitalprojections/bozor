@@ -27,6 +27,7 @@ Homestead.json
 /storage/pail
 .env.backup
 .env.production
+.env.staging
 .phpactor.json
 auth.json
 bozor_database

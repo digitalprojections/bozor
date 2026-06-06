@@ -1,5 +1,7 @@
 {
     "common.app_name": "Bozor",
+    "common.save": "Сохранить",
+    "common.saved": "Сохранено",
     "common.dashboard": "Панель управления",
     "common.log_in": "Войти",
     "common.login": "Войти",

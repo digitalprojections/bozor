@@ -1,4 +1,4 @@
-import { Head, router, usePage } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { CalendarDays, CreditCard, Megaphone, ShieldCheck } from 'lucide-react';
@@ -81,7 +81,6 @@ export default function AdminAdvertisingIndex({
     packages: Record<string, { label: string; price_jpy: number; duration_days: number; placement: string }>;
     placements: Record<string, { label: string; creative: string }>;
 }) {
-    const { flash } = usePage().props as any;
     const [profileStatus, setProfileStatus] = useState(filters.profile_status ?? 'pending');
     const [campaignStatus, setCampaignStatus] = useState(filters.campaign_status ?? 'open');
 
@@ -97,12 +96,6 @@ export default function AdminAdvertisingIndex({
             <Head title="Admin Ads" />
 
             <div className="space-y-4">
-                {flash?.success && (
-                    <div className="rounded border border-[#bbf7d0] bg-[#f0fdf4] px-3 py-2 text-sm font-medium text-[#166534]">
-                        {flash.success}
-                    </div>
-                )}
-
                 <section className="rounded border border-[#dce5ef] bg-white p-3 shadow-sm">
                     <div className="grid gap-2 md:grid-cols-[1fr_1fr_auto]">
                         <TinyField label="Advertiser applications">

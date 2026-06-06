@@ -1,4 +1,4 @@
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import type { ComponentType, FormEvent, ReactNode } from 'react';
 import {
     ArrowLeft,
@@ -81,7 +81,6 @@ type FormData = {
 };
 
 export default function AdminUsersEdit({ account }: { account: Account }) {
-    const { flash } = usePage().props as any;
     const breadcrumbs: BreadcrumbItem[] = [
         {
             title: 'Admin users',
@@ -154,9 +153,9 @@ export default function AdminUsersEdit({ account }: { account: Account }) {
                 </Button>
             </div>
 
-            {(flash?.success || recentlySuccessful) && (
+            {recentlySuccessful && (
                 <div className="rounded border border-[#bbf7d0] bg-[#f0fdf4] px-4 py-3 text-sm font-medium text-[#166534]">
-                    {flash?.success ?? 'Saved'}
+                    Saved
                 </div>
             )}
 

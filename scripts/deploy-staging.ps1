@@ -2,7 +2,7 @@ param(
     [string]$HostName = "bazaarjapan.link",
     [string]$User = "ec2-user",
     [string]$KeyPath = "bozorkey.pem",
-    [string]$RemoteDir = "/home/ec2-user",
+    [string]$RemoteDir = "/home/ec2-user/bozor-staging",
     [string]$ImageRepo = "fuzalov/bozor-app",
     [string]$ImageTag = ""
 )
@@ -26,21 +26,22 @@ $args = @(
     "-ImageRepo",
     $ImageRepo,
     "-EnvironmentName",
-    "production",
+    "staging",
+    "-ComposeFile",
+    "docker-compose.staging.yml",
     "-ComposeProjectName",
-    "bozor",
+    "bozor-staging",
     "-RemoteEnvFile",
-    ".env",
+    ".env.staging",
     "-AppContainerName",
-    "bozor-app",
+    "bozor-staging-app",
     "-HealthUrl",
-    "https://bazaarjapan.link/health",
-    "-UploadCaddyConfig"
+    "https://staging.bazaarjapan.link/health"
 )
 
 if ($ImageTag) {
     $args += @("-ImageTag", $ImageTag)
 }
 
-Write-Host "Running production DockerHub deploy sequence"
+Write-Host "Running staging DockerHub deploy sequence"
 & powershell @args

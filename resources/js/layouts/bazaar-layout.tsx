@@ -64,7 +64,7 @@ export default function BazaarLayout({
     flushMobile = false,
 }: BazaarLayoutProps) {
     const { t } = useTranslations();
-    const { auth, layoutAds = {} } = usePage().props as any;
+    const { auth, flash, layoutAds = {} } = usePage().props as any;
     const user = auth.user && !auth.user.is_guest ? auth.user : null;
     const ads = layoutAds as LayoutAds;
     const hasRightRailAds = (ads.right_rail?.length ?? 0) > 0;
@@ -201,6 +201,20 @@ export default function BazaarLayout({
                     variant="banner"
                     className="mb-6"
                 />
+
+                {(flash?.success || flash?.error) && (
+                    <div
+                        role="status"
+                        className={cn(
+                            'mb-6 rounded border px-4 py-3 text-sm font-medium',
+                            flash?.error
+                                ? 'border-red-200 bg-red-50 text-red-700'
+                                : 'border-[#bbf7d0] bg-[#f0fdf4] text-[#166534]',
+                        )}
+                    >
+                        {flash.error ?? flash.success}
+                    </div>
+                )}
 
                 {showTitle && (
                     <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">

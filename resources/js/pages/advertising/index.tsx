@@ -56,7 +56,7 @@ export default function AdvertisingIndex({
     packages: Record<string, { label: string; price_jpy: number; duration_days: number; placement: string }>;
     placements: Record<string, { label: string; creative: string }>;
 }) {
-    const { errors, flash, auth } = usePage().props as any;
+    const { errors, auth } = usePage().props as any;
     const [businessName, setBusinessName] = useState(advertiserProfile?.business_name ?? auth.user?.store_name ?? '');
     const [websiteUrl, setWebsiteUrl] = useState(advertiserProfile?.website_url ?? '');
     const [contactEmail, setContactEmail] = useState(advertiserProfile?.contact_email ?? auth.user?.email ?? '');
@@ -81,9 +81,9 @@ export default function AdvertisingIndex({
             <Head title="Advertising" />
 
             <div className="space-y-4">
-                {(flash?.success || errors?.advertiser) && (
-                    <div className={errors?.advertiser ? errorNotice : successNotice}>
-                        {errors?.advertiser ?? flash?.success}
+                {errors?.advertiser && (
+                    <div className={errorNotice}>
+                        {errors.advertiser}
                     </div>
                 )}
 
@@ -350,5 +350,4 @@ function statusClass(status: string) {
     return 'border-[#dbe4f0] bg-[#f8fafc] px-1.5 py-0 text-[11px] text-[#475467]';
 }
 
-const successNotice = 'rounded border border-[#bbf7d0] bg-[#f0fdf4] px-3 py-2 text-sm font-medium text-[#166534]';
 const errorNotice = 'rounded border border-[#f1c7c7] bg-[#fff1f1] px-3 py-2 text-sm font-medium text-[#b42318]';

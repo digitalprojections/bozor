@@ -91,7 +91,7 @@ export default function AdminReportsIndex({
     filters: { status?: string; search?: string };
     counts: Record<string, number>;
 }) {
-    const { errors, flash } = usePage().props as any;
+    const { errors } = usePage().props as any;
     const [search, setSearch] = useState(filters.search ?? '');
     const [status, setStatus] = useState(filters.status ?? 'open');
     const [openReport, setOpenReport] = useState<number | null>(
@@ -112,15 +112,11 @@ export default function AdminReportsIndex({
             <Head title="Reports" />
 
             <div className="space-y-4">
-                {(flash?.success || errors?.account) && (
+                {errors?.account && (
                     <div
-                        className={
-                            errors?.account
-                                ? 'rounded border border-[#f1c7c7] bg-[#fff1f1] px-3 py-2 text-sm font-medium text-[#b42318]'
-                                : 'rounded border border-[#bbf7d0] bg-[#f0fdf4] px-3 py-2 text-sm font-medium text-[#166534]'
-                        }
+                        className="rounded border border-[#f1c7c7] bg-[#fff1f1] px-3 py-2 text-sm font-medium text-[#b42318]"
                     >
-                        {errors?.account ?? flash?.success}
+                        {errors.account}
                     </div>
                 )}
 

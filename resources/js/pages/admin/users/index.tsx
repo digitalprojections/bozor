@@ -51,7 +51,7 @@ export default function AdminUsersIndex({
     users: PaginatedUsers;
     filters: { search?: string };
 }) {
-    const { errors, flash } = usePage().props as any;
+    const { errors } = usePage().props as any;
     const [search, setSearch] = useState(filters.search ?? '');
 
     const submit = (event: FormEvent) => {
@@ -95,15 +95,11 @@ export default function AdminUsersIndex({
             <Head title="Admin Users" />
 
             <div className="space-y-4">
-                {(flash?.success || errors?.delete) && (
+                {errors?.delete && (
                     <div
-                        className={
-                            errors?.delete
-                                ? 'rounded border border-[#f1c7c7] bg-[#fff1f1] px-3 py-2 text-sm font-medium text-[#b42318]'
-                                : 'rounded border border-[#bbf7d0] bg-[#f0fdf4] px-3 py-2 text-sm font-medium text-[#166534]'
-                        }
+                        className="rounded border border-[#f1c7c7] bg-[#fff1f1] px-3 py-2 text-sm font-medium text-[#b42318]"
                     >
-                        {errors?.delete ?? flash?.success}
+                        {errors.delete}
                     </div>
                 )}
 

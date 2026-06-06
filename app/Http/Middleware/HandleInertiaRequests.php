@@ -72,6 +72,10 @@ class HandleInertiaRequests extends Middleware
             'locale' => $locale,
             'translations' => $this->loadTranslationsForLocale($locale, $fallback),
             'supportedLocales' => config('locales.supported', ['en' => ['name' => 'English', 'native' => 'English']]),
+            'flash' => [
+                'success' => fn () => $request->session()->get('success'),
+                'error' => fn () => $request->session()->get('error'),
+            ],
             'layoutAds' => fn () => app(AdService::class)->layoutAds(),
             'seo' => [
                 'title' => config('app.name', 'Bozor Japan'),

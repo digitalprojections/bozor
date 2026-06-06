@@ -120,6 +120,29 @@ DockerHub image → EC2 Docker Compose (app + PostgreSQL + Redis + Caddy)
                        SES (transactional email)
 ```
 
+### Staging First
+
+Use staging as the release candidate environment before production. Staging should have its own domain, database, bucket, OAuth redirect, and mail behavior so tests never mutate production data.
+
+Recommended flow:
+
+```powershell
+# 1. Deploy the candidate image to staging
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/deploy-staging.ps1
+
+# 2. Smoke test staging:
+#    - https://staging.bazaarjapan.link/health
+#    - login / Google callback
+#    - create listing with image upload
+#    - bid / buy-now path
+#    - admin flows touched by the change
+
+# 3. Promote only after staging passes
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/deploy-production.ps1
+```
+
+Create `/home/ec2-user/bozor-staging/.env.staging` from `.env.staging.example` on the staging server. For the current same-EC2 setup, `staging.bazaarjapan.link` points to the same public IP as `bazaarjapan.link`; production Caddy is the only container binding ports 80/443 and routes staging traffic to the staging app over the shared `bozor-public` Docker network.
+
 ### One-Command Deploy
 
 The production sequence builds the app image, tags it, pushes it to DockerHub, pins the EC2 `.env` to that exact tag, pulls it on EC2, recreates the stack, runs migrations/cache commands, and verifies `/health`.

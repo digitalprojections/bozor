@@ -1,4 +1,4 @@
-{$APP_DOMAIN} {
+(secure_headers) {
 	encode gzip zstd
 
 	header {
@@ -7,6 +7,16 @@
 		X-Frame-Options "SAMEORIGIN"
 		Referrer-Policy "strict-origin-when-cross-origin"
 	}
+}
 
-	reverse_proxy app:80
+{$APP_DOMAIN} {
+	import secure_headers
+
+	reverse_proxy {$APP_UPSTREAM:app:80}
+}
+
+{$STAGING_APP_DOMAIN:staging.bazaarjapan.link} {
+	import secure_headers
+
+	reverse_proxy {$STAGING_APP_UPSTREAM:bozor-staging-app:80}
 }

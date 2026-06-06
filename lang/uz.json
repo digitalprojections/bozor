@@ -1,5 +1,7 @@
 {
     "common.app_name": "Bozor",
+    "common.save": "Saqlash",
+    "common.saved": "Saqlandi",
     "common.dashboard": "Boshqaruv paneli",
     "common.log_in": "Kirish",
     "common.login": "Kirish",

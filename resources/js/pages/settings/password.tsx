@@ -12,6 +12,7 @@ import type { BreadcrumbItem } from '@/types';
 import type { Auth } from '@/types/auth';
 import PasswordController from '@/actions/App/Http/Controllers/Settings/PasswordController';
 import { edit } from '@/routes/user-password';
+import { useTranslations } from '@/hooks/use-translations';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -22,6 +23,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 export default function Password() {
     const { auth } = usePage().props as { auth: Auth };
+    const { t } = useTranslations();
     const requiresCurrentPassword = Boolean(
         auth.user?.has_local_password && !auth.logged_in_with_google,
     );
@@ -148,8 +150,8 @@ export default function Password() {
                                         leave="transition ease-in-out"
                                         leaveTo="opacity-0"
                                     >
-                                        <p className="text-sm text-neutral-600">
-                                            Saved
+                                        <p className="text-sm font-medium text-[#166534]">
+                                            {t('common.saved')}
                                         </p>
                                     </Transition>
                                 </div>
