@@ -2,7 +2,7 @@
 
 ## Goals
 
-Advertising should create revenue without making the marketplace feel less trustworthy. Ads are paid listings with `listing_type = advertisement`; normal marketplace items remain `listing_type = item`.
+Advertising should create revenue without making the marketplace feel less trustworthy. Ads are managed through approved advertiser profiles, ad campaigns, and ad orders. The older `listing_type = advertisement` path can remain as a manual fallback, but normal marketplace items remain `listing_type = item`.
 
 The first version should sell simple fixed-duration placements. CPM and CPC pricing need reliable traffic, impression tracking, click tracking, and advertiser reporting before they become fair to buyers or useful for us.
 
@@ -61,16 +61,18 @@ Avoid pure CPC at launch. It shifts too much risk to the marketplace before clic
 
 ## Operational Workflow
 
-1. Advertiser submits an ad listing with title, body, image, destination URL, placement, campaign dates, and budget.
-2. Admin reviews the ad for policy and quality.
-3. Admin sets `status = active`, `listing_type = advertisement`, placement, dates, priority, and price.
-4. Shared layout loads active ads by placement and rotates available ads.
-5. Future version records impressions and clicks to calculate eCPM and renewal pricing.
+1. User applies for an advertiser account.
+2. Admin approves, rejects, or suspends the advertiser profile.
+3. Approved advertiser creates an ad campaign with title, body, image, destination URL, package, and preferred start date.
+4. The system creates one fixed-price ad order for the selected package.
+5. Advertiser submits a payment reference after paying through the current manual/off-platform process.
+6. Admin confirms payment, reviews the ad, sets dates/priority, and marks the campaign scheduled or active.
+7. Shared layout loads paid active campaigns by placement and rotates available ads.
+8. Future version records impressions and clicks to calculate eCPM and renewal pricing.
 
 ## Next Milestones
 
-- Admin ad creation/editing UI.
+- Online payment checkout for ad packages.
 - Impression and click tracking endpoints.
 - Advertiser reporting page.
-- Payment checkout for ad packages.
 - Sponsored in-feed placement after disclosure and ranking rules are defined.
