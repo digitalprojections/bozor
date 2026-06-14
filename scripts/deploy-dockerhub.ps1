@@ -12,11 +12,38 @@ param(
     [string]$AppContainerName = "bozor-app",
     [string]$HealthUrl = "https://bazaarjapan.link/health",
     [string]$PublicNetworkName = "bozor-public",
+    [switch]$SkipLocalDockerCleanup,
     [switch]$SkipRemoteImagePrune,
     [switch]$UploadCaddyConfig
 )
 
 $ErrorActionPreference = "Stop"
+
+function Invoke-RemoteDockerCleanup {
+    param(
+        [string]$Reason
+    )
+
+    if ($SkipRemoteImagePrune) {
+        Write-Host "Skipping remote Docker cleanup ($Reason)"
+        return
+    }
+
+    Write-Host "Cleaning remote Docker on EC2 ($Reason)"
+    ssh -i $KeyPath $remote "docker image prune -a -f && docker builder prune -f || true; docker system df; df -h /"
+}
+
+function Invoke-LocalDockerCleanup {
+    if ($SkipLocalDockerCleanup) {
+        Write-Host "Skipping local Docker cleanup"
+        return
+    }
+
+    Write-Host "Cleaning local Docker after deploy"
+    docker image prune -a -f
+    docker builder prune -f
+    docker system df
+}
 
 if (-not $ImageTag) {
     $shortSha = (git rev-parse --short HEAD).Trim()
@@ -66,8 +93,7 @@ Write-Host "Pinning remote APP_IMAGE=$image"
 ssh -i $KeyPath $remote "cd $RemoteDir && touch $RemoteEnvFile && sed -i '/^APP_IMAGE=/d' $RemoteEnvFile && printf '\nAPP_IMAGE=$image\n' >> $RemoteEnvFile"
 
 if (-not $SkipRemoteImagePrune) {
-    Write-Host "Pruning unused remote Docker images before pull"
-    ssh -i $KeyPath $remote "docker image prune -a -f && df -h /"
+    Invoke-RemoteDockerCleanup "before pull"
 }
 
 Write-Host "Pulling and recreating stack"
@@ -79,5 +105,8 @@ ssh -i $KeyPath $remote "cd $RemoteDir && docker-compose --env-file $RemoteEnvFi
 Write-Host "Verifying deployment"
 ssh -i $KeyPath $remote "docker inspect $AppContainerName --format='{{.Config.Image}} {{.State.Health.Status}}'"
 ssh -i $KeyPath $remote "curl -k -sS -o /dev/null -w '%{http_code}\n' $HealthUrl"
+
+Invoke-RemoteDockerCleanup "after healthy deploy"
+Invoke-LocalDockerCleanup
 
 Write-Host "Deployed $image"

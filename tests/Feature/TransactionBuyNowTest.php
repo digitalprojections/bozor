@@ -190,6 +190,88 @@ class TransactionBuyNowTest extends TestCase
         $this->assertDatabaseCount('transactions', 0);
     }
 
+    public function test_seller_cannot_delete_sold_listing_before_transaction_is_completed(): void
+    {
+        $seller = User::factory()->create();
+        $buyer = User::factory()->create();
+        $listing = $this->createListing($seller, [
+            'status' => 'sold',
+        ]);
+
+        Transaction::create([
+            'listing_id' => $listing->id,
+            'buyer_id' => $buyer->id,
+            'seller_id' => $seller->id,
+            'amount' => $listing->price,
+            'status' => Transaction::STATUS_PENDING_PAYMENT,
+            'purchase_type' => Transaction::TYPE_BUY_NOW,
+        ]);
+
+        $this->actingAs($seller)
+            ->delete(route('listings.destroy', $listing))
+            ->assertForbidden();
+
+        $this->assertDatabaseHas('listings', [
+            'id' => $listing->id,
+            'deleted_at' => null,
+        ]);
+    }
+
+    public function test_seller_cannot_delete_completed_listing_before_three_days_pass(): void
+    {
+        $seller = User::factory()->create();
+        $buyer = User::factory()->create();
+        $listing = $this->createListing($seller, [
+            'status' => 'sold',
+        ]);
+
+        Transaction::create([
+            'listing_id' => $listing->id,
+            'buyer_id' => $buyer->id,
+            'seller_id' => $seller->id,
+            'amount' => $listing->price,
+            'status' => Transaction::STATUS_RECEIVED,
+            'purchase_type' => Transaction::TYPE_BUY_NOW,
+            'completed_at' => now()->subDays(2),
+        ]);
+
+        $this->actingAs($seller)
+            ->delete(route('listings.destroy', $listing))
+            ->assertForbidden();
+
+        $this->assertDatabaseHas('listings', [
+            'id' => $listing->id,
+            'deleted_at' => null,
+        ]);
+    }
+
+    public function test_seller_can_delete_completed_listing_after_three_days(): void
+    {
+        $seller = User::factory()->create();
+        $buyer = User::factory()->create();
+        $listing = $this->createListing($seller, [
+            'status' => 'sold',
+        ]);
+        $transaction = Transaction::create([
+            'listing_id' => $listing->id,
+            'buyer_id' => $buyer->id,
+            'seller_id' => $seller->id,
+            'amount' => $listing->price,
+            'status' => Transaction::STATUS_RECEIVED,
+            'purchase_type' => Transaction::TYPE_BUY_NOW,
+            'completed_at' => now()->subDays(3)->subSecond(),
+        ]);
+
+        $this->actingAs($seller)
+            ->delete(route('listings.destroy', $listing))
+            ->assertRedirect(route('dashboard'));
+
+        $this->assertSoftDeleted('listings', [
+            'id' => $listing->id,
+        ]);
+        $this->assertSame($listing->id, $transaction->fresh()->listing->id);
+    }
+
     public function test_guest_buy_now_does_not_redirect_to_login(): void
     {
         Notification::fake();

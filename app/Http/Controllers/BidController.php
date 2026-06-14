@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Bid;
 use App\Models\Listing;
+use App\Models\ListingMessage;
 use App\Notifications\Seller\BidReceived;
 use App\Notifications\Buyer\Outbid;
 use Illuminate\Http\Request;
@@ -110,5 +111,46 @@ class BidController extends Controller
         });
 
         return back()->with('success', 'Bid placed successfully!');
+    }
+
+    public function destroy(Bid $bid)
+    {
+        DB::transaction(function () use ($bid) {
+            $lockedBid = Bid::query()
+                ->whereKey($bid->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            $listing = Listing::query()
+                ->whereKey($lockedBid->listing_id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if ((int) $listing->user_id !== (int) auth()->id()) {
+                abort(403);
+            }
+
+            if (! $this->hasMessageExchange($listing, $lockedBid)) {
+                abort(403, __('listing.bid_delete_requires_message_exchange'));
+            }
+
+            $lockedBid->delete();
+
+            $listing->update([
+                'current_high_bid' => (int) ($listing->bids()->max('amount') ?? 0),
+            ]);
+        });
+
+        return back()->with('success', __('listing.bid_deleted'));
+    }
+
+    private function hasMessageExchange(Listing $listing, Bid $bid): bool
+    {
+        return ListingMessage::query()
+            ->where('listing_id', $listing->id)
+            ->where('seller_id', $listing->user_id)
+            ->where('questioner_id', $bid->user_id)
+            ->whereNotNull('answer')
+            ->exists();
     }
 }

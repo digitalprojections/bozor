@@ -114,8 +114,8 @@ export default function Show({ transaction }: { transaction: Transaction }) {
     const packageShippingMethod = transaction.package?.shipping_method ?? transaction.shipping_method;
     const packageTrackingNumber = transaction.package?.tracking_number ?? transaction.tracking_number;
     const packageItems = transaction.package?.items ?? [];
-    const shippingContact = isSeller ? transaction.buyer.contact : transaction.seller.contact;
-    const shippingContactRole = isSeller ? (t('transaction.buyer') || 'Buyer') : (t('transaction.details.seller') || 'Seller');
+    const buyerShippingContact = transaction.buyer.contact;
+    const sellerContact = transaction.seller.contact;
 
     const handleMarkAsPaid = () => {
         if (confirm(t('transaction.mark_as_paid_confirm') || 'Are you sure you have completed the payment for this item?')) {
@@ -370,7 +370,7 @@ export default function Show({ transaction }: { transaction: Transaction }) {
                     </div>
                 )}
 
-                {isParticipant && shippingContact && (
+                {isSeller && buyerShippingContact && (
                     <Card className="rounded-[24px] border-[#dbeafe] bg-gradient-to-br from-white to-[#f8fbff] shadow-sm overflow-hidden">
                         <CardHeader className="px-6 py-5 border-b border-[#e8eef8]">
                             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -380,30 +380,70 @@ export default function Show({ transaction }: { transaction: Transaction }) {
                                         {t('transaction.contact.shipping_label') || 'Shipping label details'}
                                     </h2>
                                     <p className="mt-1 text-sm text-[#64748b]">
-                                        {shippingContactRole} #{isSeller ? transaction.buyer_id : transaction.seller_id}
+                                        {(t('transaction.buyer') || 'Buyer')} #{transaction.buyer_id}
                                     </p>
                                 </div>
                                 <CopyField
                                     label={t('transaction.contact.full_address') || 'Full address'}
-                                    value={formatFullAddress(shippingContact)}
+                                    value={formatFullAddress(buyerShippingContact)}
                                     compact
                                 />
                             </div>
                         </CardHeader>
                         <CardContent className="p-6">
                             <div className="grid gap-3 sm:grid-cols-2">
-                                <CopyField label={t('transaction.contact.first_name') || 'First name'} value={shippingContact.first_name} />
-                                <CopyField label={t('transaction.contact.family_name') || 'Family name'} value={shippingContact.family_name} />
-                                <CopyField label={t('Postal Code') || 'Postal Code'} value={shippingContact.postal_code} />
-                                <CopyField label={t('Prefecture') || 'Prefecture'} value={shippingContact.prefecture} />
-                                <CopyField label={t('City') || 'City'} value={shippingContact.city} />
-                                <CopyField label={t('Address Line 1') || 'Address Line 1'} value={shippingContact.address_line1} />
-                                <CopyField label={t('Address Line 2') || 'Address Line 2'} value={shippingContact.address_line2} />
+                                <CopyField label={t('transaction.contact.first_name') || 'First name'} value={buyerShippingContact.first_name} />
+                                <CopyField label={t('transaction.contact.family_name') || 'Family name'} value={buyerShippingContact.family_name} />
+                                <CopyField label={t('Postal Code') || 'Postal Code'} value={buyerShippingContact.postal_code} />
+                                <CopyField label={t('Prefecture') || 'Prefecture'} value={buyerShippingContact.prefecture} />
+                                <CopyField label={t('City') || 'City'} value={buyerShippingContact.city} />
+                                <CopyField label={t('Address Line 1') || 'Address Line 1'} value={buyerShippingContact.address_line1} />
+                                <CopyField label={t('Address Line 2') || 'Address Line 2'} value={buyerShippingContact.address_line2} />
                                 <CopyField
                                     label={t('Phone') || 'Phone'}
-                                    value={shippingContact.phone}
+                                    value={buyerShippingContact.phone}
                                     icon={<Phone size={14} />}
                                 />
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
+
+                {isBuyer && sellerContact && (
+                    <Card className="rounded-[20px] border-[#edf2f9] bg-white shadow-sm">
+                        <CardHeader className="px-5 py-4 border-b border-[#f0f2f5]">
+                            <h2 className="font-bold text-base text-[#0b1b32] flex items-center gap-2">
+                                <User size={18} className="text-[#0d9488]" />
+                                {t('transaction.details.seller') || 'Seller Info'}
+                            </h2>
+                        </CardHeader>
+                        <CardContent className="p-5">
+                            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className="h-11 w-11 rounded-full border border-[#e1e9f2] bg-[#f0f5fd] flex items-center justify-center text-base font-bold text-[#2b4b8f]">
+                                        {transaction.seller.name.charAt(0)}
+                                    </div>
+                                    <div>
+                                        <p className="font-bold text-[#1a263b]">
+                                            {sellerContact.full_name}
+                                        </p>
+                                        <p className="text-xs text-[#64748b]">
+                                            #{transaction.seller_id}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="grid gap-2 text-sm sm:min-w-72">
+                                    <div className="flex items-start gap-2 text-[#475569]">
+                                        <MapPin size={15} className="mt-0.5 shrink-0 text-[#0d9488]" />
+                                        <span>{formatFullAddress(sellerContact) || t('common.n_a')}</span>
+                                    </div>
+                                    {sellerContact.phone && (
+                                        <div className="flex items-center gap-2 text-[#475569]">
+                                            <Phone size={15} className="shrink-0 text-[#0d9488]" />
+                                            <span>{sellerContact.phone}</span>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </CardContent>
                     </Card>
@@ -701,26 +741,27 @@ export default function Show({ transaction }: { transaction: Transaction }) {
                         </CardContent>
                     </Card>
 
-                    {/* Seller Info */}
-                    <Card className="rounded-[24px] border-[#edf2f9] shadow-sm">
-                        <CardHeader className="px-6 py-4 border-b border-[#f0f2f5]">
-                            <h3 className="font-bold text-[#0b1b32] flex items-center gap-2">
-                                <User size={18} className="text-[#0d9488]" />
-                                {t('transaction.details.seller') || 'Seller Info'}
-                            </h3>
-                        </CardHeader>
-                        <CardContent className="p-6">
-                            <div className="flex items-center gap-3">
-                                <div className="h-10 w-10 rounded-full bg-[#f0f5fd] border border-[#e1e9f2] flex items-center justify-center font-bold text-[#2b4b8f]">
-                                    {transaction.seller.name.charAt(0)}
+                    {!isBuyer && (
+                        <Card className="rounded-[24px] border-[#edf2f9] shadow-sm">
+                            <CardHeader className="px-6 py-4 border-b border-[#f0f2f5]">
+                                <h3 className="font-bold text-[#0b1b32] flex items-center gap-2">
+                                    <User size={18} className="text-[#0d9488]" />
+                                    {t('transaction.details.seller') || 'Seller Info'}
+                                </h3>
+                            </CardHeader>
+                            <CardContent className="p-6">
+                                <div className="flex items-center gap-3">
+                                    <div className="h-10 w-10 rounded-full bg-[#f0f5fd] border border-[#e1e9f2] flex items-center justify-center font-bold text-[#2b4b8f]">
+                                        {transaction.seller.name.charAt(0)}
+                                    </div>
+                                    <div>
+                                        <p className="font-bold text-[#1a263b]">{transaction.seller.name}</p>
+                                        <p className="text-xs text-[#5f6c84]">{t('transaction.details.contact_seller') || 'Contact Seller'}</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p className="font-bold text-[#1a263b]">{transaction.seller.name}</p>
-                                    <p className="text-xs text-[#5f6c84]">{t('transaction.details.contact_seller') || 'Contact Seller'}</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
+                            </CardContent>
+                        </Card>
+                    )}
 
                     {/* Payment Info */}
                     <Card className="rounded-[24px] border-[#edf2f9] shadow-sm">

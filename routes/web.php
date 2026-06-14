@@ -96,6 +96,7 @@ Route::middleware(['real-user'])->group(function () {
 
         // Bidding and Buy Now routes
         Route::post('/listings/{listing}/bid', [BidController::class, 'store'])->name('listings.bid');
+        Route::delete('/bids/{bid}', [BidController::class, 'destroy'])->name('bids.destroy');
         Route::post('/listings/{listing}/buy-now', [TransactionController::class, 'buyNow'])->name('listings.buy-now');
 
         Route::post('/transactions/{transaction}/mark-as-paid', [TransactionController::class, 'markAsPaid'])->name('transactions.mark-as-paid');

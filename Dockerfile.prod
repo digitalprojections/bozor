@@ -17,6 +17,8 @@ RUN DOCKER_BUILD=1 npm run build
 # Multi-stage build: PHP application
 FROM php:8.4-fpm-alpine
 
+ARG PHPREDIS_VERSION=6.2.0
+
 # Install system dependencies
 RUN apk add --no-cache \
     curl \
@@ -27,9 +29,11 @@ RUN apk add --no-cache \
     nginx \
     supervisor \
     && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
-    && pecl install redis \
-    && docker-php-ext-enable redis \
-    && docker-php-ext-install pdo pdo_pgsql \
+    && mkdir -p /usr/src/php/ext/redis \
+    && curl -fsSL "https://github.com/phpredis/phpredis/archive/refs/tags/${PHPREDIS_VERSION}.tar.gz" -o /tmp/phpredis.tar.gz \
+    && tar -xzf /tmp/phpredis.tar.gz -C /usr/src/php/ext/redis --strip-components=1 \
+    && docker-php-ext-install redis pdo pdo_pgsql \
+    && rm -f /tmp/phpredis.tar.gz \
     && apk del .build-deps
 
 # Install Composer

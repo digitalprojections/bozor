@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
-import { Package, Info, FileText, Trash2 } from 'lucide-react';
+import { Package, Info, FileText, Trash2, Gavel } from 'lucide-react';
 import BazaarLayout from '@/layouts/bazaar-layout';
 import { cn } from '@/lib/utils';
 import { useTranslations } from '@/hooks/use-translations';
@@ -60,6 +60,7 @@ interface ListingProps {
         shipping_method?: 'kuroneko_yamato';
         shipping_cost_type?: 'free' | 'fixed' | 'location_based' | 'chakubarai';
         shipping_cost?: number | null;
+        can_delete?: boolean;
     };
     transaction?: {
         id: number;
@@ -71,6 +72,17 @@ interface ListingProps {
     } | null;
     recommendations?: any[];
     messages?: ListingMessage[];
+    ownerBids?: Array<{
+        id: number;
+        amount: number;
+        created_at: string;
+        can_delete: boolean;
+        bidder: {
+            id: number;
+            name: string;
+            avatar_url: string;
+        };
+    }>;
     is_watched?: boolean;
     seo?: {
         title?: string;
@@ -89,6 +101,7 @@ export default function Show({
     transaction = null,
     recommendations = [],
     messages = [],
+    ownerBids = [],
     is_watched = false,
     seo,
 }: ListingProps) {
@@ -111,7 +124,7 @@ export default function Show({
         seo?.description ?? listing.description.substring(0, 160);
     const seoImage = seo?.og_image ?? imageUrls[0];
     const seoImageAlt = seo?.og_image_alt ?? listing.title;
-    const hasBids = (listing.bids_count ?? 0) > 0;
+    const canDeleteListing = Boolean(listing.can_delete);
     const isOwner =
         auth?.user &&
         !auth.user.is_guest &&
@@ -123,6 +136,14 @@ export default function Show({
         listing.status === 'active';
     const markImageFailed = (index: number) => {
         setFailedImages((current) => new Set(current).add(index));
+    };
+
+    const deleteBid = (bidId: number) => {
+        if (confirm(t('listing.bid_delete_confirm'))) {
+            router.delete(`/bids/${bidId}`, {
+                preserveScroll: true,
+            });
+        }
     };
 
     const breadcrumbs: BreadcrumbItem[] = [
@@ -305,27 +326,27 @@ export default function Show({
 
                                     <div className="flex flex-col gap-4 sm:flex-row sm:gap-6 md:flex-col md:items-end md:gap-3">
                                         <div className="flex items-center gap-2">
-                                            {listing.status !== 'sold' ? (
-                                                <div className="flex items-center gap-2">
-                                                    {auth?.user &&
-                                                        !auth.user.is_guest &&
+                                            <div className="flex items-center gap-2">
+                                                {listing.status !== 'sold' &&
+                                                    auth?.user &&
+                                                    !auth.user.is_guest &&
+                                                    Number(listing.user.id) !==
                                                         Number(
-                                                            listing.user.id,
-                                                        ) !==
-                                                            Number(
-                                                                auth.user.id,
-                                                            ) && (
-                                                            <WatchButton
-                                                                listingId={
-                                                                    listing.id
-                                                                }
-                                                                isWatched={
-                                                                    is_watched
-                                                                }
-                                                            />
-                                                        )}
-                                                    {isOwner && (
-                                                        <div className="flex w-full items-center gap-2 sm:w-auto">
+                                                            auth.user.id,
+                                                        ) && (
+                                                        <WatchButton
+                                                            listingId={
+                                                                listing.id
+                                                            }
+                                                            isWatched={
+                                                                is_watched
+                                                            }
+                                                        />
+                                                    )}
+                                                {isOwner && (
+                                                    <div className="flex w-full items-center gap-2 sm:w-auto">
+                                                        {listing.status !==
+                                                            'sold' && (
                                                             <Link
                                                                 href={`/listings/${listing.id}/edit`}
                                                                 className="flex-1 sm:flex-none"
@@ -340,39 +361,43 @@ export default function Show({
                                                                     )}
                                                                 </Button>
                                                             </Link>
-                                                            {!hasBids && (
-                                                                <Button
-                                                                    variant="outline"
-                                                                    size="sm"
-                                                                    className="h-9 flex-1 rounded-full border-red-200 px-5 text-red-500 hover:bg-red-50 sm:h-10 sm:flex-none"
-                                                                    onClick={() => {
-                                                                        if (
-                                                                            confirm(
-                                                                                t(
-                                                                                    'listing.delete_confirm',
-                                                                                ),
-                                                                            )
-                                                                        ) {
-                                                                            router.delete(
-                                                                                `/listings/${listing.id}`,
-                                                                            );
-                                                                        }
-                                                                    }}
-                                                                >
-                                                                    <Trash2
-                                                                        size={
-                                                                            14
-                                                                        }
-                                                                        className="mr-1"
-                                                                    />
-                                                                    {t(
-                                                                        'common.delete',
-                                                                    )}
-                                                                </Button>
-                                                            )}
-                                                        </div>
+                                                        )}
+                                                        {canDeleteListing && (
+                                                            <Button
+                                                                variant="outline"
+                                                                size="sm"
+                                                                className="h-9 flex-1 rounded-full border-red-200 px-5 text-red-500 hover:bg-red-50 sm:h-10 sm:flex-none"
+                                                                onClick={() => {
+                                                                    if (
+                                                                        confirm(
+                                                                            t(
+                                                                                'listing.delete_confirm',
+                                                                            ),
+                                                                        )
+                                                                    ) {
+                                                                        router.delete(
+                                                                            `/listings/${listing.id}`,
+                                                                        );
+                                                                    }
+                                                                }}
+                                                            >
+                                                                <Trash2
+                                                                    size={14}
+                                                                    className="mr-1"
+                                                                />
+                                                                {t(
+                                                                    'common.delete',
+                                                                )}
+                                                            </Button>
+                                                        )}
+                                                    </div>
+                                                )}
+                                                {listing.status === 'sold' &&
+                                                    !canDeleteListing && (
+                                                        <SoldBadge />
                                                     )}
-                                                    {(!auth?.user ||
+                                                {listing.status !== 'sold' &&
+                                                    (!auth?.user ||
                                                         auth.user.is_guest) && (
                                                         <WatchButton
                                                             listingId={
@@ -383,10 +408,7 @@ export default function Show({
                                                             }
                                                         />
                                                     )}
-                                                </div>
-                                            ) : (
-                                                <SoldBadge />
-                                            )}
+                                            </div>
                                         </div>
 
                                         <div className="flex flex-wrap gap-3 text-[11px] font-medium tracking-wider text-[#64748b] uppercase md:flex-col md:items-end">
@@ -533,6 +555,77 @@ export default function Show({
                     buyerId={transaction?.buyer_id}
                     privateThread={Boolean(transaction)}
                 />
+
+                {isOwner && listing.is_auction && ownerBids.length > 0 && (
+                    <Card className="rounded-[16px] border-[#edf2f9] shadow-sm sm:rounded-[24px]">
+                        <CardHeader className="px-5 pt-6 pb-2 sm:px-8 sm:pt-8">
+                            <h2 className="flex flex-row items-center gap-2 text-lg font-bold text-[#0b1b32]">
+                                <Gavel
+                                    size={20}
+                                    className="text-[#0d9488]"
+                                />
+                                {t('listing.bids.manage_title')}
+                            </h2>
+                        </CardHeader>
+                        <CardContent className="p-5 pt-2 sm:p-8 sm:pt-4">
+                            <div className="divide-y divide-[#e5edf5] rounded-[14px] border border-[#eef5fd] bg-[#f8fbfe]">
+                                {ownerBids.map((bid) => (
+                                    <div
+                                        key={bid.id}
+                                        className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between"
+                                    >
+                                        <div className="flex min-w-0 items-center gap-3">
+                                            <img
+                                                src={bid.bidder.avatar_url}
+                                                alt=""
+                                                className="h-10 w-10 rounded-full object-cover"
+                                            />
+                                            <div className="min-w-0">
+                                                <div className="truncate text-sm font-bold text-[#0b1b32]">
+                                                    {bid.bidder.name}
+                                                </div>
+                                                <div className="text-xs text-[#64748b]">
+                                                    {new Date(
+                                                        bid.created_at,
+                                                    ).toLocaleString()}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center justify-between gap-3 sm:justify-end">
+                                            <PriceDisplay
+                                                price={bid.amount}
+                                                size="sm"
+                                            />
+                                            {bid.can_delete ? (
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="h-9 rounded-full border-red-200 px-4 text-red-600 hover:bg-red-50 hover:text-red-700"
+                                                    onClick={() =>
+                                                        deleteBid(bid.id)
+                                                    }
+                                                >
+                                                    <Trash2
+                                                        size={14}
+                                                        className="mr-1"
+                                                    />
+                                                    {t('common.delete')}
+                                                </Button>
+                                            ) : (
+                                                <span className="max-w-40 text-right text-xs font-medium text-[#64748b]">
+                                                    {t(
+                                                        'listing.bids.message_required',
+                                                    )}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
 
                 {/* Recommendations Section */}
                 <RecommendationsSection recommendations={recommendations} />

@@ -12,15 +12,19 @@ public/hot
 public/storage
 
 .env
+.env.*
 .env.backup
 .env.production
 auth.json
 bozorkey.pem
 storage/*.key
 storage/*.log
+storage/logs/*
 storage/framework/cache/data/*
 storage/framework/sessions/*
 storage/framework/views/*.php
+storage/framework/testing/*
+bootstrap/cache/*.php
 storage/app/public/*
 
 npm-debug.log

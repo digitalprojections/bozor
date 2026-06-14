@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Bid;
 use App\Models\Category;
 use App\Models\Listing;
+use App\Models\ListingMessage;
 use App\Models\Transaction;
 use App\Models\User;
 use Carbon\CarbonImmutable;
@@ -497,6 +498,139 @@ class AuctionBidTest extends TestCase
         $this->assertDatabaseHas('listings', [
             'id' => $listing->id,
             'deleted_at' => null,
+        ]);
+    }
+
+    public function test_seller_can_delete_completed_auction_listing_with_bids_after_three_days(): void
+    {
+        $seller = User::factory()->create();
+        $buyer = User::factory()->create();
+        $listing = $this->createAuction($seller, [
+            'status' => 'sold',
+        ]);
+
+        Bid::create([
+            'listing_id' => $listing->id,
+            'user_id' => $buyer->id,
+            'amount' => 1050,
+        ]);
+
+        Transaction::create([
+            'listing_id' => $listing->id,
+            'buyer_id' => $buyer->id,
+            'seller_id' => $seller->id,
+            'amount' => 1050,
+            'status' => Transaction::STATUS_RECEIVED,
+            'purchase_type' => Transaction::TYPE_AUCTION,
+            'completed_at' => now()->subDays(3)->subSecond(),
+        ]);
+
+        $this->actingAs($seller)
+            ->delete(route('listings.destroy', $listing))
+            ->assertRedirect(route('dashboard'));
+
+        $this->assertSoftDeleted('listings', [
+            'id' => $listing->id,
+        ]);
+    }
+
+    public function test_listing_owner_can_delete_bid_after_message_exchange_with_bidder(): void
+    {
+        $seller = User::factory()->create();
+        $buyer = User::factory()->create();
+        $secondBuyer = User::factory()->create();
+        $listing = $this->createAuction($seller, [
+            'price' => 1000,
+            'current_high_bid' => 1500,
+        ]);
+
+        $lowerBid = Bid::create([
+            'listing_id' => $listing->id,
+            'user_id' => $secondBuyer->id,
+            'amount' => 1200,
+        ]);
+        $deletedBid = Bid::create([
+            'listing_id' => $listing->id,
+            'user_id' => $buyer->id,
+            'amount' => 1500,
+        ]);
+
+        ListingMessage::create([
+            'listing_id' => $listing->id,
+            'questioner_id' => $buyer->id,
+            'seller_id' => $seller->id,
+            'question' => 'Can we discuss this bid?',
+            'answer' => 'Yes.',
+            'answered_at' => now(),
+        ]);
+
+        $this->actingAs($seller)
+            ->delete(route('bids.destroy', $deletedBid))
+            ->assertRedirect();
+
+        $this->assertDatabaseMissing('bids', [
+            'id' => $deletedBid->id,
+        ]);
+        $this->assertDatabaseHas('bids', [
+            'id' => $lowerBid->id,
+        ]);
+        $this->assertSame(1200, $listing->fresh()->current_high_bid);
+        $this->assertSame(1200, $listing->fresh()->display_price);
+    }
+
+    public function test_listing_owner_cannot_delete_bid_without_answered_message_exchange(): void
+    {
+        $seller = User::factory()->create();
+        $buyer = User::factory()->create();
+        $listing = $this->createAuction($seller);
+        $bid = Bid::create([
+            'listing_id' => $listing->id,
+            'user_id' => $buyer->id,
+            'amount' => 1050,
+        ]);
+
+        ListingMessage::create([
+            'listing_id' => $listing->id,
+            'questioner_id' => $buyer->id,
+            'seller_id' => $seller->id,
+            'question' => 'Can we discuss this bid?',
+        ]);
+
+        $this->actingAs($seller)
+            ->delete(route('bids.destroy', $bid))
+            ->assertForbidden();
+
+        $this->assertDatabaseHas('bids', [
+            'id' => $bid->id,
+        ]);
+    }
+
+    public function test_non_owner_cannot_delete_bid_with_message_exchange(): void
+    {
+        $seller = User::factory()->create();
+        $buyer = User::factory()->create();
+        $listing = $this->createAuction($seller);
+        $bid = Bid::create([
+            'listing_id' => $listing->id,
+            'user_id' => $buyer->id,
+            'amount' => 1050,
+        ]);
+
+        ListingMessage::create([
+            'listing_id' => $listing->id,
+            'questioner_id' => $buyer->id,
+            'seller_id' => $seller->id,
+            'question' => 'Can we discuss this bid?',
+            'answer' => 'Yes.',
+            'answered_at' => now(),
+        ]);
+
+        $this->actingAs($buyer)
+            ->delete(route('bids.destroy', $bid))
+            ->assertForbidden();
+
+        $this->assertDatabaseHas('bids', [
+            'id' => $bid->id,
         ]);
     }
 

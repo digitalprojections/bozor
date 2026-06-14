@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Bid;
 use App\Models\Category;
 use App\Models\Listing;
 use App\Models\ListingMessage;
@@ -160,8 +161,10 @@ class ListingController extends Controller
         $highestBid = $listing->bids()->orderBy('amount', 'desc')->first();
         $listing->setAttribute('minimum_bid', $listing->minimumBidAmount());
         $listing->setAttribute('is_highest_bidder', auth()->check() && $highestBid?->user_id === auth()->id());
+        $listing->setAttribute('can_delete', $this->canCurrentUserDeleteListing($listing));
         $transaction = $this->visibleTransactionFor($listing);
         $messages = $this->messagesForListing($listing, $transaction);
+        $ownerBids = $this->ownerBidsForListing($listing);
         $this->markMessageNotificationsRead($listing, $transaction);
 
         $recommendations = $listingService->getRecommendations(
@@ -258,6 +261,7 @@ class ListingController extends Controller
                 'seller_id' => $transaction->seller_id,
             ] : null,
             'messages' => $messages,
+            'ownerBids' => $ownerBids,
             'is_watched' => auth()->check() ? auth()->user()->watchedListings()->where('listing_id', $listing->id)->exists() : false,
             'recommendations' => $recommendations,
             'seo' => [
@@ -318,6 +322,38 @@ class ListingController extends Controller
             ->get();
 
         return $messages->map(fn (ListingMessage $message) => $this->messagePayload($message, (bool) $transaction))->values()->all();
+    }
+
+    private function ownerBidsForListing(Listing $listing): array
+    {
+        if (! auth()->check() || (int) $listing->user_id !== (int) auth()->id()) {
+            return [];
+        }
+
+        $answeredQuestionerIds = ListingMessage::query()
+            ->where('listing_id', $listing->id)
+            ->where('seller_id', $listing->user_id)
+            ->whereNotNull('answer')
+            ->pluck('questioner_id')
+            ->map(fn ($id) => (int) $id)
+            ->all();
+
+        return $listing->bids()
+            ->with('user')
+            ->get()
+            ->map(fn (Bid $bid) => [
+                'id' => $bid->id,
+                'amount' => $bid->amount,
+                'created_at' => $bid->created_at,
+                'can_delete' => in_array((int) $bid->user_id, $answeredQuestionerIds, true),
+                'bidder' => [
+                    'id' => $bid->user->id,
+                    'name' => $bid->user->masked_name,
+                    'avatar_url' => $bid->user->avatar_url,
+                ],
+            ])
+            ->values()
+            ->all();
     }
 
     private function messagePayload(ListingMessage $message, bool $canSeeFullNames): array
@@ -521,13 +557,16 @@ class ListingController extends Controller
     {
         $this->ensureListingIsOwnedByCurrentUser($listing);
 
-        if ($listing->hasBids()) {
-            abort(403, __('listing.bid_locked'));
+        if (! $this->canCurrentUserDeleteListing($listing)) {
+            abort(403, $listing->status === 'sold'
+                ? __('listing.delete_completed_wait')
+                : __('listing.bid_locked'));
         }
 
-        // Delete images from storage
-        foreach ($listing->images ?? [] as $imagePath) {
-            Storage::disk('public')->delete($imagePath);
+        if (! $listing->transactions()->where('status', '!=', Transaction::STATUS_CANCELLED)->exists()) {
+            foreach ($listing->images ?? [] as $imagePath) {
+                Storage::disk('public')->delete($imagePath);
+            }
         }
 
         $listing->delete();
@@ -540,6 +579,29 @@ class ListingController extends Controller
         if ((int) $listing->user_id !== (int) auth()->id()) {
             abort(403);
         }
+    }
+
+    private function canCurrentUserDeleteListing(Listing $listing): bool
+    {
+        if (! auth()->check() || (int) $listing->user_id !== (int) auth()->id()) {
+            return false;
+        }
+
+        if ($listing->status === 'sold') {
+            return $this->completedTransactionForDeletion($listing) !== null;
+        }
+
+        return ! $listing->hasBids();
+    }
+
+    private function completedTransactionForDeletion(Listing $listing): ?Transaction
+    {
+        return $listing->transactions()
+            ->where('status', Transaction::STATUS_RECEIVED)
+            ->whereNotNull('completed_at')
+            ->where('completed_at', '<=', now()->subDays(3))
+            ->latest('completed_at')
+            ->first();
     }
 
     private function mergeDefaultShippingInput(Request $request, ?Listing $listing = null): void
