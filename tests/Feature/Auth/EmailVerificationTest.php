@@ -22,6 +22,15 @@ class EmailVerificationTest extends TestCase
         $response->assertOk();
     }
 
+    public function test_unverified_user_is_redirected_to_verification_prompt_from_verified_routes(): void
+    {
+        $user = User::factory()->unverified()->create();
+
+        $this->actingAs($user)
+            ->get(route('dashboard'))
+            ->assertRedirect(route('verification.notice', absolute: false));
+    }
+
     public function test_email_can_be_verified()
     {
         $user = User::factory()->unverified()->create();

@@ -20,6 +20,7 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\VerificationRequestController;
 use App\Http\Controllers\WatchlistController;
 use App\Models\Listing;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -66,6 +67,14 @@ Route::get('/privacy', function () {
 Route::get('/terms', function () {
     return Inertia::render('terms');
 })->name('terms');
+
+Route::get('/email/verification-notification', function (Request $request) {
+    if ($request->user()?->hasVerifiedEmail()) {
+        return redirect()->route('dashboard');
+    }
+
+    return redirect()->route('verification.notice');
+})->middleware('auth');
 
 Route::middleware(['real-user'])->group(function () {
     Route::post('/user/accept-terms', function () {
