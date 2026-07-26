@@ -1,11 +1,12 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/react-starter-kit",
+    "name": "fuzalov/bozor",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "Bozor marketplace application.",
     "keywords": [
-        "laravel",
-        "framework"
+        "bozor",
+        "marketplace",
+        "japan"
     ],
     "license": "MIT",
     "require": {

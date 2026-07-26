@@ -30,7 +30,7 @@
             }
         </style>
 
-        <title inertia>{{ config('app.name', 'Laravel') }}</title>
+        <title inertia>{{ config('app.name', 'Bozor') }}</title>
 
         @php
             $seo = $page['props']['seo'] ?? [];

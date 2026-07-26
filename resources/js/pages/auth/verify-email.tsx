@@ -22,6 +22,13 @@ export default function VerifyEmail({ status }: { status?: string }) {
                 </div>
             )}
 
+            {status === 'verification-link-failed' && (
+                <div className="mb-4 text-center text-sm font-medium text-red-600">
+                    We could not send the verification email right now. Please
+                    try again later.
+                </div>
+            )}
+
             <Form {...send.form()} className="space-y-6 text-center">
                 {({ processing }) => (
                     <>

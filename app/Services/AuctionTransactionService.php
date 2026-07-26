@@ -27,6 +27,10 @@ class AuctionTransactionService
                 return $existingTransaction;
             }
 
+            if ($lockedListing->transactions()->exists()) {
+                return null;
+            }
+
             if (! $lockedListing->auctionCanSell()) {
                 return null;
             }

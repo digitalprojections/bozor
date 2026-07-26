@@ -21,6 +21,7 @@ import { ITEM_CONDITIONS, type ItemCondition } from '@/types/item-conditions';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import {
     ImageCompressor,
+    UnsupportedImageFormatError,
     type CompressionResult,
 } from '@/lib/image-compressor';
 import { ShippingSettingsCard } from '@/components/listings/shipping-settings-card';
@@ -74,6 +75,7 @@ type ImageSlot =
       };
 
 const MAX_IMAGES = 5;
+const IMAGE_UPLOAD_ACCEPT = 'image/jpeg,image/png,image/webp,image/gif';
 
 const isKeptExistingImageSlot = (
     slot: ImageSlot,
@@ -255,7 +257,11 @@ export default function EditListing({
             }
         } catch (error) {
             console.error('Compression failed:', error);
-            alert('Failed to process this image. Please try again.');
+            alert(
+                error instanceof UnsupportedImageFormatError
+                    ? t('listing.create.iphone_image_processing_failed')
+                    : t('listing.create.image_processing_failed'),
+            );
         } finally {
             setIsCompressing(false);
         }
@@ -863,7 +869,7 @@ export default function EditListing({
                                         <input
                                             id={inputId}
                                             type="file"
-                                            accept="image/*"
+                                            accept={IMAGE_UPLOAD_ACCEPT}
                                             onChange={(e) =>
                                                 handleImageSlotChange(index, e)
                                             }

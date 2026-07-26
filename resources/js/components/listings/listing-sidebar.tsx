@@ -199,7 +199,7 @@ export function ListingSidebar({
             url: listingShareUrl,
         };
 
-        if (navigator.share) {
+        if (shouldUseNativeShare()) {
             try {
                 const shareImage = await getShareImageFile(
                     shareImageUrl,
@@ -744,6 +744,21 @@ function getSuggestedBidAmount(currentPrice: number): number {
     const increment = Math.max(1, Math.ceil(currentPrice * 0.05));
 
     return currentPrice + increment;
+}
+
+function shouldUseNativeShare(): boolean {
+    if (
+        typeof window === 'undefined' ||
+        typeof navigator === 'undefined' ||
+        !navigator.share
+    ) {
+        return false;
+    }
+
+    const hasCoarsePointer =
+        window.matchMedia?.('(pointer: coarse)').matches ?? false;
+
+    return hasCoarsePointer || window.innerWidth < 768;
 }
 
 async function getShareImageFile(

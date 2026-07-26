@@ -13,6 +13,7 @@ import {
     ChevronRight,
     Truck,
     Boxes,
+    RotateCcw,
 } from 'lucide-react';
 import type { BreadcrumbItem } from '@/types';
 import { useState } from 'react';
@@ -42,6 +43,7 @@ interface SoldItem {
     sold_at: string;
     type: 'purchase' | 'auction';
     status: TransactionStatus;
+    can_repost?: boolean;
 }
 
 export default function SoldItems({ items }: { items: SoldItem[] }) {
@@ -101,6 +103,20 @@ export default function SoldItems({ items }: { items: SoldItem[] }) {
                 onStart: () => setPackageProcessing(true),
                 onFinish: () => setPackageProcessing(false),
                 onSuccess: () => setSelectedTransactionIds([]),
+            },
+        );
+    };
+
+    const repostListing = (item: SoldItem) => {
+        if (!confirm(t('listing.repost_confirm'))) {
+            return;
+        }
+
+        router.post(
+            `/listings/${item.id}/repost`,
+            {},
+            {
+                preserveScroll: true,
             },
         );
     };
@@ -360,13 +376,27 @@ export default function SoldItems({ items }: { items: SoldItem[] }) {
                                                     </>
                                                 )}
                                             </div>
-                                            <Link
-                                                href={`/transactions/${item.transaction_id}`}
-                                                className="flex items-center gap-1 rounded-lg px-4 py-2 text-sm font-bold text-[#2b4b8f] transition-colors group-hover:translate-x-1 hover:bg-[#f0f5fd]"
-                                            >
-                                                {t('common.view')}
-                                                <ChevronRight size={16} />
-                                            </Link>
+                                            <div className="flex items-center gap-2">
+                                                {item.can_repost && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            repostListing(item)
+                                                        }
+                                                        className="flex items-center gap-1 rounded-lg border border-[#b7ddd8] px-3 py-2 text-sm font-bold text-[#0f766e] transition-colors hover:bg-[#eefdf9]"
+                                                    >
+                                                        <RotateCcw size={15} />
+                                                        {t('listing.repost')}
+                                                    </button>
+                                                )}
+                                                <Link
+                                                    href={`/transactions/${item.transaction_id}`}
+                                                    className="flex items-center gap-1 rounded-lg px-4 py-2 text-sm font-bold text-[#2b4b8f] transition-colors group-hover:translate-x-1 hover:bg-[#f0f5fd]"
+                                                >
+                                                    {t('common.view')}
+                                                    <ChevronRight size={16} />
+                                                </Link>
+                                            </div>
                                         </div>
                                     </div>
                                 </CardContent>

@@ -14,7 +14,9 @@ use App\Services\ListingService;
 use App\Services\ListingSharePreviewService;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -67,7 +69,7 @@ class ListingController extends Controller
             'public_prefecture' => 'nullable|string|max:100',
             'public_city' => 'nullable|string|max:100',
             'images' => 'nullable|array|max:5',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:8192',
             'main_image_index' => 'nullable|integer|min:0|max:4',
             'status' => 'in:draft,active',
             'condition' => 'required|in:new,like_new,used_good,used_fair,for_parts',
@@ -162,6 +164,7 @@ class ListingController extends Controller
         $listing->setAttribute('minimum_bid', $listing->minimumBidAmount());
         $listing->setAttribute('is_highest_bidder', auth()->check() && $highestBid?->user_id === auth()->id());
         $listing->setAttribute('can_delete', $this->canCurrentUserDeleteListing($listing));
+        $listing->setAttribute('can_repost', $this->canCurrentUserRepostListing($listing));
         $transaction = $this->visibleTransactionFor($listing);
         $messages = $this->messagesForListing($listing, $transaction);
         $ownerBids = $this->ownerBidsForListing($listing);
@@ -455,7 +458,7 @@ class ListingController extends Controller
             'existing_images' => 'nullable|array|max:5',
             'existing_images.*' => 'string',
             'images' => 'nullable|array|max:5',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:8192',
             'main_image_selection' => 'nullable|string|max:512',
             'shipping_payer' => 'required|in:seller,buyer',
             'shipping_method' => 'required|in:kuroneko_yamato',
@@ -574,6 +577,63 @@ class ListingController extends Controller
         return redirect()->route('dashboard')->with('success', 'Listing deleted successfully.');
     }
 
+    public function repost(Request $request, Listing $listing)
+    {
+        $this->ensureListingIsOwnedByCurrentUser($listing);
+
+        if (! $this->canCurrentUserRepostListing($listing)) {
+            abort(403);
+        }
+
+        $profileAddressStatus = $this->sellerAddressStatus($request);
+        if (! $profileAddressStatus['complete']) {
+            throw ValidationException::withMessages([
+                'location' => __('Complete your personal address in profile settings before reposting this listing.'),
+            ]);
+        }
+
+        $newImagePaths = $this->duplicateListingImages($listing);
+
+        $newListing = DB::transaction(function () use ($listing, $newImagePaths) {
+            $listing->loadMissing('categories');
+
+            $newListing = Listing::create([
+                'user_id' => $listing->user_id,
+                'category_id' => $listing->category_id,
+                'title' => $listing->title,
+                'description' => $listing->description,
+                'price' => $listing->price,
+                'reserve_price' => $listing->is_auction ? $listing->getRawOriginal('reserve_price') : null,
+                'status' => 'active',
+                'listing_type' => 'item',
+                'images' => $newImagePaths,
+                'location' => $listing->location,
+                'public_prefecture' => $listing->public_prefecture,
+                'public_city' => $listing->public_city,
+                'shipping_payer' => $listing->shipping_payer,
+                'shipping_method' => $listing->shipping_method,
+                'shipping_cost_type' => $listing->shipping_cost_type,
+                'shipping_cost' => $listing->shipping_cost,
+                'condition' => $listing->condition,
+                'buy_now_price' => $listing->is_auction ? $listing->buy_now_price : null,
+                'is_auction' => $listing->is_auction,
+                'auction_end_date' => $this->repostedAuctionEndDate($listing),
+                'current_high_bid' => 0,
+            ]);
+
+            $categoryIds = $listing->categories->pluck('id');
+            if ($categoryIds->isNotEmpty()) {
+                $newListing->categories()->attach($categoryIds);
+            }
+
+            return $newListing;
+        });
+
+        return redirect()
+            ->route('listings.edit', $newListing)
+            ->with('success', __('Listing reposted successfully. Review it and save any changes.'));
+    }
+
     private function ensureListingIsOwnedByCurrentUser(Listing $listing): void
     {
         if ((int) $listing->user_id !== (int) auth()->id()) {
@@ -592,6 +652,11 @@ class ListingController extends Controller
         }
 
         return ! $listing->hasBids();
+    }
+
+    private function canCurrentUserRepostListing(Listing $listing): bool
+    {
+        return $listing->canBeRepostedBy(auth()->user());
     }
 
     private function completedTransactionForDeletion(Listing $listing): ?Transaction
@@ -719,6 +784,41 @@ class ListingController extends Controller
         }
 
         return $utcDate;
+    }
+
+    private function repostedAuctionEndDate(Listing $listing): ?CarbonImmutable
+    {
+        if (! $listing->is_auction) {
+            return null;
+        }
+
+        $durationInSeconds = 7 * 24 * 60 * 60;
+        if ($listing->created_at && $listing->auction_end_date && $listing->auction_end_date->gt($listing->created_at)) {
+            $durationInSeconds = $listing->created_at->diffInSeconds($listing->auction_end_date);
+        }
+
+        $durationInSeconds = min(max($durationInSeconds, 24 * 60 * 60), 30 * 24 * 60 * 60);
+
+        return CarbonImmutable::instance(now()->addSeconds($durationInSeconds))->utc();
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function duplicateListingImages(Listing $listing): array
+    {
+        return collect($listing->images ?? [])
+            ->filter(fn ($path) => is_string($path) && $path !== '' && Storage::disk('public')->exists($path))
+            ->map(function (string $path) {
+                $extension = pathinfo($path, PATHINFO_EXTENSION);
+                $newPath = 'listings/'.Str::uuid().($extension ? '.'.$extension : '');
+
+                Storage::disk('public')->copy($path, $newPath);
+
+                return $newPath;
+            })
+            ->values()
+            ->all();
     }
 
     /**

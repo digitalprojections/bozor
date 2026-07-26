@@ -19,6 +19,19 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+function Invoke-CheckedNative {
+    param(
+        [string]$Description,
+        [scriptblock]$Command
+    )
+
+    & $Command
+
+    if ($LASTEXITCODE -ne 0) {
+        throw "$Description failed with exit code $LASTEXITCODE"
+    }
+}
+
 function Invoke-RemoteDockerCleanup {
     param(
         [string]$Reason
@@ -61,7 +74,9 @@ Write-Host "Building $latest"
 $previousAppImage = $env:APP_IMAGE
 $env:APP_IMAGE = $latest
 try {
-    docker compose -f $ComposeFile build app
+    Invoke-CheckedNative "Docker build for $latest" {
+        docker compose -f $ComposeFile build app
+    }
 }
 finally {
     if ($null -eq $previousAppImage) {
@@ -72,13 +87,19 @@ finally {
 }
 
 Write-Host "Tagging $image"
-docker tag $latest $image
+Invoke-CheckedNative "Docker tag $image" {
+    docker tag $latest $image
+}
 
 Write-Host "Pushing $latest"
-docker push $latest
+Invoke-CheckedNative "Docker push $latest" {
+    docker push $latest
+}
 
 Write-Host "Pushing $image"
-docker push $image
+Invoke-CheckedNative "Docker push $image" {
+    docker push $image
+}
 
 Write-Host "Backing up remote deployment files"
 ssh -i $KeyPath $remote "mkdir -p $RemoteDir && cd $RemoteDir && if [ -f $ComposeFile ]; then cp $ComposeFile $ComposeFile.backup-$backupStamp; fi && if [ -f $RemoteEnvFile ]; then cp $RemoteEnvFile $RemoteEnvFile.backup-$backupStamp; fi && mkdir -p docker/caddy"

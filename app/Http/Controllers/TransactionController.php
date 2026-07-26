@@ -6,8 +6,8 @@ use App\Models\Listing;
 use App\Models\ListingMessage;
 use App\Models\Transaction;
 use App\Models\TransactionPackage;
-use App\Notifications\Seller\ListingSold;
 use App\Notifications\MessageReceived;
+use App\Notifications\Seller\ListingSold;
 use App\Notifications\TransactionUpdated;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -146,9 +146,10 @@ class TransactionController extends Controller
                 'status' => Transaction::STATUS_CANCELLED,
             ]);
 
-            // Revert listing to active
+            $listing = $transaction->listing;
+
             $transaction->listing->update([
-                'status' => 'active',
+                'status' => $listing->is_auction && $listing->auctionEnded() ? 'archived' : 'active',
             ]);
         });
 

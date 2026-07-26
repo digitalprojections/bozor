@@ -7,6 +7,7 @@ use App\Models\AdOrder;
 use App\Models\AdvertiserProfile;
 use App\Models\User;
 use App\Services\AdService;
+use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
@@ -145,6 +146,55 @@ class AdvertisingWorkflowTest extends TestCase
         $this->assertCount(1, $ads['top_banner']);
         $this->assertSame('Used cameras this week', $ads['top_banner'][0]['title']);
         $this->assertSame('Tokyo Camera Shop', $ads['top_banner'][0]['advertiser']);
+    }
+
+    public function test_admin_campaign_schedule_uses_submitted_timezone_offset(): void
+    {
+        $this->travelTo(CarbonImmutable::parse('2026-06-23 01:15:00', 'UTC'));
+
+        $admin = User::factory()->create(['email' => 'fuzalov@gmail.com']);
+        $user = User::factory()->create();
+        $profile = AdvertiserProfile::create([
+            'user_id' => $user->id,
+            'business_name' => 'Tokyo Camera Shop',
+            'contact_email' => 'ads@example.com',
+            'status' => AdvertiserProfile::STATUS_APPROVED,
+        ]);
+        $campaign = AdCampaign::create([
+            'advertiser_profile_id' => $profile->id,
+            'user_id' => $user->id,
+            'title' => 'Used cameras this week',
+            'description' => 'Shop inspected used cameras and lenses.',
+            'target_url' => 'https://example.com/cameras',
+            'placement' => 'footer',
+            'package_key' => 'footer_week',
+            'status' => AdCampaign::STATUS_PENDING_REVIEW,
+            'price_jpy' => 2000,
+        ]);
+        $campaign->order()->create([
+            'user_id' => $user->id,
+            'amount_jpy' => 2000,
+            'status' => AdOrder::STATUS_PENDING_CONFIRMATION,
+        ]);
+
+        $this
+            ->actingAs($admin)
+            ->patch(route('admin.advertising.campaigns.update', $campaign), [
+                'status' => AdCampaign::STATUS_ACTIVE,
+                'order_status' => AdOrder::STATUS_PAID,
+                'starts_at' => '2026-06-23T10:01',
+                'ends_at' => '2026-06-24T10:01',
+                'timezone_offset' => -540,
+                'priority' => 0,
+            ])
+            ->assertSessionHasNoErrors()
+            ->assertRedirect();
+
+        $campaign->refresh();
+
+        $this->assertTrue($campaign->starts_at->equalTo(CarbonImmutable::parse('2026-06-23 01:01:00', 'UTC')));
+        $this->assertTrue($campaign->ends_at->equalTo(CarbonImmutable::parse('2026-06-24 01:01:00', 'UTC')));
+        $this->assertSame('Used cameras this week', app(AdService::class)->layoutAds()['footer'][0]['title']);
     }
 
     public function test_service_returns_all_active_paid_campaigns_for_slot_rotation(): void

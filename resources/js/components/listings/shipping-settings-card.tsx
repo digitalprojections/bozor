@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { FreeShippingBadge } from '@/components/listings/free-shipping-badge';
+import { useTranslations } from '@/hooks/use-translations';
 
 export const YAMATO_RATE_TABLE_URL =
     'https://www.kuronekoyamato.co.jp/ytc/en/search/estimate/all_list.html';
@@ -28,14 +29,46 @@ interface ShippingSettingsCardProps {
 }
 
 const yamatoSizes = [
-    { size: '60', dimensions: 'Up to 60 cm', weight: 'Up to 2 kg' },
-    { size: '80', dimensions: 'Up to 80 cm', weight: 'Up to 5 kg' },
-    { size: '100', dimensions: 'Up to 100 cm', weight: 'Up to 10 kg' },
-    { size: '120', dimensions: 'Up to 120 cm', weight: 'Up to 15 kg' },
-    { size: '140', dimensions: 'Up to 140 cm', weight: 'Up to 20 kg' },
-    { size: '160', dimensions: 'Up to 160 cm', weight: 'Up to 25 kg' },
-    { size: '180', dimensions: 'Up to 180 cm', weight: 'Up to 30 kg' },
-    { size: '200', dimensions: 'Up to 200 cm', weight: 'Up to 30 kg' },
+    {
+        size: '60',
+        dimensionsKey: 'listing.create.yamato_size_60',
+        weightKey: 'listing.create.yamato_weight_2',
+    },
+    {
+        size: '80',
+        dimensionsKey: 'listing.create.yamato_size_80',
+        weightKey: 'listing.create.yamato_weight_5',
+    },
+    {
+        size: '100',
+        dimensionsKey: 'listing.create.yamato_size_100',
+        weightKey: 'listing.create.yamato_weight_10',
+    },
+    {
+        size: '120',
+        dimensionsKey: 'listing.create.yamato_size_120',
+        weightKey: 'listing.create.yamato_weight_15',
+    },
+    {
+        size: '140',
+        dimensionsKey: 'listing.create.yamato_size_140',
+        weightKey: 'listing.create.yamato_weight_20',
+    },
+    {
+        size: '160',
+        dimensionsKey: 'listing.create.yamato_size_160',
+        weightKey: 'listing.create.yamato_weight_25',
+    },
+    {
+        size: '180',
+        dimensionsKey: 'listing.create.yamato_size_180',
+        weightKey: 'listing.create.yamato_weight_30',
+    },
+    {
+        size: '200',
+        dimensionsKey: 'listing.create.yamato_size_200',
+        weightKey: 'listing.create.yamato_weight_30',
+    },
 ];
 
 export function ShippingSettingsCard({
@@ -43,6 +76,8 @@ export function ShippingSettingsCard({
     errors,
     setData,
 }: ShippingSettingsCardProps) {
+    const { t } = useTranslations();
+
     const chooseFreeShipping = () => {
         setData('shipping_payer', 'seller');
         setData('shipping_cost_type', 'free');
@@ -61,14 +96,15 @@ export function ShippingSettingsCard({
         <Card className="w-full max-w-full overflow-hidden rounded-none border-x-0 p-3 sm:rounded-lg sm:border-x sm:p-6">
             <div className="mb-4 flex flex-col gap-3 sm:mb-5 sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0">
-                    <h2 className="flex items-center gap-2 text-lg font-semibold sm:text-xl">
+                    <div className="text-xs font-bold tracking-wide text-[#0f766e] uppercase">
+                        {t('listing.create.step_2')}
+                    </div>
+                    <h2 className="flex items-center gap-2 text-lg font-semibold text-[#0b1b32] sm:text-xl">
                         <Truck className="h-5 w-5 text-[#0d9488]" />
-                        Shipping settings
+                        {t('listing.create.shipping_settings')}
                     </h2>
                     <p className="mt-1 text-sm text-muted-foreground">
-                        Kuroneko Yamato is the only shipping carrier for now.
-                        Choose whether shipping is free for the buyer or paid by
-                        the buyer.
+                        {t('listing.create.shipping_settings_desc')}
                     </p>
                 </div>
                 <a
@@ -77,7 +113,7 @@ export function ShippingSettingsCard({
                     rel="noreferrer"
                     className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-full border border-[#cbd5e1] px-4 text-sm font-semibold text-[#0f766e] transition hover:bg-[#f0fdfa] sm:w-auto"
                 >
-                    Check Yamato rates
+                    {t('listing.create.check_yamato_rates')}
                     <ExternalLink className="h-4 w-4" />
                 </a>
             </div>
@@ -91,11 +127,10 @@ export function ShippingSettingsCard({
                             </div>
                             <div className="min-w-0">
                                 <div className="text-sm font-bold text-[#0b1b32]">
-                                    Kuroneko Yamato TA-Q-BIN
+                                    {t('listing.create.yamato_service')}
                                 </div>
                                 <div className="text-xs text-[#5f6c84]">
-                                    Domestic Japan parcel delivery, sizes 60 to
-                                    200.
+                                    {t('listing.create.yamato_service_desc')}
                                 </div>
                             </div>
                         </div>
@@ -117,7 +152,9 @@ export function ShippingSettingsCard({
                                     <FreeShippingBadge />
                                 </span>
                                 <span className="block text-xs opacity-80">
-                                    Seller pays Yamato. Buyer sees ¥0 shipping.
+                                    {t(
+                                        'listing.create.seller_pays_shipping_desc',
+                                    )}
                                 </span>
                             </span>
                         </Button>
@@ -133,11 +170,12 @@ export function ShippingSettingsCard({
                         >
                             <span className="min-w-0">
                                 <span className="block font-bold">
-                                    Buyer pays shipping
+                                    {t('listing.create.buyer_pays_shipping')}
                                 </span>
                                 <span className="block text-xs opacity-80">
-                                    Enter a fixed cost, use destination-based
-                                    cost, or chakubarai.
+                                    {t(
+                                        'listing.create.buyer_pays_shipping_desc',
+                                    )}
                                 </span>
                             </span>
                         </Button>
@@ -156,7 +194,7 @@ export function ShippingSettingsCard({
                                     onClick={() => chooseBuyerPays('fixed')}
                                     className="h-auto rounded-lg p-3 whitespace-normal"
                                 >
-                                    Fixed cost
+                                    {t('listing.create.fixed_shipping_cost')}
                                 </Button>
                                 <Button
                                     type="button"
@@ -171,7 +209,9 @@ export function ShippingSettingsCard({
                                     }
                                     className="h-auto rounded-lg p-3 whitespace-normal"
                                 >
-                                    Decide by location
+                                    {t(
+                                        'listing.create.location_based_shipping',
+                                    )}
                                 </Button>
                                 <Button
                                     type="button"
@@ -185,14 +225,14 @@ export function ShippingSettingsCard({
                                     }
                                     className="h-auto rounded-lg p-3 whitespace-normal"
                                 >
-                                    Chakubarai
+                                    {t('listing.create.chakubarai_shipping')}
                                 </Button>
                             </div>
 
                             {data.shipping_cost_type === 'fixed' && (
                                 <div>
                                     <Label htmlFor="shipping_cost">
-                                        Shipping cost (¥)
+                                        {t('listing.create.shipping_cost_yen')}
                                     </Label>
                                     <Input
                                         id="shipping_cost"
@@ -221,10 +261,9 @@ export function ShippingSettingsCard({
                                 <div className="flex gap-3 rounded-lg border border-dashed border-[#cbd5e1] bg-white p-3 text-sm text-[#334155]">
                                     <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#0d9488]" />
                                     <span className="min-w-0">
-                                        Buyer sees that Yamato shipping will be
-                                        decided from the buyer&apos;s delivery
-                                        location. Use the official Yamato rate
-                                        table to confirm the amount.
+                                        {t(
+                                            'listing.create.location_based_shipping_desc',
+                                        )}
                                     </span>
                                 </div>
                             )}
@@ -233,9 +272,9 @@ export function ShippingSettingsCard({
                                 <div className="flex gap-3 rounded-lg border border-dashed border-[#cbd5e1] bg-white p-3 text-sm text-[#334155]">
                                     <Truck className="mt-0.5 h-4 w-4 shrink-0 text-[#0d9488]" />
                                     <span className="min-w-0">
-                                        Buyer pays the Yamato shipping charge on
-                                        delivery. Confirm availability and price
-                                        with Yamato before shipping.
+                                        {t(
+                                            'listing.create.chakubarai_shipping_desc',
+                                        )}
                                     </span>
                                 </div>
                             )}
@@ -252,10 +291,10 @@ export function ShippingSettingsCard({
                 <div className="overflow-hidden rounded-lg border border-[#dbe7f3]">
                     <div className="border-b border-[#dbe7f3] bg-[#f8fbfe] px-3 py-3 sm:px-4">
                         <div className="text-sm font-bold text-[#0b1b32]">
-                            Yamato size table
+                            {t('listing.create.yamato_size_table')}
                         </div>
                         <div className="text-xs text-[#5f6c84]">
-                            Actual rates depend on origin and destination.
+                            {t('listing.create.yamato_size_table_desc')}
                         </div>
                     </div>
                     <div className="max-h-[320px] overflow-auto">
@@ -263,13 +302,17 @@ export function ShippingSettingsCard({
                             <thead className="sticky top-0 bg-white text-[#5f6c84]">
                                 <tr>
                                     <th className="px-3 py-2 font-semibold sm:px-4">
-                                        Size
+                                        {t('listing.create.yamato_table_size')}
                                     </th>
                                     <th className="px-3 py-2 font-semibold sm:px-4">
-                                        Parcel
+                                        {t(
+                                            'listing.create.yamato_table_parcel',
+                                        )}
                                     </th>
                                     <th className="px-3 py-2 font-semibold sm:px-4">
-                                        Weight
+                                        {t(
+                                            'listing.create.yamato_table_weight',
+                                        )}
                                     </th>
                                 </tr>
                             </thead>
@@ -283,10 +326,10 @@ export function ShippingSettingsCard({
                                             {row.size}
                                         </td>
                                         <td className="px-3 py-2 text-[#1a263b] sm:px-4">
-                                            {row.dimensions}
+                                            {t(row.dimensionsKey)}
                                         </td>
                                         <td className="px-3 py-2 text-[#1a263b] sm:px-4">
-                                            {row.weight}
+                                            {t(row.weightKey)}
                                         </td>
                                     </tr>
                                 ))}

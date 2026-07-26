@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
-import { Package, Info, FileText, Trash2, Gavel } from 'lucide-react';
+import { Package, Info, FileText, Trash2, Gavel, RotateCcw } from 'lucide-react';
 import BazaarLayout from '@/layouts/bazaar-layout';
 import { cn } from '@/lib/utils';
 import { useTranslations } from '@/hooks/use-translations';
@@ -61,6 +61,7 @@ interface ListingProps {
         shipping_cost_type?: 'free' | 'fixed' | 'location_based' | 'chakubarai';
         shipping_cost?: number | null;
         can_delete?: boolean;
+        can_repost?: boolean;
     };
     transaction?: {
         id: number;
@@ -144,6 +145,14 @@ export default function Show({
                 preserveScroll: true,
             });
         }
+    };
+
+    const repostListing = () => {
+        if (!confirm(t('listing.repost_confirm'))) {
+            return;
+        }
+
+        router.post(`/listings/${listing.id}/repost`, {});
     };
 
     const breadcrumbs: BreadcrumbItem[] = [
@@ -387,6 +396,24 @@ export default function Show({
                                                                 />
                                                                 {t(
                                                                     'common.delete',
+                                                                )}
+                                                            </Button>
+                                                        )}
+                                                        {listing.can_repost && (
+                                                            <Button
+                                                                variant="outline"
+                                                                size="sm"
+                                                                className="h-9 flex-1 rounded-full border-[#b7ddd8] px-5 text-[#0f766e] hover:bg-[#eefdf9] sm:h-10 sm:flex-none"
+                                                                onClick={
+                                                                    repostListing
+                                                                }
+                                                            >
+                                                                <RotateCcw
+                                                                    size={14}
+                                                                    className="mr-1"
+                                                                />
+                                                                {t(
+                                                                    'listing.repost',
                                                                 )}
                                                             </Button>
                                                         )}

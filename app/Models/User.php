@@ -2,15 +2,18 @@
 
 namespace App\Models;
 
+use App\Helpers\AvatarHelper;
+use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, TwoFactorAuthenticatable;
 
     /**
@@ -155,6 +158,34 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Transaction::class, 'seller_id');
     }
 
+    public function following()
+    {
+        return $this->belongsToMany(User::class, 'user_follows', 'follower_id', 'followed_id')
+            ->withTimestamps();
+    }
+
+    public function followers()
+    {
+        return $this->belongsToMany(User::class, 'user_follows', 'followed_id', 'follower_id')
+            ->withTimestamps();
+    }
+
+    public function hasTransactionWith(User|int $user): bool
+    {
+        $userId = $user instanceof User ? $user->id : $user;
+
+        return Transaction::query()
+            ->where(function ($query) use ($userId) {
+                $query->where('buyer_id', $this->id)
+                    ->where('seller_id', $userId);
+            })
+            ->orWhere(function ($query) use ($userId) {
+                $query->where('buyer_id', $userId)
+                    ->where('seller_id', $this->id);
+            })
+            ->exists();
+    }
+
     public function latestVerificationRequest()
     {
         return $this->hasOne(VerificationRequest::class)->latestOfMany();
@@ -162,7 +193,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function isVerified(): bool
     {
-        return (bool)$this->is_verified;
+        return (bool) $this->is_verified;
     }
 
     /**
@@ -170,17 +201,17 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function getAvatarUrlAttribute(): string
     {
-        return \App\Helpers\AvatarHelper::getAvatarUrl($this);
+        return AvatarHelper::getAvatarUrl($this);
     }
 
     public function givenRatings()
     {
-        return $this->hasMany(Rating::class , 'rater_id');
+        return $this->hasMany(Rating::class, 'rater_id');
     }
 
     public function receivedRatings()
     {
-        return $this->hasMany(Rating::class , 'rated_user_id');
+        return $this->hasMany(Rating::class, 'rated_user_id');
     }
 
     public function getAverageRatingAttribute()
@@ -195,7 +226,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function watchedListings()
     {
-        return $this->belongsToMany(Listing::class , 'watchlists')
+        return $this->belongsToMany(Listing::class, 'watchlists')
             ->where('listing_type', 'item')
             ->withTimestamps();
     }
@@ -216,8 +247,11 @@ class User extends Authenticatable implements MustVerifyEmail
 
         $parts = explode(' ', $this->name);
         $maskedParts = array_map(function ($part) {
-            if (empty($part)) return '';
-            return mb_substr($part, 0, 1) . '****';
+            if (empty($part)) {
+                return '';
+            }
+
+            return mb_substr($part, 0, 1).'****';
         }, $parts);
 
         return implode(' ', $maskedParts);
@@ -241,8 +275,8 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function getStoreBannerUrlAttribute(): ?string
     {
-        return $this->store_banner 
-            ? \Illuminate\Support\Facades\Storage::disk('public')->url($this->store_banner) 
+        return $this->store_banner
+            ? Storage::disk('public')->url($this->store_banner)
             : null;
     }
 }

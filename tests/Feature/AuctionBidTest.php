@@ -11,6 +11,7 @@ use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
@@ -532,6 +533,133 @@ class AuctionBidTest extends TestCase
         $this->assertSoftDeleted('listings', [
             'id' => $listing->id,
         ]);
+    }
+
+    public function test_seller_can_repost_ended_auction_as_clean_active_listing(): void
+    {
+        Storage::fake('public');
+        Storage::disk('public')->put('listings/original.jpg', 'image-bytes');
+
+        $seller = User::factory()->create();
+        $buyer = User::factory()->create();
+        $listing = $this->createAuction($seller, [
+            'title' => 'Ended auction',
+            'price' => 1000,
+            'reserve_price' => 3000,
+            'auction_end_date' => now()->subMinute(),
+            'images' => ['listings/original.jpg'],
+        ]);
+        $listing->categories()->attach($listing->category_id);
+
+        Bid::create([
+            'listing_id' => $listing->id,
+            'user_id' => $buyer->id,
+            'amount' => 1500,
+        ]);
+
+        $this->actingAs($seller)
+            ->post(route('listings.repost', $listing))
+            ->assertRedirect();
+
+        $newListing = Listing::query()
+            ->where('user_id', $seller->id)
+            ->where('id', '!=', $listing->id)
+            ->firstOrFail();
+
+        $this->assertSame('Ended auction', $newListing->title);
+        $this->assertSame('active', $newListing->status);
+        $this->assertTrue($newListing->is_auction);
+        $this->assertTrue($newListing->auction_end_date->isFuture());
+        $this->assertSame(0, $newListing->current_high_bid);
+        $this->assertSame(0, $newListing->bids()->count());
+        $this->assertSame(0, $newListing->transactions()->count());
+        $this->assertSame([$listing->category_id], $newListing->categories()->pluck('categories.id')->all());
+        $this->assertNotSame($listing->images[0], $newListing->images[0]);
+        Storage::disk('public')->assertExists($newListing->images[0]);
+    }
+
+    public function test_seller_can_repost_cancelled_transaction_listing_without_recreating_old_auction_sale(): void
+    {
+        $seller = User::factory()->create();
+        $buyer = User::factory()->create();
+        $listing = $this->createAuction($seller, [
+            'status' => 'active',
+            'price' => 1000,
+            'reserve_price' => 1000,
+            'auction_end_date' => now()->subMinute(),
+        ]);
+
+        Bid::create([
+            'listing_id' => $listing->id,
+            'user_id' => $buyer->id,
+            'amount' => 1500,
+        ]);
+
+        Transaction::create([
+            'listing_id' => $listing->id,
+            'buyer_id' => $buyer->id,
+            'seller_id' => $seller->id,
+            'amount' => 1500,
+            'status' => Transaction::STATUS_CANCELLED,
+            'purchase_type' => Transaction::TYPE_AUCTION,
+        ]);
+
+        $this->actingAs($seller)
+            ->get(route('listings.show', $listing))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('listing.can_repost', true)
+                ->where('transaction', null)
+            );
+
+        $this->assertSame(1, $listing->transactions()->count());
+
+        $this->actingAs($seller)
+            ->post(route('listings.repost', $listing))
+            ->assertRedirect();
+
+        $newListing = Listing::query()
+            ->where('user_id', $seller->id)
+            ->where('id', '!=', $listing->id)
+            ->firstOrFail();
+
+        $this->assertSame('active', $newListing->status);
+        $this->assertTrue($newListing->auction_end_date->isFuture());
+        $this->assertSame(0, $newListing->bids()->count());
+        $this->assertSame(0, $newListing->transactions()->count());
+        $this->assertSame(1, $listing->transactions()->count());
+    }
+
+    public function test_listing_with_active_transaction_cannot_be_reposted(): void
+    {
+        $seller = User::factory()->create();
+        $buyer = User::factory()->create();
+        $listing = $this->createAuction($seller, [
+            'status' => 'sold',
+            'auction_end_date' => now()->subMinute(),
+        ]);
+
+        Transaction::create([
+            'listing_id' => $listing->id,
+            'buyer_id' => $buyer->id,
+            'seller_id' => $seller->id,
+            'amount' => 1500,
+            'status' => Transaction::STATUS_PENDING_PAYMENT,
+            'purchase_type' => Transaction::TYPE_AUCTION,
+        ]);
+
+        $this->actingAs($seller)
+            ->get(route('listings.show', $listing))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('listing.can_repost', false)
+            );
+
+        $this->actingAs($seller)
+            ->post(route('listings.repost', $listing))
+            ->assertForbidden();
+
+        $this->assertSame(1, Listing::where('user_id', $seller->id)->count());
     }
 
     public function test_listing_owner_can_delete_bid_after_message_exchange_with_bidder(): void

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Head, Link } from '@inertiajs/react';
-import { Star, Package, Calendar, CheckCircle2, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
+import { Star, Package, Calendar, CheckCircle2, Clock, ChevronLeft, ChevronRight, UserCheck, UserPlus, Users } from 'lucide-react';
 import BazaarLayout from '@/layouts/bazaar-layout';
 import { useTranslations } from '@/hooks/use-translations';
 import { Card, CardContent } from '@/components/ui/card';
@@ -8,11 +8,13 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ListingCard } from '@/components/listings/listing-card';
+import { LoginRequiredDialog } from '@/components/login-required-dialog';
 import { UserAvatar } from '@/components/user-avatar';
 import { cn } from '@/lib/utils';
 import { formatRating, roundedRating } from '@/lib/format';
-import type { BreadcrumbItem } from '@/types';
+import type { Auth, BreadcrumbItem } from '@/types';
 
 interface Rating {
     id: number;
@@ -54,6 +56,16 @@ interface PaginatedListings {
     prev_page_url: string | null;
 }
 
+interface Follower {
+    id: number;
+    name: string;
+    masked_name: string;
+    avatar_url: string;
+    avatar_source?: 'uploaded' | 'mascot' | 'generated' | 'google';
+    avatar_seed?: string;
+    created_at: string;
+}
+
 interface ProfileProps {
     profileUser: {
         id: number;
@@ -69,6 +81,10 @@ interface ProfileProps {
         store_name: string | null;
         store_description: string | null;
         store_banner_url: string | null;
+        followers_count: number;
+        is_following: boolean;
+        can_follow: boolean;
+        followers: Follower[];
     };
     activeListings: PaginatedListings;
     soldListings: PaginatedListings;
@@ -76,12 +92,37 @@ interface ProfileProps {
 
 export default function Show({ profileUser, activeListings, soldListings }: ProfileProps) {
     const { t } = useTranslations();
+    const { auth } = usePage<{ auth: Auth }>().props;
+    const [isFollowLoading, setIsFollowLoading] = React.useState(false);
+    const [loginRequiredOpen, setLoginRequiredOpen] = React.useState(false);
     const profileDisplayName = profileUser.masked_name || profileUser.name;
+    const isOwnProfile = auth.user?.id === profileUser.id;
 
     const breadcrumbs: BreadcrumbItem[] = [
         { title: t('marketplace.title'), href: '/marketplace' },
         { title: profileDisplayName, href: '#' },
     ];
+
+    const handleFollowToggle = () => {
+        if (!auth.user || auth.user.is_guest) {
+            setLoginRequiredOpen(true);
+            return;
+        }
+
+        setIsFollowLoading(true);
+
+        const options = {
+            preserveScroll: true,
+            onFinish: () => setIsFollowLoading(false),
+        };
+
+        if (profileUser.is_following) {
+            router.delete(`/users/${profileUser.id}/follow`, options);
+            return;
+        }
+
+        router.post(`/users/${profileUser.id}/follow`, {}, options);
+    };
 
     const Pagination = ({ pagination, preserveScroll = true }: { pagination: PaginatedListings, preserveScroll?: boolean }) => {
         if (pagination.last_page <= 1) return null;
@@ -196,9 +237,79 @@ export default function Show({ profileUser, activeListings, soldListings }: Prof
                                 )}
                             </div>
 
+                            {!isOwnProfile && (
+                                <Button
+                                    type="button"
+                                    onClick={handleFollowToggle}
+                                    disabled={isFollowLoading || !profileUser.can_follow}
+                                    className={cn(
+                                        "h-10 rounded-full px-5 font-bold",
+                                        profileUser.is_following
+                                            ? "bg-[#eef7f7] text-[#0f766e] hover:bg-[#d9eeee]"
+                                            : "bg-[#0d9488] text-white hover:bg-[#0f766e]"
+                                    )}
+                                    variant={profileUser.is_following ? "secondary" : "default"}
+                                >
+                                    {profileUser.is_following ? (
+                                        <UserCheck size={17} className={cn("mr-2", isFollowLoading && "animate-pulse")} />
+                                    ) : (
+                                        <UserPlus size={17} className={cn("mr-2", isFollowLoading && "animate-pulse")} />
+                                    )}
+                                    {profileUser.is_following ? (t('profile.following') || 'Following') : (t('profile.follow') || 'Follow')}
+                                </Button>
+                            )}
+
                             <Separator className="bg-[#f0f2f5]" />
 
                             <div className="w-full flex flex-col gap-4">
+                                <Dialog>
+                                    <DialogTrigger asChild>
+                                        <button
+                                            type="button"
+                                            className="flex items-center justify-between rounded-2xl px-3 py-2 text-left transition-colors hover:bg-[#f8fafc]"
+                                        >
+                                            <span className="text-sm text-[#5f6c84] font-medium flex items-center gap-2">
+                                                <Users size={16} className="text-[#5f6c84]" />
+                                                {t('profile.followers') || 'Followers'}
+                                            </span>
+                                            <span className="font-bold text-[#0b1b32] text-lg">{profileUser.followers_count}</span>
+                                        </button>
+                                    </DialogTrigger>
+                                    <DialogContent className="rounded-[24px] border-[#edf2f9] sm:max-w-md">
+                                        <DialogHeader>
+                                            <DialogTitle>{t('profile.followers') || 'Followers'}</DialogTitle>
+                                        </DialogHeader>
+                                        {profileUser.followers.length > 0 ? (
+                                            <div className="max-h-[420px] space-y-3 overflow-y-auto pr-1">
+                                                {profileUser.followers.map((follower) => (
+                                                    <Link
+                                                        key={follower.id}
+                                                        href={`/users/${follower.id}`}
+                                                        className="flex items-center gap-3 rounded-2xl border border-[#edf2f9] p-3 transition-colors hover:bg-[#f8fafc]"
+                                                    >
+                                                        <UserAvatar
+                                                            user={follower}
+                                                            className="h-11 w-11 border border-[#f0f5fd]"
+                                                            fallbackClassName="bg-[#f0f5fd] text-[#2b4b8f] font-bold"
+                                                            mascotSize={40}
+                                                        />
+                                                        <div className="min-w-0">
+                                                            <p className="truncate text-sm font-bold text-[#0b1b32]">{follower.name}</p>
+                                                            <p className="text-xs font-medium text-[#8ca1b9]">
+                                                                {new Date(follower.created_at).toLocaleDateString()}
+                                                            </p>
+                                                        </div>
+                                                    </Link>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div className="rounded-2xl border border-dashed border-[#e2e8f0] p-8 text-center">
+                                                <Users size={28} className="mx-auto mb-3 text-[#8ca1b9]" />
+                                                <p className="text-sm font-bold text-[#0b1b32]">{t('profile.no_followers') || 'No followers yet.'}</p>
+                                            </div>
+                                        )}
+                                    </DialogContent>
+                                </Dialog>
                                 <div className="flex items-center justify-between">
                                     <span className="text-sm text-[#5f6c84] font-medium">{t('rating.score')}</span>
                                     <div className="flex items-center gap-1.5 font-bold text-[#0b1b32]">
@@ -387,6 +498,10 @@ export default function Show({ profileUser, activeListings, soldListings }: Prof
                     </Tabs>
                 </div>
             </div>
+            <LoginRequiredDialog
+                open={loginRequiredOpen}
+                onOpenChange={setLoginRequiredOpen}
+            />
         </BazaarLayout>
     );
 }

@@ -49,7 +49,8 @@ class DashboardController extends Controller
             ->withCount(['bids', 'watchedBy'])
             ->withMax('bids', 'amount')
             ->latest()
-            ->get();
+            ->get()
+            ->each(fn (Listing $listing) => $listing->setAttribute('can_repost', $listing->canBeRepostedBy($user)));
 
         // Get recent transactions
         $transactions = Transaction::where('seller_id', $user->id)
@@ -196,6 +197,7 @@ class DashboardController extends Controller
                     'sold_at' => $transaction->created_at,
                     'status' => $transaction->status,
                     'type' => $transaction->purchase_type === Transaction::TYPE_AUCTION ? 'auction' : 'purchase',
+                    'can_repost' => $transaction->listing->canBeRepostedBy($transaction->seller),
                 ];
             });
 

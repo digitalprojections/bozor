@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
+use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Responses\LoginResponse;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -23,6 +24,10 @@ class FortifyServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(LoginResponseContract::class, LoginResponse::class);
+        $this->app->bind(
+            \Laravel\Fortify\Http\Controllers\EmailVerificationNotificationController::class,
+            EmailVerificationNotificationController::class,
+        );
     }
 
     /**

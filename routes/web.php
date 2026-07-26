@@ -1,9 +1,9 @@
 <?php
 
-use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Admin\AdvertisingController as AdminAdvertisingController;
-use App\Http\Controllers\Admin\VerificationController;
 use App\Http\Controllers\AdCampaignController;
+use App\Http\Controllers\Admin\AdvertisingController as AdminAdvertisingController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\VerificationController;
 use App\Http\Controllers\AdvertiserController;
 use App\Http\Controllers\Auth\SocialiteController;
 use App\Http\Controllers\BidController;
@@ -86,6 +86,8 @@ Route::middleware(['real-user'])->group(function () {
     // Watchlist routes
     Route::get('/watchlist', [WatchlistController::class, 'index'])->name('watchlist.index');
     Route::post('/watchlist/{listing}/toggle', [WatchlistController::class, 'toggle'])->name('watchlist.toggle');
+    Route::post('/users/{user}/follow', [ProfileController::class, 'follow'])->name('profile.follow');
+    Route::delete('/users/{user}/follow', [ProfileController::class, 'unfollow'])->name('profile.unfollow');
     Route::post('/listings/{listing}/reports', [ListingReportController::class, 'store'])->name('listings.reports.store');
     Route::post('/listings/{listing}/messages', [ListingMessageController::class, 'storeForListing'])->name('listings.messages.store');
     Route::patch('/listing-messages/{message}/answer', [ListingMessageController::class, 'answer'])->name('listing-messages.answer');
@@ -101,6 +103,7 @@ Route::middleware(['real-user'])->group(function () {
         Route::post('/listings', [ListingController::class, 'store'])->name('listings.store');
         Route::get('/listings/{listing}/edit', [ListingController::class, 'edit'])->name('listings.edit');
         Route::patch('/listings/{listing}', [ListingController::class, 'update'])->name('listings.update');
+        Route::post('/listings/{listing}/repost', [ListingController::class, 'repost'])->name('listings.repost');
         Route::delete('/listings/{listing}', [ListingController::class, 'destroy'])->name('listings.destroy');
 
         // Bidding and Buy Now routes
@@ -151,10 +154,10 @@ Route::middleware(['auth', 'admin'])
         Route::patch('/advertising/profiles/{profile}', [AdminAdvertisingController::class, 'updateProfile'])->name('advertising.profiles.update');
         Route::patch('/advertising/campaigns/{campaign}', [AdminAdvertisingController::class, 'updateCampaign'])->name('advertising.campaigns.update');
 
-        Route::get('/reports', [\App\Http\Controllers\Admin\ListingReportController::class, 'index'])->name('reports.index');
-        Route::patch('/reports/{report}', [\App\Http\Controllers\Admin\ListingReportController::class, 'update'])->name('reports.update');
-        Route::post('/reports/{report}/listing-action', [\App\Http\Controllers\Admin\ListingReportController::class, 'listingAction'])->name('reports.listing-action');
-        Route::post('/reports/{report}/users/{user}/action', [\App\Http\Controllers\Admin\ListingReportController::class, 'userAction'])->name('reports.user-action');
+        Route::get('/reports', [App\Http\Controllers\Admin\ListingReportController::class, 'index'])->name('reports.index');
+        Route::patch('/reports/{report}', [App\Http\Controllers\Admin\ListingReportController::class, 'update'])->name('reports.update');
+        Route::post('/reports/{report}/listing-action', [App\Http\Controllers\Admin\ListingReportController::class, 'listingAction'])->name('reports.listing-action');
+        Route::post('/reports/{report}/users/{user}/action', [App\Http\Controllers\Admin\ListingReportController::class, 'userAction'])->name('reports.user-action');
 
         Route::get('/verifications', [VerificationController::class, 'index'])->name('verifications.index');
         Route::get('/verifications/{id}', [VerificationController::class, 'show'])->name('verifications.show');

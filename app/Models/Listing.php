@@ -285,6 +285,27 @@ class Listing extends Model
         return $this->auctionEnded();
     }
 
+    public function canBeRepostedBy(?User $user): bool
+    {
+        if (! $user || (int) $this->user_id !== (int) $user->id || $this->isAdvertisement()) {
+            return false;
+        }
+
+        if ($this->transactions()->where('status', '!=', Transaction::STATUS_CANCELLED)->exists()) {
+            return false;
+        }
+
+        if ($this->transactions()->where('status', Transaction::STATUS_CANCELLED)->exists()) {
+            return true;
+        }
+
+        if ($this->is_auction && $this->auctionEnded()) {
+            return true;
+        }
+
+        return in_array($this->status, ['archived'], true);
+    }
+
     public function watchedBy()
     {
         return $this->belongsToMany(User::class, 'watchlists')->withTimestamps();

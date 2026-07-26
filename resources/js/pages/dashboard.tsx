@@ -12,6 +12,7 @@ import {
     MapPin,
     Package,
     ReceiptText,
+    RotateCcw,
     ShoppingBag,
     Tag,
     Trash2,
@@ -34,6 +35,7 @@ type DashboardListing = {
     watched_by_count?: number;
     categories?: { id: number; name: string }[];
     transactions?: { id: number; status: string; amount: number }[];
+    can_repost?: boolean;
 };
 
 export default function Dashboard({
@@ -78,6 +80,20 @@ export default function Dashboard({
         router.delete(`/listings/${listing.id}`, {
             preserveScroll: true,
         });
+    };
+
+    const repostListing = (listing: DashboardListing) => {
+        if (!confirm(t('listing.repost_confirm'))) {
+            return;
+        }
+
+        router.post(
+            `/listings/${listing.id}/repost`,
+            {},
+            {
+                preserveScroll: true,
+            },
+        );
     };
 
     return (
@@ -314,6 +330,20 @@ export default function Dashboard({
                                                     {t('common.view')}
                                                 </Link>
                                             </Button>
+                                            {listing.can_repost && (
+                                                <Button
+                                                    type="button"
+                                                    size="sm"
+                                                    variant="outline"
+                                                    onClick={() =>
+                                                        repostListing(listing)
+                                                    }
+                                                    className="h-8 justify-start rounded-[4px] border-[#b7ddd8] text-[#0f766e] hover:bg-[#eefdf9] sm:col-span-1"
+                                                >
+                                                    <RotateCcw size={14} />
+                                                    {t('listing.repost')}
+                                                </Button>
+                                            )}
                                         </div>
                                     </CardContent>
                                 </Card>

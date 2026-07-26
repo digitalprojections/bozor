@@ -234,6 +234,7 @@ function CampaignRow({
             order_status: orderStatus,
             starts_at: startsAt,
             ends_at: endsAt,
+            timezone_offset: new Date().getTimezoneOffset(),
             priority,
             admin_notes: adminNotes,
         }, { preserveScroll: true });
@@ -386,7 +387,10 @@ function toInputDateTime(date?: string | null) {
     if (Number.isNaN(parsed.getTime())) {
         return '';
     }
-    return parsed.toISOString().slice(0, 16);
+
+    const local = new Date(parsed.getTime() - parsed.getTimezoneOffset() * 60_000);
+
+    return local.toISOString().slice(0, 16);
 }
 
 function statusClass(status: string) {

@@ -93,12 +93,14 @@ class AdvertisingController extends Controller
             ])],
             'starts_at' => ['nullable', 'date'],
             'ends_at' => ['nullable', 'date', 'after:starts_at'],
+            'timezone_offset' => ['nullable', 'integer', 'min:-840', 'max:840'],
             'priority' => ['required', 'integer', 'min:0', 'max:1000'],
             'admin_notes' => ['nullable', 'string', 'max:2000'],
         ]);
 
-        $startsAt = filled($validated['starts_at'] ?? null) ? CarbonImmutable::parse($validated['starts_at']) : null;
-        $endsAt = filled($validated['ends_at'] ?? null) ? CarbonImmutable::parse($validated['ends_at']) : null;
+        $timezoneOffset = (int) ($validated['timezone_offset'] ?? 0);
+        $startsAt = $this->parseLocalDateTime($validated['starts_at'] ?? null, $timezoneOffset);
+        $endsAt = $this->parseLocalDateTime($validated['ends_at'] ?? null, $timezoneOffset);
 
         $campaign->update([
             'status' => $validated['status'],
@@ -121,5 +123,16 @@ class AdvertisingController extends Controller
         ]);
 
         return back()->with('success', __('Ad campaign updated.'));
+    }
+
+    private function parseLocalDateTime(?string $value, int $timezoneOffset): ?CarbonImmutable
+    {
+        if (blank($value)) {
+            return null;
+        }
+
+        return CarbonImmutable::parse($value, 'UTC')
+            ->addMinutes($timezoneOffset)
+            ->utc();
     }
 }
