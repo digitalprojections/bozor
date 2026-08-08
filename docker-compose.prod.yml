@@ -1,3 +1,9 @@
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "20m"
+    max-file: "3"
+
 services:
   app:
     image: ${APP_IMAGE:-fuzalov/bozor-app:latest}
@@ -6,6 +12,7 @@ services:
       dockerfile: Dockerfile.prod
     container_name: ${APP_CONTAINER_NAME:-bozor-app}
     restart: always
+    logging: *default-logging
     working_dir: /var/www/html
     environment:
       APP_NAME: ${APP_NAME:-Bozor}
@@ -13,6 +20,10 @@ services:
       APP_DEBUG: ${APP_DEBUG:-false}
       APP_KEY: ${APP_KEY}
       APP_URL: ${APP_URL}
+      LOG_CHANNEL: ${LOG_CHANNEL:-stack}
+      LOG_STACK: ${LOG_STACK:-single}
+      LOG_LEVEL: ${LOG_LEVEL:-warning}
+      LOG_DEPRECATIONS_CHANNEL: ${LOG_DEPRECATIONS_CHANNEL:-null}
       DB_CONNECTION: pgsql
       DB_HOST: postgres
       DB_PORT: 5432
@@ -49,6 +60,8 @@ services:
     volumes:
       - app_public_storage:/var/www/html/storage/app/public
       - app_logs:/var/www/html/storage/logs
+      - ./docker/nginx/default.conf:/etc/nginx/http.d/default.conf:ro
+      - ./docker/supervisor/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf:ro
     depends_on:
       postgres:
         condition: service_healthy
@@ -68,6 +81,7 @@ services:
     image: caddy:2-alpine
     container_name: ${CADDY_CONTAINER_NAME:-bozor-caddy}
     restart: always
+    logging: *default-logging
     environment:
       APP_DOMAIN: ${APP_DOMAIN}
       APP_UPSTREAM: ${APP_UPSTREAM:-bozor-app:80}
@@ -91,6 +105,7 @@ services:
     image: postgres:16-alpine
     container_name: ${POSTGRES_CONTAINER_NAME:-bozor-postgres}
     restart: always
+    logging: *default-logging
     environment:
       POSTGRES_DB: ${DB_DATABASE}
       POSTGRES_USER: ${DB_USERNAME}
@@ -109,6 +124,7 @@ services:
     image: redis:7-alpine
     container_name: ${REDIS_CONTAINER_NAME:-bozor-redis}
     restart: always
+    logging: *default-logging
     command: redis-server --appendonly yes
     volumes:
       - redis_data:/data

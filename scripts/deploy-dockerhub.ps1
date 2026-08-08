@@ -104,8 +104,11 @@ Invoke-CheckedNative "Docker push $image" {
 Write-Host "Backing up remote deployment files"
 ssh -i $KeyPath $remote "mkdir -p $RemoteDir && cd $RemoteDir && if [ -f $ComposeFile ]; then cp $ComposeFile $ComposeFile.backup-$backupStamp; fi && if [ -f $RemoteEnvFile ]; then cp $RemoteEnvFile $RemoteEnvFile.backup-$backupStamp; fi && mkdir -p docker/caddy"
 
-Write-Host "Uploading compose and Caddy config"
+Write-Host "Uploading compose and runtime config"
 scp -i $KeyPath $ComposeFile "${remote}:${RemoteDir}/$ComposeFile"
+ssh -i $KeyPath $remote "mkdir -p ${RemoteDir}/docker/nginx ${RemoteDir}/docker/supervisor"
+scp -i $KeyPath docker/nginx/default.conf "${remote}:${RemoteDir}/docker/nginx/default.conf"
+scp -i $KeyPath docker/supervisor/supervisord.conf "${remote}:${RemoteDir}/docker/supervisor/supervisord.conf"
 if ($UploadCaddyConfig) {
     scp -i $KeyPath docker/caddy/Caddyfile "${remote}:${RemoteDir}/docker/caddy/Caddyfile"
 }
