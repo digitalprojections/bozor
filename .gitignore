@@ -32,6 +32,7 @@ Homestead.json
 auth.json
 bozor_database
 *.zip
+.migration/
 
 # Unwanted for Deployment
 .cursor/
