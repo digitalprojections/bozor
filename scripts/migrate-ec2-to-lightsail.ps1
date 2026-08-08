@@ -134,7 +134,7 @@ if (-not $SkipRestore) {
     }
 
     Invoke-CheckedNative "Restore target Postgres database" {
-        ssh -i $TargetKeyPath -o StrictHostKeyChecking=no $targetRemote "docker exec $TargetPostgresContainer sh -c 'pg_restore --clean --if-exists --no-owner -U ""`$POSTGRES_USER"" -d ""`$POSTGRES_DB""' < ${remoteBackupDir}/${postgresDumpFile}"
+        ssh -i $TargetKeyPath -o StrictHostKeyChecking=no $targetRemote "docker exec -i $TargetPostgresContainer sh -c 'pg_restore --clean --if-exists --no-owner -U ""`$POSTGRES_USER"" -d ""`$POSTGRES_DB""' < ${remoteBackupDir}/${postgresDumpFile}"
     }
 
     Invoke-CheckedNative "Restart target stack after data restore" {
