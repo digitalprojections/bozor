@@ -42,7 +42,9 @@ $deployArgs = @(
     "-HealthUrl",
     $HealthUrl,
     "-PublicNetworkName",
-    "bozor-public"
+    "bozor-public",
+    "-RemoteComposeCommand",
+    "docker compose"
 )
 
 if ($ImageTag) {

@@ -12,6 +12,7 @@ param(
     [string]$AppContainerName = "bozor-app",
     [string]$HealthUrl = "https://bazaarjapan.link/health",
     [string]$PublicNetworkName = "bozor-public",
+    [string]$RemoteComposeCommand = "docker-compose",
     [switch]$SkipLocalDockerCleanup,
     [switch]$SkipRemoteImagePrune,
     [switch]$UploadCaddyConfig
@@ -121,10 +122,10 @@ if (-not $SkipRemoteImagePrune) {
 }
 
 Write-Host "Pulling and recreating stack"
-ssh -i $KeyPath $remote "docker network create $PublicNetworkName 2>/dev/null || true && cd $RemoteDir && docker-compose --env-file $RemoteEnvFile -p $ComposeProjectName -f $ComposeFile pull app && docker-compose --env-file $RemoteEnvFile -p $ComposeProjectName -f $ComposeFile up -d --force-recreate"
+ssh -i $KeyPath $remote "docker network create $PublicNetworkName 2>/dev/null || true && cd $RemoteDir && $RemoteComposeCommand --env-file $RemoteEnvFile -p $ComposeProjectName -f $ComposeFile pull app && $RemoteComposeCommand --env-file $RemoteEnvFile -p $ComposeProjectName -f $ComposeFile up -d --force-recreate"
 
 Write-Host "Running Laravel post-deploy commands"
-ssh -i $KeyPath $remote "cd $RemoteDir && docker-compose --env-file $RemoteEnvFile -p $ComposeProjectName -f $ComposeFile exec -T app php artisan migrate --force && docker-compose --env-file $RemoteEnvFile -p $ComposeProjectName -f $ComposeFile exec -T app php artisan config:cache && docker-compose --env-file $RemoteEnvFile -p $ComposeProjectName -f $ComposeFile exec -T app php artisan route:cache && docker-compose --env-file $RemoteEnvFile -p $ComposeProjectName -f $ComposeFile exec -T app php artisan view:cache"
+ssh -i $KeyPath $remote "cd $RemoteDir && $RemoteComposeCommand --env-file $RemoteEnvFile -p $ComposeProjectName -f $ComposeFile exec -T app php artisan migrate --force && $RemoteComposeCommand --env-file $RemoteEnvFile -p $ComposeProjectName -f $ComposeFile exec -T app php artisan config:cache && $RemoteComposeCommand --env-file $RemoteEnvFile -p $ComposeProjectName -f $ComposeFile exec -T app php artisan route:cache && $RemoteComposeCommand --env-file $RemoteEnvFile -p $ComposeProjectName -f $ComposeFile exec -T app php artisan view:cache"
 
 Write-Host "Verifying deployment"
 ssh -i $KeyPath $remote "docker inspect $AppContainerName --format='{{.Config.Image}} {{.State.Health.Status}}'"

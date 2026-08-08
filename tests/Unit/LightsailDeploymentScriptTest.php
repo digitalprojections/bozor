@@ -16,8 +16,17 @@ class LightsailDeploymentScriptTest extends TestCase
         $this->assertStringContainsString('scripts/deploy-dockerhub.ps1', $script);
         $this->assertStringContainsString('docker-compose.lightsail.yml', $script);
         $this->assertStringContainsString('http://127.0.0.1:8088/health', $script);
+        $this->assertStringContainsString('docker compose', $script);
         $this->assertStringContainsString('"bozor"', $script);
         $this->assertStringNotContainsString('"ec2-user"', $script);
+    }
+
+    public function test_shared_dockerhub_deploy_keeps_remote_compose_command_configurable(): void
+    {
+        $script = file_get_contents(dirname(__DIR__, 2).'/scripts/deploy-dockerhub.ps1');
+
+        $this->assertStringContainsString('[string]$RemoteComposeCommand = "docker-compose"', $script);
+        $this->assertStringContainsString('$RemoteComposeCommand --env-file $RemoteEnvFile', $script);
     }
 
     public function test_lightsail_compose_uses_localhost_port_without_caddy(): void
