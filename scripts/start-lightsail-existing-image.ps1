@@ -30,7 +30,7 @@ function Invoke-CheckedNative {
 $remote = "${User}@${HostName}"
 
 Invoke-CheckedNative "Prepare Lightsail deployment directories" {
-    ssh -i $KeyPath -o StrictHostKeyChecking=no $remote "mkdir -p $RemoteDir docker/nginx docker/supervisor"
+    ssh -i $KeyPath -o StrictHostKeyChecking=no $remote "mkdir -p $RemoteDir $RemoteDir/docker/nginx $RemoteDir/docker/supervisor"
 }
 
 Invoke-CheckedNative "Upload Lightsail compose file" {

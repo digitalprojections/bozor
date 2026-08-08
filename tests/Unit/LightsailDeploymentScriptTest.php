@@ -58,6 +58,7 @@ class LightsailDeploymentScriptTest extends TestCase
 
         $this->assertStringContainsString('[Parameter(Mandatory = $true)]', $script);
         $this->assertStringContainsString('[string]$AppImage', $script);
+        $this->assertStringContainsString('$RemoteDir/docker/nginx', $script);
         $this->assertStringContainsString('docker compose --env-file $RemoteEnvFile', $script);
         $this->assertStringContainsString('docker compose --env-file $RemoteEnvFile -p $ComposeProjectName -f $ComposeFile pull app', $script);
         $this->assertStringNotContainsString('docker push', $script);
