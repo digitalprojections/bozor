@@ -52,6 +52,18 @@ class LightsailDeploymentScriptTest extends TestCase
         $this->assertStringContainsString('sudo nginx -t', $nginx);
     }
 
+    public function test_existing_image_lightsail_start_does_not_push_new_image(): void
+    {
+        $script = file_get_contents(dirname(__DIR__, 2).'/scripts/start-lightsail-existing-image.ps1');
+
+        $this->assertStringContainsString('[Parameter(Mandatory = $true)]', $script);
+        $this->assertStringContainsString('[string]$AppImage', $script);
+        $this->assertStringContainsString('docker compose --env-file $RemoteEnvFile', $script);
+        $this->assertStringContainsString('docker compose --env-file $RemoteEnvFile -p $ComposeProjectName -f $ComposeFile pull app', $script);
+        $this->assertStringNotContainsString('docker push', $script);
+        $this->assertStringNotContainsString('docker build', $script);
+    }
+
     public function test_migration_script_targets_active_ec2_volumes_and_ignored_backup_folder(): void
     {
         $script = file_get_contents(dirname(__DIR__, 2).'/scripts/migrate-ec2-to-lightsail.ps1');
