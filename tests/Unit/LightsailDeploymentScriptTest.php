@@ -72,6 +72,8 @@ class LightsailDeploymentScriptTest extends TestCase
 
         $this->assertStringContainsString('pg_dump', $script);
         $this->assertStringContainsString('pg_restore', $script);
+        $this->assertStringContainsString('stop app redis', $script);
+        $this->assertStringContainsString('up -d --force-recreate', $script);
         $this->assertStringNotContainsString('ec2-user_postgres_data', $script);
         $this->assertStringContainsString('ec2-user_redis_data', $script);
         $this->assertStringContainsString('ec2-user_app_public_storage', $script);

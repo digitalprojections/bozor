@@ -11,6 +11,9 @@ param(
     [string]$LocalBackupDir = ".migration/bozor-lightsail",
     [string]$SourcePostgresContainer = "bozor-postgres",
     [string]$TargetPostgresContainer = "bozor-postgres",
+    [string]$TargetComposeFile = "docker-compose.lightsail.yml",
+    [string]$TargetRemoteEnvFile = ".env",
+    [string]$TargetComposeProjectName = "bozor",
     [switch]$CopyRemoteEnv,
     [switch]$SkipBackup,
     [switch]$SkipRestore
@@ -118,6 +121,10 @@ if ($CopyRemoteEnv) {
 }
 
 if (-not $SkipRestore) {
+    Invoke-CheckedNative "Stop target app and Redis before data restore" {
+        ssh -i $TargetKeyPath -o StrictHostKeyChecking=no $targetRemote "cd $TargetRemoteDir && docker compose --env-file $TargetRemoteEnvFile -p $TargetComposeProjectName -f $TargetComposeFile stop app redis"
+    }
+
     foreach ($volume in $volumes) {
         $targetVolume = $volume.Target
         $archiveFile = $volume.File
@@ -128,6 +135,10 @@ if (-not $SkipRestore) {
 
     Invoke-CheckedNative "Restore target Postgres database" {
         ssh -i $TargetKeyPath -o StrictHostKeyChecking=no $targetRemote "docker exec $TargetPostgresContainer sh -c 'pg_restore --clean --if-exists --no-owner -U ""`$POSTGRES_USER"" -d ""`$POSTGRES_DB""' < ${remoteBackupDir}/${postgresDumpFile}"
+    }
+
+    Invoke-CheckedNative "Restart target stack after data restore" {
+        ssh -i $TargetKeyPath -o StrictHostKeyChecking=no $targetRemote "cd $TargetRemoteDir && docker compose --env-file $TargetRemoteEnvFile -p $TargetComposeProjectName -f $TargetComposeFile up -d --force-recreate"
     }
 }
 
