@@ -1,7 +1,12 @@
 <?php
 
+use App\Http\Middleware\CountHumanVisitors;
+use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
+use App\Http\Middleware\IdentifyGuest;
+use App\Http\Middleware\RequirePasswordWhenAvailable;
+use App\Http\Middleware\RequireRealUser;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -20,17 +25,18 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
 
         $middleware->web(append: [
-            \App\Http\Middleware\IdentifyGuest::class,
+            IdentifyGuest::class,
             SetLocale::class,
             HandleAppearance::class,
+            CountHumanVisitors::class,
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
         ]);
 
         $middleware->alias([
-            'real-user' => \App\Http\Middleware\RequireRealUser::class,
-            'admin' => \App\Http\Middleware\EnsureAdmin::class,
-            'password.confirm' => \App\Http\Middleware\RequirePasswordWhenAvailable::class,
+            'real-user' => RequireRealUser::class,
+            'admin' => EnsureAdmin::class,
+            'password.confirm' => RequirePasswordWhenAvailable::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -2,11 +2,12 @@
 
 namespace App\Http\Middleware;
 
-use App\Services\AdService;
-use App\Http\Middleware\EnsureAdmin;
 use App\Models\AdCampaign;
 use App\Models\AdvertiserProfile;
 use App\Models\ListingReport;
+use App\Notifications\MessageReceived;
+use App\Services\AdService;
+use App\Services\HumanVisitorCounter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\File;
@@ -65,10 +66,10 @@ class HandleInertiaRequests extends Middleware
                 : 0,
             'unreadMessageNotificationsCount' => fn () => $request->user()
                 ? $request->user()->unreadNotifications()
-                    ->where('type', \App\Notifications\MessageReceived::class)
+                    ->where('type', MessageReceived::class)
                     ->count()
                 : 0,
-            'sidebarOpen' => !$request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+            'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'locale' => $locale,
             'translations' => $this->loadTranslationsForLocale($locale, $fallback),
             'supportedLocales' => config('locales.supported', ['en' => ['name' => 'English', 'native' => 'English']]),
@@ -77,6 +78,7 @@ class HandleInertiaRequests extends Middleware
                 'error' => fn () => $request->session()->get('error'),
             ],
             'layoutAds' => fn () => app(AdService::class)->layoutAds(),
+            'visitorCounter' => ['total' => app(HumanVisitorCounter::class)->total()],
             'seo' => [
                 'title' => config('app.name', 'Bozor Japan'),
                 'description' => __('Free registration and no sales fees! A marketplace for individuals and small businesses in Japan.'),
@@ -93,8 +95,8 @@ class HandleInertiaRequests extends Middleware
      */
     private function loadTranslationsForLocale(string $locale, string $fallback): array
     {
-        $path = lang_path($locale . '.json');
-        $fallbackPath = lang_path($fallback . '.json');
+        $path = lang_path($locale.'.json');
+        $fallbackPath = lang_path($fallback.'.json');
 
         $fallbackStrings = $fallbackPath !== $path && File::exists($fallbackPath)
             ? (json_decode(File::get($fallbackPath), true) ?? [])

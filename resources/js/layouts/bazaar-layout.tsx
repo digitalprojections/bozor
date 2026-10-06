@@ -64,10 +64,19 @@ export default function BazaarLayout({
     flushMobile = false,
 }: BazaarLayoutProps) {
     const { t } = useTranslations();
-    const { auth, flash, layoutAds = {} } = usePage().props as any;
+    const {
+        auth,
+        flash,
+        layoutAds = {},
+        locale = 'en',
+        visitorCounter,
+    } = usePage().props as any;
     const user = auth.user && !auth.user.is_guest ? auth.user : null;
     const ads = layoutAds as LayoutAds;
     const hasRightRailAds = (ads.right_rail?.length ?? 0) > 0;
+    const formattedVisitorTotal = new Intl.NumberFormat(locale).format(
+        Number(visitorCounter?.total ?? 0),
+    );
 
     return (
         <div className="min-h-screen bg-[#f4f6fa] text-[#1a263b] dark:bg-[#0b1120] dark:text-[#e5edf6]">
@@ -270,6 +279,19 @@ export default function BazaarLayout({
                     <p className="text-sm text-[#7f8fa4] dark:text-[#9fb0c5]">
                         {t('layout.footer.disclaimer')}
                     </p>
+                    <div className="flex justify-center text-sm text-[#5f6c84] dark:text-[#b8c7d9]">
+                        <span className="inline-flex items-center gap-2">
+                            <UsersRound
+                                size={16}
+                                className="text-[#0d9488] dark:text-[#5eead4]"
+                                aria-hidden="true"
+                            />
+                            <span>{t('layout.footer.human_visitors')}</span>
+                            <span className="font-semibold text-[#1a263b] dark:text-[#e5edf6]">
+                                {formattedVisitorTotal}
+                            </span>
+                        </span>
+                    </div>
                     <div className="flex justify-center gap-6 text-sm font-medium text-[#5f6c84] dark:text-[#b8c7d9]">
                         <Link
                             href="/terms"

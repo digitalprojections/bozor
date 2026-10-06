@@ -31,6 +31,7 @@ Homestead.json
 .phpactor.json
 auth.json
 bozor_database
+bozor_local_test
 *.zip
 .migration/
 

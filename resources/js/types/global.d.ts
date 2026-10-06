@@ -14,6 +14,9 @@ declare module '@inertiajs/core' {
             translations: Translations;
             supportedLocales: SupportedLocale;
             layoutAds?: LayoutAds;
+            visitorCounter?: {
+                total: number;
+            };
             [key: string]: unknown;
         };
     }
