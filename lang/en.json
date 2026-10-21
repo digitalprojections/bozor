@@ -544,5 +544,12 @@
     "advertising.status.scheduled": "Scheduled",
     "advertising.status.active": "Active",
     "advertising.status.paused": "Paused",
-    "advertising.status.expired": "Expired"
+    "advertising.status.expired": "Expired",
+    "registration.postal.idle": "Enter a 7-digit postal code to fill your address.",
+    "registration.postal.loading": "Looking up your address…",
+    "registration.postal.success": "Address found. Check the details and enter your street number and building.",
+    "registration.postal.unavailable": "No address found. Check the postal code or enter your address manually.",
+    "registration.postal.error": "Address lookup is unavailable. Enter your address manually or re-enter the postal code to retry.",
+    "registration.postal.choose": "Several areas match this postal code. Select your area.",
+    "registration.postal.choose_label": "Select your area"
 }

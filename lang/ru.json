@@ -544,5 +544,12 @@
     "advertising.status.scheduled": "Запланировано",
     "advertising.status.active": "Активно",
     "advertising.status.paused": "На паузе",
-    "advertising.status.expired": "Истекло"
+    "advertising.status.expired": "Истекло",
+    "registration.postal.idle": "Введите почтовый индекс из 7 цифр для автозаполнения адреса.",
+    "registration.postal.loading": "Поиск адреса…",
+    "registration.postal.success": "Адрес найден. Проверьте данные и укажите номер дома и название здания.",
+    "registration.postal.unavailable": "Адрес не найден. Проверьте индекс или введите адрес вручную.",
+    "registration.postal.error": "Поиск адреса недоступен. Введите адрес вручную или повторно введите индекс.",
+    "registration.postal.choose": "Найдено несколько адресов. Выберите свой район.",
+    "registration.postal.choose_label": "Выберите район"
 }

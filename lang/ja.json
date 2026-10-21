@@ -543,5 +543,12 @@
     "advertising.status.scheduled": "予約済み",
     "advertising.status.active": "アクティブ",
     "advertising.status.paused": "一時停止",
-    "advertising.status.expired": "期限切れ"
+    "advertising.status.expired": "期限切れ",
+    "registration.postal.idle": "7桁の郵便番号を入力すると、住所が自動入力されます。",
+    "registration.postal.loading": "住所を検索しています…",
+    "registration.postal.success": "住所が見つかりました。内容を確認し、番地・建物名を入力してください。",
+    "registration.postal.unavailable": "住所が見つかりませんでした。郵便番号を確認するか、住所を手入力してください。",
+    "registration.postal.error": "住所を検索できませんでした。住所を手入力するか、郵便番号を再入力してお試しください。",
+    "registration.postal.choose": "複数の住所が見つかりました。該当する地域を選択してください。",
+    "registration.postal.choose_label": "地域を選択"
 }

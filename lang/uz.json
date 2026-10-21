@@ -544,5 +544,12 @@
     "advertising.status.scheduled": "Rejalashtirilgan",
     "advertising.status.active": "Faol",
     "advertising.status.paused": "Pauzada",
-    "advertising.status.expired": "Muddati tugagan"
+    "advertising.status.expired": "Muddati tugagan",
+    "registration.postal.idle": "Manzilni avtomatik to‘ldirish uchun 7 raqamli pochta indeksini kiriting.",
+    "registration.postal.loading": "Manzil qidirilmoqda…",
+    "registration.postal.success": "Manzil topildi. Ma’lumotlarni tekshiring va uy raqami hamda bino nomini kiriting.",
+    "registration.postal.unavailable": "Manzil topilmadi. Pochta indeksini tekshiring yoki manzilni qo‘lda kiriting.",
+    "registration.postal.error": "Manzilni qidirish imkoni bo‘lmadi. Manzilni qo‘lda kiriting yoki qayta urinish uchun pochta indeksini qayta kiriting.",
+    "registration.postal.choose": "Ushbu pochta indeksiga bir nechta hudud mos keladi. Hududingizni tanlang.",
+    "registration.postal.choose_label": "Hududni tanlang"
 }

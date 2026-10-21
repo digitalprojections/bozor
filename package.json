@@ -9,7 +9,9 @@
         "format": "prettier --write resources/",
         "format:check": "prettier --check resources/",
         "lint": "eslint . --fix",
-        "types": "tsc --noEmit"
+        "types": "tsc --noEmit",
+        "test:registration": "node --experimental-strip-types --test tests/frontend/postal-address.test.mjs",
+        "preview:registration": "node scripts/preview-registration.mjs"
     },
     "devDependencies": {
         "@eslint/js": "^9.19.0",
@@ -70,5 +72,7 @@
         "@tailwindcss/oxide-win32-x64-msvc": "^4.0.1",
         "lightningcss-linux-x64-gnu": "^1.29.1",
         "lightningcss-win32-x64-msvc": "^1.29.1"
-    }
+    },
+    "name": "bozor",
+    "version": "1.0.1"
 }

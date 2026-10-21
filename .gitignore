@@ -57,3 +57,11 @@ node_modules/
 /vendor/
 bozor_database
 bozorkey.pem
+
+# Local environment variants and verification artifacts
+.env.*
+!.env.*.example
+/coverage/
+/test-results/
+/playwright-report/
+*.tsbuildinfo
