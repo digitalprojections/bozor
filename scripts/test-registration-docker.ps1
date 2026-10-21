@@ -16,7 +16,9 @@ try {
     $current = @{}
     foreach ($entry in $inspection[0].Config.Env) {
         $parts = $entry.Split('=', 2)
-        $current[$parts[0]] = $parts[1]
+        if ($parts[0] -match '^(APP_|DB_|MAIL_|AWS_|GOOGLE_|SESSION_|CACHE_|REDIS_|LOG_|QUEUE_|FILESYSTEM_|TRUSTED_|VITE_|BCRYPT_)') {
+            $current[$parts[0]] = $parts[1]
+        }
     }
     if ($current.DB_DATABASE -ne 'bozor_local_test') { throw 'Refusing to change a stack outside the known local test database.' }
     $listener = [System.Net.Sockets.TcpListener]::new([System.Net.IPAddress]::Loopback, 8087)
@@ -30,7 +32,9 @@ try {
     if ($LASTEXITCODE -eq 0) {
         docker tag $inspection[0].Image bozor-app-local:before-registration-qa
     } else {
-        docker export --output test-results/bozor-app-before.tar bozor-app
+        docker exec bozor-app tar -czf /tmp/bozor-registration-code-before.tar.gz -C /var/www/html app bootstrap config database/migrations lang public/build resources routes composer.json composer.lock package.json
+        if ($LASTEXITCODE -ne 0) { throw 'Unable to archive existing app code.' }
+        docker cp bozor-app:/tmp/bozor-registration-code-before.tar.gz test-results/bozor-registration-code-before.tar.gz
     }
     if ($LASTEXITCODE -ne 0) { throw 'Unable to retain the previous app image.' }
     $override = Join-Path $repo 'test-results/registration-compose.override.yml'
