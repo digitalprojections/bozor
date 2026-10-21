@@ -33,3 +33,13 @@ yarn-error.log
 composer.phar
 *.zip
 bozor_database
+
+# Local test databases, reports, and editor state
+bozor_local_test
+testing
+test-results
+playwright-report
+coverage
+.codex
+.agents
+.migration
