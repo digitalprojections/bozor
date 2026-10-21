@@ -26,7 +26,12 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Local database backup failed.' }
     docker cp bozor-postgres:/tmp/bozor-registration-before.dump test-results/bozor-registration-before.dump
     if ($LASTEXITCODE -ne 0) { throw 'Unable to save local database backup.' }
-    docker tag $inspection[0].Image bozor-app-local:before-registration-qa
+    docker image inspect $inspection[0].Image *> $null
+    if ($LASTEXITCODE -eq 0) {
+        docker tag $inspection[0].Image bozor-app-local:before-registration-qa
+    } else {
+        docker commit bozor-app bozor-app-local:before-registration-qa | Out-Null
+    }
     if ($LASTEXITCODE -ne 0) { throw 'Unable to retain the previous app image.' }
     $override = Join-Path $repo 'test-results/registration-compose.override.yml'
     $overrideText = @"
