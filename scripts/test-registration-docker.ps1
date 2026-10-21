@@ -30,7 +30,7 @@ try {
     if ($LASTEXITCODE -eq 0) {
         docker tag $inspection[0].Image bozor-app-local:before-registration-qa
     } else {
-        docker commit bozor-app bozor-app-local:before-registration-qa | Out-Null
+        docker export --output test-results/bozor-app-before.tar bozor-app
     }
     if ($LASTEXITCODE -ne 0) { throw 'Unable to retain the previous app image.' }
     $override = Join-Path $repo 'test-results/registration-compose.override.yml'
