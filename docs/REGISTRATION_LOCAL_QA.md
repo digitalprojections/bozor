@@ -32,7 +32,7 @@ The app was exposed at `http://127.0.0.1:8087` for testing. Mail used the array 
 | Browser JavaScript errors | None reported during the journeys |
 | Test-data cleanup | Exactly two synthetic accounts removed; zero matching QA accounts remained |
 
-External email delivery and Google OAuth were outside the changed registration-address features and were not exercised. Production, physical Android devices, and public deployment were not tested.
+External public email delivery and Google OAuth were outside the changed registration-address features and were not exercised. Local SMTP delivery and the actual email-verification link were subsequently tested as documented below. Production, physical Android devices, and public deployment were not tested.
 
 ## Repeatable tools
 
@@ -53,3 +53,17 @@ Final result: **148 tests, 1,051 assertions, zero errors, zero failures, zero sk
 The first run's sitemap error is avoided in the test process by disabling PHP short tags. The production Dockerfile's PHP defaults were not changed by this registration task; this is a separate environment consideration for sitemap testing.
 
 The test browser was closed and its viewport/network overrides were reset. The existing app service was stopped after testing, per the project's localhost testing instructions; PostgreSQL, Redis, and Caddy were retained.
+
+## Fake-email SMTP verification follow-up
+
+Mailpit v1.31.6 was downloaded from its official release and checked against the published SHA-256 digest. The portable Windows binary is available across projects at `%USERPROFILE%/.codex/tools/mailpit/1.31.6/mailpit.exe`. Its SMTP and inbox listeners bind only to Windows loopback (1025 and 8025). The existing Docker app connects through `host.docker.internal:1025`; no additional container or stack is required.
+
+Verified with a new synthetic `@example.test` account:
+
+1. Registration delivered a real SMTP verification message to the fake inbox.
+2. Resend delivered a second message and showed success feedback.
+3. Opening the captured email's signed link in the built-in browser reached the authenticated dashboard.
+4. A database assertion confirmed `email_verified_at` was persisted.
+5. The account was logged out, then removed during cleanup. The prior local mail settings were restored, and the app and Mailpit test processes were stopped.
+
+Repeat using `scripts/test-registration-mail.ps1 -Action Start` and `-Action Stop`. The script targets only the known existing local stack and preserves its previous cached mail configuration. Use a disposable address; Mailpit captures messages locally. The PHP helper's `AssertVerified` and `Cleanup` actions operate only on this follow-up's explicitly named synthetic account.
