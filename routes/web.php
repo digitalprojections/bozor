@@ -25,6 +25,11 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 
+Route::get('/feature-requests', [\App\Http\Controllers\FeatureRequestController::class, 'create'])->name('feature-requests.create');
+Route::post('/feature-requests', [\App\Http\Controllers\FeatureRequestController::class, 'store'])->middleware('real-user')->name('feature-requests.store');
+
+Route::get('/feature-requests/login', [\App\Http\Controllers\FeatureRequestController::class, 'signIn'])->name('feature-requests.login');
+
 // Locale update route
 Route::post('locale', [LocaleController::class, 'update'])->name('locale.update');
 
@@ -145,6 +150,7 @@ Route::middleware(['auth', 'admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
+        Route::get('/feature-requests', [\App\Http\Controllers\FeatureRequestController::class, 'index'])->name('feature-requests.index');
         Route::get('/users', [UserController::class, 'index'])->name('users.index');
         Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
         Route::patch('/users/{user}', [UserController::class, 'update'])->name('users.update');

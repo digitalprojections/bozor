@@ -551,5 +551,24 @@
     "registration.postal.unavailable": "Адрес не найден. Проверьте индекс или введите адрес вручную.",
     "registration.postal.error": "Поиск адреса недоступен. Введите адрес вручную или повторно введите индекс.",
     "registration.postal.choose": "Найдено несколько адресов. Выберите свой район.",
-    "registration.postal.choose_label": "Выберите район"
+    "registration.postal.choose_label": "Выберите район",
+    "feature_requests.title": "Предложить функцию",
+    "feature_requests.intro": "Есть идея, как улучшить Bozor? Расскажите, что было бы полезно и как вы будете этим пользоваться.",
+    "feature_requests.subject": "Название предложения",
+    "feature_requests.description": "Описание идеи",
+    "feature_requests.hint": "Опишите проблему и то, как ваше предложение поможет её решить. Не указывайте пароли, платёжные данные или личные контактные данные.",
+    "feature_requests.submit": "Отправить предложение",
+    "feature_requests.sending": "Отправка…",
+    "feature_requests.success": "Спасибо! Ваше предложение сохранено для рассмотрения.",
+    "feature_requests.sign_in_hint": "Войдите в аккаунт, чтобы отправить предложение.",
+    "feature_requests.sign_in": "Войти",
+    "feature_requests.inbox": "Предложения функций",
+    "feature_requests.empty": "Предложений пока нет.",
+    "feature_requests.previous": "Назад",
+    "feature_requests.next": "Далее",
+    "feature_requests.pagination": "Страницы предложений",
+    "feature_requests.title_required": "Введите название предложения.",
+    "feature_requests.title_max": "Название не должно превышать 160 символов.",
+    "feature_requests.description_required": "Опишите вашу идею.",
+    "feature_requests.description_max": "Описание не должно превышать 5 000 символов."
 }

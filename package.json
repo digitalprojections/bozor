@@ -11,7 +11,8 @@
         "lint": "eslint . --fix",
         "types": "tsc --noEmit",
         "test:registration": "node --experimental-strip-types --test tests/frontend/postal-address.test.mjs",
-        "preview:registration": "node scripts/preview-registration.mjs"
+        "preview:registration": "node scripts/preview-registration.mjs",
+        "test:feature-requests": "node --test tests/frontend/feature-requests.test.mjs"
     },
     "devDependencies": {
         "@eslint/js": "^9.19.0",
@@ -74,5 +75,5 @@
         "lightningcss-win32-x64-msvc": "^1.29.1"
     },
     "name": "bozor",
-    "version": "1.0.1"
+    "version": "1.0.2"
 }

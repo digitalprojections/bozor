@@ -65,3 +65,7 @@ bozorkey.pem
 /test-results/
 /playwright-report/
 *.tsbuildinfo
+
+# Local container exports and database snapshots
+/local-artifacts/
+*.sql.gz

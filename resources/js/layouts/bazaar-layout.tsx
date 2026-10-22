@@ -25,6 +25,7 @@ import {
     UsersRound,
     Flag,
     Megaphone,
+    Lightbulb,
 } from 'lucide-react';
 import React, { ReactNode } from 'react';
 import { useTranslations } from '@/hooks/use-translations';
@@ -436,6 +437,11 @@ function DefaultSidebar() {
                 {isAdmin && (
                     <>
                         <SidebarLink
+                            icon={Lightbulb}
+                            label={t('feature_requests.inbox')}
+                            href="/admin/feature-requests"
+                        />
+                        <SidebarLink
                             icon={Flag}
                             label="Reports"
                             href="/admin/reports"
@@ -482,6 +488,11 @@ function DefaultSidebar() {
                     icon={Star}
                     label={t('layout.sidebar.watchlist')}
                     href="/watchlist"
+                />
+                <SidebarLink
+                    icon={Lightbulb}
+                    label={t('feature_requests.title')}
+                    href="/feature-requests"
                 />
             </SidebarSection>
 

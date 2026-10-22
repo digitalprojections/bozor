@@ -551,5 +551,24 @@
     "registration.postal.unavailable": "Manzil topilmadi. Pochta indeksini tekshiring yoki manzilni qo‘lda kiriting.",
     "registration.postal.error": "Manzilni qidirish imkoni bo‘lmadi. Manzilni qo‘lda kiriting yoki qayta urinish uchun pochta indeksini qayta kiriting.",
     "registration.postal.choose": "Ushbu pochta indeksiga bir nechta hudud mos keladi. Hududingizni tanlang.",
-    "registration.postal.choose_label": "Hududni tanlang"
+    "registration.postal.choose_label": "Hududni tanlang",
+    "feature_requests.title": "Yangi imkoniyat taklif qilish",
+    "feature_requests.intro": "Bozorni yaxshilash uchun fikringiz bormi? Sizga nima qulaylik yaratishini va undan qanday foydalanishingizni yozing.",
+    "feature_requests.subject": "Taklif sarlavhasi",
+    "feature_requests.description": "Taklif tafsilotlari",
+    "feature_requests.hint": "Qanday muammoga duch kelganingizni va taklifingiz qanday yordam berishini yozing. Parol, to‘lov ma’lumotlari yoki shaxsiy aloqa ma’lumotlarini kiritmang.",
+    "feature_requests.submit": "Taklifni yuborish",
+    "feature_requests.sending": "Yuborilmoqda…",
+    "feature_requests.success": "Rahmat! Taklifingiz ko‘rib chiqish uchun saqlandi.",
+    "feature_requests.sign_in_hint": "Taklif yuborish uchun hisobingizga kiring.",
+    "feature_requests.sign_in": "Hisobga kirish",
+    "feature_requests.inbox": "Foydalanuvchi takliflari",
+    "feature_requests.empty": "Hozircha takliflar yo‘q.",
+    "feature_requests.previous": "Oldingi",
+    "feature_requests.next": "Keyingi",
+    "feature_requests.pagination": "Takliflar sahifalari",
+    "feature_requests.title_required": "Taklif sarlavhasini kiriting.",
+    "feature_requests.title_max": "Sarlavha 160 belgidan oshmasin.",
+    "feature_requests.description_required": "Taklifingizni batafsil yozing.",
+    "feature_requests.description_max": "Tafsilotlar 5 000 belgidan oshmasin."
 }

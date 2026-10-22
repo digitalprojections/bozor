@@ -551,5 +551,24 @@
     "registration.postal.unavailable": "No address found. Check the postal code or enter your address manually.",
     "registration.postal.error": "Address lookup is unavailable. Enter your address manually or re-enter the postal code to retry.",
     "registration.postal.choose": "Several areas match this postal code. Select your area.",
-    "registration.postal.choose_label": "Select your area"
+    "registration.postal.choose_label": "Select your area",
+    "feature_requests.title": "Request a feature",
+    "feature_requests.intro": "Have an idea to improve Bozor? Tell us what would help and how you would use it.",
+    "feature_requests.subject": "Feature title",
+    "feature_requests.description": "Describe your idea",
+    "feature_requests.hint": "Explain the problem and how your suggestion would help. Please do not include passwords, payment details, or personal contact information.",
+    "feature_requests.submit": "Send request",
+    "feature_requests.sending": "Sending…",
+    "feature_requests.success": "Thank you! Your feature request has been saved for review.",
+    "feature_requests.sign_in_hint": "Sign in to send your feature request.",
+    "feature_requests.sign_in": "Sign in",
+    "feature_requests.inbox": "Feature requests",
+    "feature_requests.empty": "No feature requests yet.",
+    "feature_requests.previous": "Previous",
+    "feature_requests.next": "Next",
+    "feature_requests.pagination": "Feature request pages",
+    "feature_requests.title_required": "Please enter a feature title.",
+    "feature_requests.title_max": "Keep the title within 160 characters.",
+    "feature_requests.description_required": "Please describe your idea.",
+    "feature_requests.description_max": "Keep the description within 5,000 characters."
 }

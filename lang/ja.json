@@ -550,5 +550,24 @@
     "registration.postal.unavailable": "住所が見つかりませんでした。郵便番号を確認するか、住所を手入力してください。",
     "registration.postal.error": "住所を検索できませんでした。住所を手入力するか、郵便番号を再入力してお試しください。",
     "registration.postal.choose": "複数の住所が見つかりました。該当する地域を選択してください。",
-    "registration.postal.choose_label": "地域を選択"
+    "registration.postal.choose_label": "地域を選択",
+    "feature_requests.title": "機能を提案",
+    "feature_requests.intro": "Bozorをもっと使いやすくするアイデアをお聞かせください。どのような場面で役立つかも教えてください。",
+    "feature_requests.subject": "提案のタイトル",
+    "feature_requests.description": "アイデアの詳細",
+    "feature_requests.hint": "困っていることと、提案によってどう改善できるかをご記入ください。パスワード、決済情報、個人の連絡先は記載しないでください。",
+    "feature_requests.submit": "提案を送信",
+    "feature_requests.sending": "送信中…",
+    "feature_requests.success": "ありがとうございます。ご提案を受け付けました。運営が確認します。",
+    "feature_requests.sign_in_hint": "機能を提案するにはログインしてください。",
+    "feature_requests.sign_in": "ログイン",
+    "feature_requests.inbox": "機能の提案一覧",
+    "feature_requests.empty": "機能の提案はまだありません。",
+    "feature_requests.previous": "前へ",
+    "feature_requests.next": "次へ",
+    "feature_requests.pagination": "機能提案のページ切り替え",
+    "feature_requests.title_required": "提案のタイトルをご入力ください。",
+    "feature_requests.title_max": "タイトルは160文字以内でご入力ください。",
+    "feature_requests.description_required": "アイデアの詳細をご入力ください。",
+    "feature_requests.description_max": "詳細は5,000文字以内でご入力ください。"
 }
