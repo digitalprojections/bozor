@@ -36,10 +36,18 @@ RUN apk add --no-cache \
     && rm -f /tmp/phpredis.tar.gz \
     && apk del .build-deps
 
+# Image codecs used by avatar uploads and listing preview generation.
+RUN apk add --no-cache libpng libjpeg-turbo libwebp freetype \
+    && apk add --no-cache --virtual .gd-build-deps $PHPIZE_DEPS libpng-dev libjpeg-turbo-dev libwebp-dev freetype-dev \
+    && docker-php-ext-configure gd --with-jpeg --with-webp --with-freetype \
+    && docker-php-ext-install gd \
+    && apk del .gd-build-deps
+
 RUN { \
     echo "upload_max_filesize=8M"; \
     echo "post_max_size=40M"; \
     echo "memory_limit=256M"; \
+    echo "short_open_tag=Off"; \
     } > /usr/local/etc/php/conf.d/uploads.ini
 
 # Install Composer
@@ -49,12 +57,18 @@ WORKDIR /var/www/html
 
 # Copy application files
 COPY --chown=www-data:www-data . .
+RUN php scripts/verify-image-runtime.php
 
 # Copy built frontend assets from builder stage
 COPY --chown=www-data:www-data --from=frontend-builder /app/public/build ./public/build
 
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader
+# Local container builds include the locked test tools.
+ARG INSTALL_DEV_DEPENDENCIES=false
+RUN if [ "$INSTALL_DEV_DEPENDENCIES" = "true" ]; then \
+        composer install --no-interaction --prefer-dist --optimize-autoloader; \
+    else \
+        composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader; \
+    fi
 
 # Create necessary directories and set permissions
 RUN mkdir -p storage/logs storage/app bootstrap/cache \

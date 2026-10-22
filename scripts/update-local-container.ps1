@@ -1,6 +1,10 @@
-param([string]$Image = 'bozor-app-local:1.0.2')
+param([string]$Image = '')
 $ErrorActionPreference = 'Stop'
 Set-Location (Split-Path $PSScriptRoot -Parent)
+if (-not $Image) {
+    $version = (Get-Content package.json -Raw | ConvertFrom-Json).version
+    $Image = "bozor-app-local:$version"
+}
 $inspection = docker inspect bozor-app | ConvertFrom-Json
 if ($LASTEXITCODE -ne 0) { throw 'The existing bozor-app test container is required.' }
 $current = @{}
@@ -26,7 +30,7 @@ docker cp bozor-postgres:/tmp/bozor-before-local-update.dump test-results/bozor-
 if ($LASTEXITCODE -ne 0) { throw 'Saving local database backup failed.' }
 docker tag $inspection[0].Image bozor-app-local:before-local-update
 if ($LASTEXITCODE -ne 0) { throw 'Retaining the old local image failed.' }
-docker build -f Dockerfile.prod -t $Image .
+docker build -f Dockerfile.prod --build-arg INSTALL_DEV_DEPENDENCIES=true -t $Image .
 if ($LASTEXITCODE -ne 0) { throw 'Local image build failed.' }
 $override = Join-Path (Get-Location) 'test-results/local-update.override.yml'
 @"
