@@ -150,6 +150,7 @@ Route::middleware(['auth', 'admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
+        Route::get('/statistics', \App\Http\Controllers\Admin\StatisticsController::class)->middleware('real-user')->name('statistics');
         Route::get('/feature-requests', [\App\Http\Controllers\FeatureRequestController::class, 'index'])->name('feature-requests.index');
         Route::get('/users', [UserController::class, 'index'])->name('users.index');
         Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');

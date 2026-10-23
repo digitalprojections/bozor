@@ -26,6 +26,7 @@ import {
     Flag,
     Megaphone,
     Lightbulb,
+    BarChart3,
 } from 'lucide-react';
 import React, { ReactNode } from 'react';
 import { useTranslations } from '@/hooks/use-translations';
@@ -436,6 +437,11 @@ function DefaultSidebar() {
             <SidebarSection title={t('layout.sidebar.activity')}>
                 {isAdmin && (
                     <>
+                        <SidebarLink
+                            icon={BarChart3}
+                            label={t('stats.title')}
+                            href="/admin/statistics"
+                        />
                         <SidebarLink
                             icon={Lightbulb}
                             label={t('feature_requests.inbox')}
