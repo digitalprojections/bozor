@@ -1,6 +1,6 @@
 <?php
 
-// Disposable accounts and data for the existing local statistics browser journey.
+// Disposable accounts and data for the existing local statistics browser journey. Tool v1.0.1.
 require '/var/www/html/vendor/autoload.php';
 $app = require '/var/www/html/bootstrap/app.php';
 $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
@@ -40,11 +40,15 @@ if ($action === 'Seed') {
 } elseif ($action === 'Cleanup') {
     $admin = App\Models\User::where('email', $adminEmail)->where('name', 'Statistics QA Admin')->firstOrFail();
     $user = App\Models\User::where('email', $userEmail)->where('name', 'Statistics QA User')->firstOrFail();
-    App\Models\FeatureRequest::where('user_id', $user->id)->delete();
-    App\Models\Listing::withTrashed()->where('user_id', $admin->id)->forceDelete();
-    App\Models\Category::where('slug', 'statistics-qa-20261023')->delete();
-    $user->delete();
-    $admin->delete();
+    Illuminate\Support\Facades\DB::transaction(function () use ($admin, $user) {
+        App\Models\FeatureRequest::where('user_id', $user->id)->delete();
+        App\Models\Transaction::where('seller_id', $admin->id)->where('buyer_id', $user->id)->delete();
+        App\Models\Bid::where('user_id', $user->id)->delete();
+        App\Models\Listing::withTrashed()->where('user_id', $admin->id)->forceDelete();
+        App\Models\Category::where('slug', 'statistics-qa-20261023')->delete();
+        $user->delete();
+        $admin->delete();
+    });
     echo "Removed both disposable accounts and all statistics fixtures.\n";
 } else {
     echo 'Synthetic statistics accounts: '.App\Models\User::where('email', $userEmail)->count()."\n";
