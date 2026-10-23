@@ -1,12 +1,12 @@
 import { Head, Link, usePage } from '@inertiajs/react';
-import { ArrowRight, Check, Megaphone, Armchair, Wrench } from 'lucide-react';
+import { ArrowRight, Check, Megaphone, WashingMachine, Wrench } from 'lucide-react';
 import { WelcomeIllustration } from '@/components/welcome-illustration';
 import { useTranslations } from '@/hooks/use-translations';
 import BazaarLayout from '@/layouts/bazaar-layout';
 import { listingEntryHref } from '@/lib/listing-entry';
 
 const examples = [
-    { key: 'item', icon: Armchair, color: 'bg-[#e6f4ed] text-[#25634c]' },
+    { key: 'item', icon: WashingMachine, color: 'bg-[#e6f4ed] text-[#25634c]' },
     { key: 'service', icon: Wrench, color: 'bg-[#fff0db] text-[#925323]' },
     {
         key: 'announcement',
