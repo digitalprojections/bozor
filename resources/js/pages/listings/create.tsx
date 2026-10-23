@@ -323,6 +323,10 @@ export default function CreateListing({
         >
             <Head title={t('listing.create.title')} />
 
+            <p className="rounded-xl border border-teal-200 bg-teal-50 p-4 text-sm leading-relaxed text-teal-900">
+                {t('welcome.free_note')}
+            </p>
+
             <div className="mx-auto w-full max-w-full space-y-4 bg-[#f8fafc] px-0 py-2 sm:space-y-6 sm:p-6 lg:max-w-4xl xl:max-w-5xl">
                 <div className="border-b border-[#dbe7f3] bg-white px-3 py-4 sm:rounded-lg sm:border sm:px-5">
                     <h1 className="text-2xl font-bold tracking-tight text-[#0b1b32] sm:text-3xl">

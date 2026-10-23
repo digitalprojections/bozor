@@ -53,7 +53,7 @@ function englishTerms(t: TranslationFunction): LegalDocument {
 
     return {
         title: t('terms.title'),
-        lastUpdated: 'May 31, 2026',
+        lastUpdated: 'October 23, 2026',
         content: (
             <>
                 <Section title="1. Introduction">
@@ -151,6 +151,7 @@ function englishTerms(t: TranslationFunction): LegalDocument {
                 </Section>
 
                 <Section title="7. Fees">
+                    <p>{t('welcome.free_note')}</p>
                     <p>
                         The core marketplace is currently free to use. We may
                         introduce paid features, advertising, subscriptions,
@@ -234,7 +235,7 @@ function legacyTerms(t: TranslationFunction): LegalDocument {
 
     return {
         title: t('terms.title'),
-        lastUpdated: 'April 1, 2026',
+        lastUpdated: 'October 23, 2026',
         content: (
             <>
                 <Section title="1. Acceptable Use">
@@ -275,6 +276,7 @@ function legacyTerms(t: TranslationFunction): LegalDocument {
                 </WarningNotice>
 
                 <Section title="4. Fees">
+                    <p>{t('welcome.free_note')}</p>
                     <p>
                         Currently, there are no fees for listing or selling on
                         this platform. We may introduce premium features in the

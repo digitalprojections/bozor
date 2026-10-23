@@ -1,8 +1,22 @@
-import { Head, Link } from '@inertiajs/react';
-import { dashboard, register } from '@/routes';
-import BazaarLayout from '@/layouts/bazaar-layout';
+import { Head, Link, usePage } from '@inertiajs/react';
+import { ArrowRight, Check, Megaphone, Armchair, Wrench } from 'lucide-react';
+import { WelcomeIllustration } from '@/components/welcome-illustration';
 import { useTranslations } from '@/hooks/use-translations';
-import { Card, CardContent } from '@/components/ui/card';
+import BazaarLayout from '@/layouts/bazaar-layout';
+import { listingEntryHref } from '@/lib/listing-entry';
+
+const examples = [
+    { key: 'item', icon: Armchair, color: 'bg-[#e6f4ed] text-[#25634c]' },
+    { key: 'service', icon: Wrench, color: 'bg-[#fff0db] text-[#925323]' },
+    {
+        key: 'announcement',
+        icon: Megaphone,
+        color: 'bg-[#eaf0ff] text-[#456597]',
+    },
+] as const;
+const scenes = ['post', 'connect', 'agree'] as const;
+const primaryButton =
+    'inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#0f766e] px-6 py-3 text-sm font-bold text-white transition hover:bg-[#115e59] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-600';
 
 export default function Welcome({
     canRegister = true,
@@ -10,87 +24,155 @@ export default function Welcome({
     canRegister?: boolean;
 }) {
     const { t } = useTranslations();
+    const { auth } = usePage<{
+        auth: { user: { is_guest?: boolean } | null };
+    }>().props;
+    const entryHref = listingEntryHref(auth?.user, canRegister);
 
     return (
         <BazaarLayout title={t('welcome.title')}>
-            <Head title={`${t('common.app_name')} — ${t('welcome.title')} ${t('welcome.title_highlight')}`} />
-
-            <Card className="rounded-[4px] border-[#f0f2f5] bg-[#fafcff] shadow-sm overflow-hidden">
-                <CardContent className="p-6 sm:p-12 text-center">
-                    <div className="flex justify-center mb-6">
-                        <img 
-                            src="/images/logo.png" 
-                            alt="Bozor" 
-                            className="h-40 w-40 sm:h-64 sm:w-64 rounded-3xl shadow-xl border-8 border-white transform hover:scale-110 transition-transform duration-300" 
-                        />
-                    </div>
-                    <h1 className="text-3xl font-bold tracking-tight text-[#0b1a31] sm:text-5xl">
-                        {t('welcome.title')} <br />
-                        <span className="text-[#0d9488]">{t('welcome.title_highlight')}</span>
-                    </h1>
-                    <p className="mx-auto mt-4 sm:mt-6 max-w-lg text-base sm:text-lg text-[#5f6c84]">
-                        {t('welcome.tagline')}
-                    </p>
-                    <div className="mt-8 sm:mt-10 flex flex-col gap-3 sm:flex-row sm:justify-center">
-                        {canRegister && (
-                            <Link
-                                href={register().url}
-                                className="inline-flex h-12 items-center justify-center rounded-sm bg-[#0d9488] px-8 text-base font-bold text-white shadow-sm transition hover:bg-[#0f766e] w-full sm:w-auto"
-                            >
+            <Head
+                title={`${t('welcome.title')} ${t('welcome.title_highlight')}`}
+            >
+                <meta
+                    name="description"
+                    content={t('welcome.meta_description')}
+                />
+            </Head>
+            <section className="relative overflow-hidden rounded-3xl border border-[#dcebe2] bg-[#faf9f2] p-6 sm:p-8 xl:p-12">
+                <div className="grid items-center gap-8 xl:grid-cols-[1.1fr_1fr]">
+                    <div>
+                        <p className="mb-5 inline-flex items-center gap-2 rounded-full bg-white px-3 py-2 text-xs font-semibold text-[#0f766e]">
+                            <span className="h-2 w-2 rounded-full bg-[#0f766e]" />
+                            {t('welcome.eyebrow')}
+                        </p>
+                        <h1 className="max-w-xl text-3xl leading-tight font-bold tracking-tight text-balance text-[#183f38] sm:text-4xl xl:text-5xl">
+                            {t('welcome.title')}{' '}
+                            <span className="text-[#0f766e]">
+                                {t('welcome.title_highlight')}
+                            </span>
+                        </h1>
+                        <p className="mt-5 max-w-xl text-base leading-relaxed text-[#52655e]">
+                            {t('welcome.tagline')}
+                        </p>
+                        <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                            <Link href={entryHref} className={primaryButton}>
                                 {t('welcome.start_selling')}
+                                <ArrowRight size={18} aria-hidden="true" />
                             </Link>
-                        )}
-                        <Link
-                            href="/marketplace"
-                            className="inline-flex h-12 items-center justify-center rounded-sm border border-[#cfddee] bg-white px-8 text-base font-bold text-[#1a263b] transition hover:bg-[#f8fafd] w-full sm:w-auto"
-                        >
-                            {t('welcome.browse_listings')}
-                        </Link>
+                            <Link
+                                href="/marketplace"
+                                className="inline-flex min-h-12 items-center justify-center rounded-xl border border-[#cbdcd1] bg-white px-5 py-3 text-sm font-semibold text-[#183f38] hover:bg-[#eef5ef]"
+                            >
+                                {t('welcome.browse_listings')}
+                            </Link>
+                        </div>
+                        <p className="mt-4 flex items-start gap-2 text-sm text-[#52655e]">
+                            <Check
+                                size={17}
+                                className="mt-0.5 shrink-0 text-[#0f766e]"
+                                aria-hidden="true"
+                            />
+                            {t('welcome.no_fee')}
+                        </p>
                     </div>
-                </CardContent>
-            </Card>
-
-            {/* How it works */}
-            <div className="flex flex-col gap-6">
-                <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-[#0b1a31]">
-                    {t('welcome.how_it_works')}
-                </h2>
-                <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-3">
-                    {[1, 2, 3].map((step) => (
-                        <Card key={step} className="rounded-[4px] border-[#f0f2f5] bg-white shadow-sm">
-                            <CardContent className="p-6 text-center">
-                                <div className="mx-auto flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-[#ccfbf1] text-[#0d9488] font-bold text-lg sm:text-xl">
-                                    {step}
+                    <div className="rounded-2xl border border-white bg-white/75 p-4 sm:p-5">
+                        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                            <h2 className="text-sm font-bold text-[#183f38]">
+                                {t('welcome.examples_heading')}
+                            </h2>
+                            <span className="rounded-full bg-[#edf3ed] px-2.5 py-1 text-xs font-medium text-[#52655e]">
+                                {t('welcome.examples_label')}
+                            </span>
+                        </div>
+                        <div className="space-y-3">
+                            {examples.map(({ key, icon: Icon, color }) => (
+                                <div
+                                    key={key}
+                                    className="flex items-center gap-4 rounded-xl border border-[#e6ece5] bg-white p-3 sm:p-4"
+                                >
+                                    <div
+                                        className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-xl ${color}`}
+                                    >
+                                        <Icon
+                                            size={29}
+                                            strokeWidth={1.5}
+                                            aria-hidden="true"
+                                        />
+                                    </div>
+                                    <div className="min-w-0">
+                                        <p className="text-xs font-medium text-[#617269]">
+                                            {t(
+                                                `welcome.example_${key}_category`,
+                                            )}
+                                        </p>
+                                        <h3 className="mt-1 text-sm font-semibold text-[#243e35]">
+                                            {t(`welcome.example_${key}_title`)}
+                                        </h3>
+                                        <p className="mt-1 text-xs leading-relaxed text-[#617269]">
+                                            {t(`welcome.example_${key}_desc`)}
+                                        </p>
+                                    </div>
                                 </div>
-                                <h3 className="mt-4 font-bold text-[#0b1a31]">{t(`welcome.step_${step}_title` as any)}</h3>
-                                <p className="mt-2 text-sm text-[#5f6c84]">
-                                    {t(`welcome.step_${step}_desc` as any)}
-                                </p>
-                            </CardContent>
-                        </Card>
-                    ))}
+                            ))}
+                        </div>
+                        <p className="mt-3 text-xs leading-relaxed text-[#617269]">
+                            {t('welcome.examples_note')}
+                        </p>
+                    </div>
                 </div>
-            </div>
-
-            {/* Bottom CTA */}
-            <Card className="rounded-[4px] border-[#f0f2f5] bg-[#1a263b] shadow-sm overflow-hidden">
-                <CardContent className="p-8 sm:p-10 text-center text-white">
-                    <h2 className="text-xl sm:text-3xl font-bold">
+            </section>
+            <section aria-labelledby="welcome-steps" className="py-3">
+                <div className="mb-5 flex flex-wrap items-end justify-between gap-2">
+                    <h2
+                        id="welcome-steps"
+                        className="text-xl font-bold text-[#183f38] sm:text-2xl dark:text-teal-100"
+                    >
+                        {t('welcome.how_it_works')}
+                    </h2>
+                    <p className="text-sm text-[#617269] dark:text-slate-300">
+                        {t('welcome.steps_note')}
+                    </p>
+                </div>
+                <ol className="grid gap-4 md:grid-cols-3">
+                    {scenes.map((scene, index) => (
+                        <li
+                            key={scene}
+                            className="rounded-2xl border border-[#e2e9e5] bg-white p-5 dark:border-slate-700 dark:bg-slate-900"
+                        >
+                            <WelcomeIllustration
+                                scene={scene}
+                                className="mx-auto h-32 w-full max-w-64"
+                            />
+                            <div className="mt-3 flex items-baseline gap-2.5">
+                                <span className="text-xs font-bold text-[#0f766e] dark:text-teal-300">
+                                    0{index + 1}
+                                </span>
+                                <h3 className="font-bold text-[#243e35] dark:text-slate-100">
+                                    {t(`welcome.step_${index + 1}_title`)}
+                                </h3>
+                            </div>
+                            <p className="mt-2 text-sm leading-relaxed text-[#617269] dark:text-slate-300">
+                                {t(`welcome.step_${index + 1}_desc`)}
+                            </p>
+                        </li>
+                    ))}
+                </ol>
+            </section>
+            <section className="flex flex-col gap-5 rounded-2xl bg-[#e6f3ed] p-6 sm:p-8 xl:flex-row xl:items-center xl:justify-between">
+                <div className="max-w-2xl">
+                    <h2 className="text-xl font-bold text-[#183f38]">
                         {t('welcome.cta_heading')}
                     </h2>
-                    <p className="mt-2 text-sm sm:text-base text-[#a3b6cc]">
-                        {t('welcome.cta_sub')}
+                    <p className="mt-2 text-sm leading-relaxed text-[#426155]">
+                        {t('welcome.free_note')}
                     </p>
-                    {canRegister && (
-                        <Link
-                            href={register().url}
-                            className="mt-6 sm:mt-8 inline-flex h-12 items-center justify-center rounded-sm bg-white px-8 text-base font-bold text-[#1a263b] transition hover:bg-[#fafaf9] w-full sm:w-auto"
-                        >
-                            {t('common.create_free_account')}
-                        </Link>
-                    )}
-                </CardContent>
-            </Card>
+                </div>
+                <Link href={entryHref} className={`${primaryButton} shrink-0`}>
+                    {t('welcome.start_selling')}
+                    <ArrowRight size={18} aria-hidden="true" />
+                </Link>
+            </section>
         </BazaarLayout>
     );
 }

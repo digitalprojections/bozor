@@ -81,6 +81,13 @@ export default function AdvertisingIndex({
         <BazaarLayout title={t('advertising.title')} breadcrumbs={breadcrumbs} showTitle>
             <Head title={t('advertising.title')} />
 
+            <div className="rounded-xl border border-teal-200 bg-teal-50 p-4 text-sm leading-relaxed text-teal-900">
+                <p>{t('welcome.free_note')}</p>
+                <Link href="/listings/create" className="mt-2 inline-block font-semibold underline underline-offset-4">
+                    {t('welcome.start_selling')}
+                </Link>
+            </div>
+
             <div className="space-y-4">
                 {errors?.advertiser && (
                     <div className={errorNotice}>
