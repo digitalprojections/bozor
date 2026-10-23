@@ -1,19 +1,12 @@
 import { Head, Link, usePage } from '@inertiajs/react';
-import { ArrowRight, Check, Megaphone, WashingMachine, Wrench } from 'lucide-react';
+import { ArrowRight, Check } from 'lucide-react';
+import { ListingIllustration } from '@/components/listing-illustration';
 import { WelcomeIllustration } from '@/components/welcome-illustration';
 import { useTranslations } from '@/hooks/use-translations';
 import BazaarLayout from '@/layouts/bazaar-layout';
 import { listingEntryHref } from '@/lib/listing-entry';
 
-const examples = [
-    { key: 'item', icon: WashingMachine, color: 'bg-[#e6f4ed] text-[#25634c]' },
-    { key: 'service', icon: Wrench, color: 'bg-[#fff0db] text-[#925323]' },
-    {
-        key: 'announcement',
-        icon: Megaphone,
-        color: 'bg-[#eaf0ff] text-[#456597]',
-    },
-] as const;
+const examples = ['item', 'service', 'announcement'] as const;
 const scenes = ['post', 'connect', 'agree'] as const;
 const primaryButton =
     'inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#0f766e] px-6 py-3 text-sm font-bold text-white transition hover:bg-[#115e59] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-600';
@@ -81,44 +74,23 @@ export default function Welcome({
                             <h2 className="text-sm font-bold text-[#183f38]">
                                 {t('welcome.examples_heading')}
                             </h2>
-                            <span className="rounded-full bg-[#edf3ed] px-2.5 py-1 text-xs font-medium text-[#52655e]">
-                                {t('welcome.examples_label')}
-                            </span>
                         </div>
-                        <div className="space-y-3">
-                            {examples.map(({ key, icon: Icon, color }) => (
+                        <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                            {examples.map((key) => (
                                 <div
                                     key={key}
-                                    className="flex items-center gap-4 rounded-xl border border-[#e6ece5] bg-white p-3 sm:p-4"
+                                    className="rounded-xl bg-white p-2 text-center sm:p-3"
                                 >
-                                    <div
-                                        className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-xl ${color}`}
-                                    >
-                                        <Icon
-                                            size={29}
-                                            strokeWidth={1.5}
-                                            aria-hidden="true"
-                                        />
-                                    </div>
-                                    <div className="min-w-0">
-                                        <p className="text-xs font-medium text-[#617269]">
-                                            {t(
-                                                `welcome.example_${key}_category`,
-                                            )}
-                                        </p>
-                                        <h3 className="mt-1 text-sm font-semibold text-[#243e35]">
-                                            {t(`welcome.example_${key}_title`)}
-                                        </h3>
-                                        <p className="mt-1 text-xs leading-relaxed text-[#617269]">
-                                            {t(`welcome.example_${key}_desc`)}
-                                        </p>
-                                    </div>
+                                    <ListingIllustration
+                                        kind={key}
+                                        className="mx-auto aspect-square w-full max-w-40"
+                                    />
+                                    <h3 className="mt-2 text-xs leading-snug font-semibold text-[#243e35] sm:text-sm">
+                                        {t(`welcome.example_${key}_title`)}
+                                    </h3>
                                 </div>
                             ))}
                         </div>
-                        <p className="mt-3 text-xs leading-relaxed text-[#617269]">
-                            {t('welcome.examples_note')}
-                        </p>
                     </div>
                 </div>
             </section>
@@ -130,9 +102,6 @@ export default function Welcome({
                     >
                         {t('welcome.how_it_works')}
                     </h2>
-                    <p className="text-sm text-[#617269] dark:text-slate-300">
-                        {t('welcome.steps_note')}
-                    </p>
                 </div>
                 <ol className="grid gap-4 md:grid-cols-3">
                     {scenes.map((scene, index) => (
@@ -142,7 +111,7 @@ export default function Welcome({
                         >
                             <WelcomeIllustration
                                 scene={scene}
-                                className="mx-auto h-32 w-full max-w-64"
+                                className="mx-auto h-40 w-full max-w-64"
                             />
                             <div className="mt-3 flex items-baseline gap-2.5">
                                 <span className="text-xs font-bold text-[#0f766e] dark:text-teal-300">
@@ -152,9 +121,6 @@ export default function Welcome({
                                     {t(`welcome.step_${index + 1}_title`)}
                                 </h3>
                             </div>
-                            <p className="mt-2 text-sm leading-relaxed text-[#617269] dark:text-slate-300">
-                                {t(`welcome.step_${index + 1}_desc`)}
-                            </p>
                         </li>
                     ))}
                 </ol>
@@ -165,7 +131,7 @@ export default function Welcome({
                         {t('welcome.cta_heading')}
                     </h2>
                     <p className="mt-2 text-sm leading-relaxed text-[#426155]">
-                        {t('welcome.free_note')}
+                        {t('welcome.free_short')}
                     </p>
                 </div>
                 <Link href={entryHref} className={`${primaryButton} shrink-0`}>
