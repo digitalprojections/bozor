@@ -43,3 +43,6 @@ coverage
 .codex
 .agents
 .migration
+local-artifacts
+*.pem
+*.sql.gz

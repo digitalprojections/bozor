@@ -69,3 +69,4 @@ bozorkey.pem
 # Local container exports and database snapshots
 /local-artifacts/
 *.sql.gz
+*.pem
