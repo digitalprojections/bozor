@@ -11,11 +11,11 @@
         "lint": "eslint . --fix",
         "types": "tsc --noEmit",
         "test:registration": "node --experimental-strip-types --test tests/frontend/postal-address.test.mjs",
-        "preview:registration": "node scripts/preview-registration.mjs",
         "test:feature-requests": "node --test tests/frontend/feature-requests.test.mjs",
         "test:statistics": "node --test tests/frontend/statistics.test.mjs",
         "test:welcome": "node --experimental-strip-types --test tests/frontend/welcome.test.mjs",
-        "preview:welcome": "node scripts/preview-welcome.mjs"
+        "local:update": "powershell -ExecutionPolicy Bypass -File scripts/update-local-container.ps1",
+        "test:local": "powershell -ExecutionPolicy Bypass -File scripts/test-local-container.ps1"
     },
     "devDependencies": {
         "@eslint/js": "^9.19.0",
@@ -78,5 +78,5 @@
         "lightningcss-win32-x64-msvc": "^1.29.1"
     },
     "name": "bozor",
-    "version": "1.0.7"
+    "version": "1.0.8"
 }

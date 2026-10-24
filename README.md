@@ -64,22 +64,19 @@ Visit **http://127.0.0.1:8000**
 
 ### Local Docker
 
-Run the local Docker-only stack with PostgreSQL:
+Use the existing `bozor-app` deployment at **http://127.0.0.1:8087**.
+Commit changes, then update and test that same container:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/deploy-local.ps1
+npm run local:update
+npm run test:local
 ```
 
-Defaults:
-- App: `http://localhost:8080`
-- PostgreSQL host port: `5433`
-- Compose project: `bozorlocal`
-
-Optional ports:
-
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/deploy-local.ps1 -HttpPort 8081 -DbPort 5434
-```
+The update script backs up `bozor_local_test`, retains the previous image,
+and preserves database and storage volumes. Tests use an isolated in-memory
+database. Use the built-in browser and reuse the existing local tab.
+Do not start separate preview servers or alternate stacks for UI checks;
+language switching and navigation need the full Laravel application.
 
 ---
 
@@ -256,7 +253,7 @@ php artisan serve && npm run dev
 php artisan queue:work          # Email notification worker
 
 # Local Docker
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/deploy-local.ps1
+npm run local:update
 
 # Production DockerHub -> EC2
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/deploy-production.ps1

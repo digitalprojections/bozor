@@ -20,6 +20,13 @@ class LocaleController extends Controller
         Session::put('locale', $locale);
         cookie()->queue('locale', $locale, 43200 * 6); // 6 months
 
+        // Shared links carry a language override; keep it aligned with the choice.
+        $previous = url()->previous();
+        parse_str(parse_url($previous, PHP_URL_QUERY) ?? '', $query);
+        if (array_key_exists('lang', $query)) {
+            return redirect()->to(url()->query($previous, ['lang' => $locale]));
+        }
+
         return back();
     }
 }

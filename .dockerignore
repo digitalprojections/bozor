@@ -44,5 +44,6 @@ coverage
 .agents
 .migration
 local-artifacts
+artifacts/ui-review
 *.pem
 *.sql.gz
