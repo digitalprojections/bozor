@@ -61,7 +61,7 @@ export function WatchButton({
                     disabled={isLoading}
                     onClick={handleToggle}
                     className={cn(
-                        'absolute top-2 right-2 z-10 flex min-h-9 min-w-12 items-center justify-center gap-1.5 rounded-full px-2.5 shadow transition-all',
+                        'absolute right-2 bottom-2 z-10 flex min-h-9 min-w-12 items-center justify-center gap-1.5 rounded-full px-2.5 shadow transition-all',
                         isWatched
                             ? 'bg-white text-rose-500'
                             : 'bg-black/30 text-white hover:bg-white hover:text-rose-400',
