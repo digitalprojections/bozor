@@ -6,7 +6,7 @@ import { LoginRequiredDialog } from '@/components/login-required-dialog';
 import { Button } from '@/components/ui/button';
 import { useTranslations } from '@/hooks/use-translations';
 import { cn } from '@/lib/utils';
-import type { SharedData } from '@/types';
+import type { Auth } from '@/types';
 
 interface WatchButtonProps {
     listingId: number;
@@ -26,7 +26,7 @@ export function WatchButton({
     onToggle,
 }: WatchButtonProps) {
     const { t } = useTranslations();
-    const { auth } = usePage<SharedData>().props;
+    const { auth } = usePage<{ auth: Auth }>().props;
     const [isLoading, setIsLoading] = React.useState(false);
     const [loginRequiredOpen, setLoginRequiredOpen] = React.useState(false);
 
@@ -133,4 +133,3 @@ export function WatchButton({
         </>
     );
 }
-
