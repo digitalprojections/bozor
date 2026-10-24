@@ -1,15 +1,15 @@
-import { LikeCount } from '@/components/listings/like-count';
-import React, { useState } from 'react';
 import { Link } from '@inertiajs/react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { MapPin, Package, Tag } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { SoldBadge } from './sold-badge';
-import { FreeShippingBadge } from './free-shipping-badge';
-import { AuctionCountdown } from './auction-countdown';
+import React, { useState } from 'react';
+import { LikeCount } from '@/components/listings/like-count';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 import { useTranslations } from '@/hooks/use-translations';
+import { cn } from '@/lib/utils';
 import { ITEM_CONDITIONS, type ItemCondition } from '@/types/item-conditions';
+import { AuctionCountdown } from './auction-countdown';
+import { FreeShippingBadge } from './free-shipping-badge';
+import { SoldBadge } from './sold-badge';
 
 interface Listing {
     id: number;

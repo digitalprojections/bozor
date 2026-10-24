@@ -1,11 +1,12 @@
-import { LikeCount } from '@/components/listings/like-count';
-import React from 'react';
 import { router, usePage } from '@inertiajs/react';
 import { Heart } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import React from 'react';
+import { LikeCount } from '@/components/listings/like-count';
 import { LoginRequiredDialog } from '@/components/login-required-dialog';
+import { Button } from '@/components/ui/button';
 import { useTranslations } from '@/hooks/use-translations';
 import { cn } from '@/lib/utils';
+import type { SharedData } from '@/types';
 
 interface WatchButtonProps {
     listingId: number;
@@ -25,7 +26,7 @@ export function WatchButton({
     onToggle,
 }: WatchButtonProps) {
     const { t } = useTranslations();
-    const { auth } = usePage().props as any;
+    const { auth } = usePage<SharedData>().props;
     const [isLoading, setIsLoading] = React.useState(false);
     const [loginRequiredOpen, setLoginRequiredOpen] = React.useState(false);
 
@@ -132,3 +133,4 @@ export function WatchButton({
         </>
     );
 }
+
