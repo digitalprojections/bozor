@@ -23,6 +23,7 @@ import { ITEM_CONDITIONS, type ItemCondition } from '@/types/item-conditions';
 
 interface Listing {
     id: number;
+    watched_by_count?: number;
     title: string;
     description: string;
     price: number;
@@ -182,6 +183,7 @@ export function ListingsGrid({
                                             />
                                         )}
                                     <WatchButton
+                                        count={listing.watched_by_count}
                                         listingId={listing.id}
                                         isWatched={watchedIds.includes(
                                             listing.id,
@@ -283,6 +285,7 @@ export function ListingsGrid({
                                             />
                                         )}
                                     <WatchButton
+                                        count={listing.watched_by_count}
                                         listingId={listing.id}
                                         isWatched={watchedIds.includes(
                                             listing.id,

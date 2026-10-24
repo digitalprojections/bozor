@@ -1,3 +1,4 @@
+import { LikeCount } from '@/components/listings/like-count';
 import React, { useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -12,6 +13,7 @@ import { ITEM_CONDITIONS, type ItemCondition } from '@/types/item-conditions';
 
 interface Listing {
     id: number;
+    watched_by_count?: number;
     title: string;
     price: number;
     display_price?: number;
@@ -99,6 +101,10 @@ export function ListingCard({ listing, className }: ListingCardProps) {
                         )}
                 </div>
                 <CardContent className="p-4">
+                    <LikeCount
+                        count={listing.watched_by_count}
+                        className="mb-2"
+                    />
                     <h3 className="truncate leading-tight font-bold text-[#0b1b32] transition-colors group-hover:text-[#0d9488]">
                         {listing.title}
                     </h3>

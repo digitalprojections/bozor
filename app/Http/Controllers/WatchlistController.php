@@ -16,7 +16,7 @@ class WatchlistController extends Controller
     {
         $listings = $request->user()->watchedListings()
             ->with(['categories', 'user'])
-            ->withCount('bids')
+            ->withCount(['bids', 'watchedBy'])
             ->withMax('bids', 'amount')
             ->latest('watchlists.created_at')
             ->get();
@@ -53,7 +53,8 @@ class WatchlistController extends Controller
             return response()->json([
                 'message' => $message,
                 'status' => $status,
-                'is_watched' => $status === 'added'
+                'is_watched' => $status === 'added',
+                'watched_by_count' => $listing->watchedBy()->count(),
             ]);
         }
 

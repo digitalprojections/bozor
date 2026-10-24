@@ -25,14 +25,14 @@ class ProfileController extends Controller
 
         $activeListings = $user->listings()
             ->where('status', 'active')
-            ->withCount('bids')
+            ->withCount(['bids', 'watchedBy'])
             ->withMax('bids', 'amount')
             ->latest()
             ->paginate(12, ['*'], 'active_page');
 
         $soldListings = $user->listings()
             ->where('status', 'sold')
-            ->withCount('bids')
+            ->withCount(['bids', 'watchedBy'])
             ->withMax('bids', 'amount')
             ->latest()
             ->paginate(12, ['*'], 'sold_page');

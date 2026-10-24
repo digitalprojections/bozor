@@ -1,3 +1,4 @@
+import { LikeCount } from '@/components/listings/like-count';
 import { Head, Link } from '@inertiajs/react';
 import BazaarLayout from '@/layouts/bazaar-layout';
 import { Card, CardContent } from '@/components/ui/card';
@@ -7,6 +8,7 @@ import { Heart } from 'lucide-react';
 
 interface Listing {
     id: number;
+    watched_by_count?: number;
     title: string;
     description: string;
     price: number;
@@ -93,6 +95,9 @@ export default function Watchlist({ listings }: Props) {
                                             </div>
                                         </div>
                                         <CardContent className="flex flex-1 flex-col gap-2 p-4">
+                                            <LikeCount
+                                                count={listing.watched_by_count}
+                                            />
                                             <div className="flex flex-col gap-1">
                                                 <span className="text-[0.75rem] font-medium tracking-wider text-[#0066cc] uppercase">
                                                     {listing.categories?.[0]

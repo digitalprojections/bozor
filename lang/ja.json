@@ -666,5 +666,7 @@
     "welcome.example_announcement_title": "プロフのご注文",
     "welcome.example_announcement_desc": "ご希望の日にちと人数をメッセージでお知らせください。",
     "welcome.meta_description": "日本のコミュニティマーケットBozor。品物の売買、サービスの紹介、地域のお知らせに。個人・事業者ともに掲載は無料です。",
-    "welcome.free_short": "通常の掲載は無料。有料広告は任意です。"
+    "welcome.free_short": "通常の掲載は無料。有料広告は任意です。",
+    "listing.likes_count": "いいね :count件",
+    "listing.likes_unavailable": "いいね数を取得できません"
 }

@@ -37,7 +37,7 @@ class MarketplaceController extends Controller
 
         // Build listings query with filters
         $listingsQuery = Listing::with(['user', 'categories', 'latestTransaction'])
-            ->withCount('bids')
+            ->withCount(['bids', 'watchedBy'])
             ->withMax('bids', 'amount')
             ->items()
             ->where('status', '!=', 'disabled')
@@ -130,7 +130,7 @@ class MarketplaceController extends Controller
         $locationOptions = $this->locationOptions($request);
 
         $listingsQuery = Listing::with(['user', 'categories', 'latestTransaction'])
-            ->withCount('bids')
+            ->withCount(['bids', 'watchedBy'])
             ->withMax('bids', 'amount')
             ->items()
             ->where('status', '!=', 'disabled')

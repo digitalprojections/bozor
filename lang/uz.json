@@ -667,5 +667,7 @@
     "welcome.example_announcement_title": "Oshga buyurtma",
     "welcome.example_announcement_desc": "Necha kishilik kerakligini va qaysi kunga buyurtma bermoqchi ekaningizni yozing.",
     "welcome.meta_description": "Yaponiyada buyum sotish, xizmat taklif qilish va boshqa e’lonlarni Bozorda bepul joylang. Shaxsiy va biznes e’lonlari uchun to‘lov yo‘q.",
-    "welcome.free_short": "Oddiy e’lonlar bepul. Pullik reklama ixtiyoriy."
+    "welcome.free_short": "Oddiy e’lonlar bepul. Pullik reklama ixtiyoriy.",
+    "listing.likes_count": ":count kishiga yoqdi",
+    "listing.likes_unavailable": "Yoqtirishlar soni mavjud emas"
 }

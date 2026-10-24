@@ -1,3 +1,4 @@
+import { LikeCount } from '@/components/listings/like-count';
 import { Link } from '@inertiajs/react';
 import { Package } from 'lucide-react';
 import { useTranslations } from '@/hooks/use-translations';
@@ -6,6 +7,7 @@ import { AuctionCountdown } from '@/components/listings/auction-countdown';
 
 interface Listing {
     id: number;
+    watched_by_count?: number;
     title: string;
     price: number;
     display_price?: number;
@@ -87,6 +89,7 @@ export function RecommendationsSection({
                                         />
                                     )}
                             </div>
+                            <LikeCount count={item.watched_by_count} />
                             <span className="line-clamp-2 text-xs leading-snug text-[#333333] group-hover:text-[#e62017]">
                                 {item.title}
                             </span>

@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
-import { Package, Info, FileText, Trash2, Gavel, RotateCcw } from 'lucide-react';
+import {
+    Package,
+    Info,
+    FileText,
+    Trash2,
+    Gavel,
+    RotateCcw,
+} from 'lucide-react';
 import BazaarLayout from '@/layouts/bazaar-layout';
 import { cn } from '@/lib/utils';
 import { useTranslations } from '@/hooks/use-translations';
@@ -226,6 +233,7 @@ export default function Show({
                                             <SoldBadge variant="overlay" />
                                         )}
                                         <WatchButton
+                                            count={listing.watched_by_count}
                                             listingId={listing.id}
                                             isWatched={is_watched}
                                             variant="overlay"
@@ -344,6 +352,9 @@ export default function Show({
                                                             auth.user.id,
                                                         ) && (
                                                         <WatchButton
+                                                            count={
+                                                                listing.watched_by_count
+                                                            }
                                                             listingId={
                                                                 listing.id
                                                             }
@@ -427,6 +438,9 @@ export default function Show({
                                                     (!auth?.user ||
                                                         auth.user.is_guest) && (
                                                         <WatchButton
+                                                            count={
+                                                                listing.watched_by_count
+                                                            }
                                                             listingId={
                                                                 listing.id
                                                             }
@@ -587,10 +601,7 @@ export default function Show({
                     <Card className="rounded-[16px] border-[#edf2f9] shadow-sm sm:rounded-[24px]">
                         <CardHeader className="px-5 pt-6 pb-2 sm:px-8 sm:pt-8">
                             <h2 className="flex flex-row items-center gap-2 text-lg font-bold text-[#0b1b32]">
-                                <Gavel
-                                    size={20}
-                                    className="text-[#0d9488]"
-                                />
+                                <Gavel size={20} className="text-[#0d9488]" />
                                 {t('listing.bids.manage_title')}
                             </h2>
                         </CardHeader>

@@ -40,6 +40,7 @@ import { AuctionCountdown } from '@/components/listings/auction-countdown';
 interface ListingSidebarProps {
     listing: {
         id: number;
+        watched_by_count?: number;
         title: string;
         description: string;
         images: string[];
@@ -456,6 +457,7 @@ export function ListingSidebar({
                     ) : null}
 
                     <WatchButton
+                        count={listing.watched_by_count}
                         listingId={listing.id}
                         isWatched={is_watched}
                         className="h-10 w-full text-sm sm:h-12"
@@ -607,8 +609,8 @@ export function ListingSidebar({
                     <DialogHeader>
                         <DialogTitle>Report this listing</DialogTitle>
                         <DialogDescription>
-                            Reports are reviewed by administrators before
-                            action is taken.
+                            Reports are reviewed by administrators before action
+                            is taken.
                         </DialogDescription>
                     </DialogHeader>
 
@@ -618,10 +620,10 @@ export function ListingSidebar({
                             <AlertTitle>Important warning</AlertTitle>
                             <AlertDescription>
                                 Bad listings can lead to listing removal,
-                                account limits, or account deletion. Wrongful
-                                or malicious reports can be punished the same
-                                way. Submit a report only when you can explain
-                                the problem clearly.
+                                account limits, or account deletion. Wrongful or
+                                malicious reports can be punished the same way.
+                                Submit a report only when you can explain the
+                                problem clearly.
                             </AlertDescription>
                         </Alert>
 

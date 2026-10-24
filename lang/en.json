@@ -667,5 +667,7 @@
     "welcome.example_announcement_title": "Plov orders",
     "welcome.example_announcement_desc": "Message us with your preferred date and number of servings.",
     "welcome.meta_description": "Buy, sell, offer services, and share community announcements on Bozor in Japan. Personal and business listings are free to post.",
-    "welcome.free_short": "Ordinary listings are free. Paid ads are optional."
+    "welcome.free_short": "Ordinary listings are free. Paid ads are optional.",
+    "listing.likes_count": ":count likes",
+    "listing.likes_unavailable": "Likes unavailable"
 }
