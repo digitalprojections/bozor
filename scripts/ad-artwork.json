@@ -1,0 +1,142 @@
+[
+  {
+    "id": "asset-master",
+    "name": "Asset Master",
+    "tagline": "Create game assets",
+    "cta": "Open Asset Master",
+    "scene": "A vivid game artist desk with crisp tiny character sprite sheets, cutout props, and a stylus tablet, white background with coral accents."
+  },
+  {
+    "id": "jawahir",
+    "name": "Jawahir Halaal Store",
+    "tagline": "Groceries for your table",
+    "cta": "Shop now",
+    "scene": "Beautiful grocery still life with fresh vegetables, dates, rice and sealed pantry bags on a warm cream backdrop. No unsupported certification symbols."
+  },
+  {
+    "id": "reserve-flow",
+    "name": "Reserve Flow",
+    "tagline": "Make booking simple",
+    "cta": "Explore Reserve Flow",
+    "scene": "Elegant appointment planner with clean calendar blocks, a tiny desk clock, and a tidy service business desk, pale blue background. No readable mock UI."
+  },
+  {
+    "id": "treasure",
+    "name": "Treasure Cartographer",
+    "tagline": "Find your way",
+    "cta": "Play now",
+    "scene": "Beautiful miniature adventure board with parchment map trails, a compass and small treasure chest, warm sand and deep teal."
+  },
+  {
+    "id": "video-chat",
+    "name": "Aloqa Video Chat",
+    "tagline": "A conversation away",
+    "cta": "Start a chat",
+    "scene": "Friendly realistic pair of modern phones facing one another, abstract colorful call connection rings, soft blue backdrop. No faces, no mock product screenshot."
+  },
+  {
+    "id": "mahjong",
+    "name": "Mahjong Zen",
+    "tagline": "A moment of calm",
+    "cta": "Play now",
+    "scene": "Premium ivory mahjong matching tiles on a serene sage green felt tabletop beside a small bamboo leaf."
+  },
+  {
+    "id": "note-sense",
+    "name": "Note Sense",
+    "tagline": "Find your pitch",
+    "cta": "Try Note Sense",
+    "scene": "Elegant realistic tuning fork, silver microphone, clear flowing sound wave and a few music notes, white background with blue details."
+  },
+  {
+    "id": "animate-frames",
+    "name": "Animate Frames",
+    "tagline": "Draw. Animate. Play.",
+    "cta": "Start animating",
+    "scene": "Artist light table with a hand-drawn bouncing orange fox shown on successive transparent animation sheets, clean bright playful art direction."
+  },
+  {
+    "id": "jlpt",
+    "name": "JLPT N2–N1",
+    "tagline": "Build your Japanese",
+    "cta": "Start studying",
+    "scene": "Beautiful Japanese study desk with flashcards, pencil, notebook and subtle cherry blossom, white and indigo, no invented readable Japanese text."
+  },
+  {
+    "id": "tile-puzzle",
+    "name": "15 Tile Puzzle",
+    "tagline": "One move at a time",
+    "cta": "Play now",
+    "scene": "Tactile classic 4 by 4 sliding number puzzle wooden tiles, one empty space, bright clean sky blue background. Avoid claiming an exact game screenshot."
+  },
+  {
+    "id": "posbon",
+    "name": "Posbon",
+    "tagline": "Stay connected as a family",
+    "cta": "Explore Posbon",
+    "scene": "Warm editorial scene of three friendly abstract location pins grouped over a soft folded neighborhood map, pale sky and warm orange, no tracking claims or real personal details."
+  },
+  {
+    "id": "nurul-quran",
+    "name": "Nurul Quran",
+    "tagline": "Read. Listen. Reflect.",
+    "cta": "Open Nurul Quran",
+    "scene": "Respectful beautiful closed Quran with elegant geometric embossed cover on a wooden book rest, peaceful green background, no invented Arabic lettering."
+  },
+  {
+    "id": "battleship",
+    "name": "Neon Battleship",
+    "tagline": "Plan your next strike",
+    "cta": "Play now",
+    "scene": "Cinematic miniature navy ships on a dark glowing cyan tactical grid, neon blue and red highlights, clear board-game scene."
+  },
+  {
+    "id": "audio-slice",
+    "name": "AudioSlice",
+    "tagline": "Split audio with ease",
+    "cta": "Try AudioSlice",
+    "scene": "Clean sculptural audio waveform sliced into three neat floating segments, silver headphones and small editing marker, bright white backdrop with orange accents."
+  },
+  {
+    "id": "quantum",
+    "name": "1024 Quantum Flux",
+    "tagline": "Think. Slide. Combine.",
+    "cta": "Play now",
+    "scene": "Beautiful futuristic glowing number blocks showing 2, 4, 8, 16, 32, 64, 128, 256 on a dark electric blue tabletop, futuristic puzzle imagery."
+  },
+  {
+    "id": "audio-visualizer",
+    "name": "Audio Visualizer",
+    "tagline": "See your sound",
+    "cta": "Try it now",
+    "scene": "Rich flowing cyan magenta and amber sound spectrum bars above a black background with elegant realistic headphones."
+  },
+  {
+    "id": "firebase-pulse",
+    "name": "Firebase Pulse",
+    "tagline": "Your projects at a glance",
+    "cta": "Get the app",
+    "scene": "Clean smartphone beside sculptural project cubes and a clear small heartbeat style monitoring line, charcoal and warm amber, no Firebase logo or invented dashboards."
+  },
+  {
+    "id": "list-share",
+    "name": "List Share",
+    "tagline": "Plan together",
+    "cta": "Get the app",
+    "scene": "Warm friendly shared planning scene with a simple checklist, grocery bag, two colorful pencils, and small house shapes, pale green backdrop."
+  },
+  {
+    "id": "tadabbur",
+    "name": "Tadabbur",
+    "tagline": "Make time for reflection",
+    "cta": "Get the app",
+    "scene": "Respectful peaceful study still life with an elegant closed embossed Quran, notebook, wooden pen and warm morning light, cream and deep teal. No readable Arabic."
+  },
+  {
+    "id": "audio-quran",
+    "name": "Audio Quran",
+    "tagline": "Listen. Repeat. Remember.",
+    "cta": "Get the app",
+    "scene": "Respectful elegant closed Quran and premium headphones on a clean sage tabletop beside a small bookmark, peaceful soft lighting, no Arabic text."
+  }
+]

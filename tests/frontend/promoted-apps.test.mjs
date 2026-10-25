@@ -8,7 +8,7 @@ test('promotions have unique identifiers and secure first-party or Store destina
         new Set(promotedApps.map((app) => app.id)).size,
         promotedApps.length,
     );
-    assert.equal(promotedApps.length, 3);
+    assert.equal(promotedApps.length, 23);
     for (const app of promotedApps) {
         const url = new URL(app.href);
         assert.equal(url.protocol, 'https:');
@@ -17,6 +17,11 @@ test('promotions have unique identifiers and secure first-party or Store destina
                 'genstudio.web.app',
                 'apps.microsoft.com',
                 'created.link',
+                'halaal-store.web.app',
+                'online-yakusoku.web.app',
+                'jlptmastery.web.app',
+                'battleship.created.link',
+                'play.google.com',
             ].includes(url.hostname),
         );
         assert.ok(app.name.trim());
@@ -39,7 +44,7 @@ test('every supported locale supplies all promotion copy', () => {
             'next',
             'pause',
             'play',
-            ...promotedApps.flatMap((app) => [app.id, `${app.id}_cta`]),
+            ...promotedApps.map((app) => app.id),
         ]) {
             assert.ok(
                 strings[`promoted_apps.${key}`]?.trim(),
@@ -64,4 +69,23 @@ test('every banner has a local optimized image', () => {
                 .length < 150000,
         );
     }
+});
+
+import {
+    promotionIndicators,
+    shouldLoadPromotion,
+} from '../../resources/js/lib/promoted-apps.ts';
+test('pagination stays compact and always includes the current ad', () => {
+    assert.deepEqual(promotionIndicators(0, 3), [0, 1, 2]);
+    assert.deepEqual(promotionIndicators(0, 23), [0, 1, 2, 3, 4]);
+    assert.deepEqual(promotionIndicators(22, 23), [18, 19, 20, 21, 22]);
+    assert.ok(promotionIndicators(12, 23).includes(12));
+    assert.deepEqual(promotionIndicators(0, 0), []);
+});
+test('only images near the carousel window are requested', () => {
+    assert.equal(shouldLoadPromotion(0, 0), true);
+    assert.equal(shouldLoadPromotion(4, 0), true);
+    assert.equal(shouldLoadPromotion(5, 0), false);
+    assert.equal(shouldLoadPromotion(11, 12), true);
+    assert.equal(shouldLoadPromotion(4, 12), false);
 });

@@ -1,7 +1,12 @@
 import { ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslations } from '@/hooks/use-translations';
-import { nextPromotionIndex, promotedApps } from '@/lib/promoted-apps';
+import {
+    nextPromotionIndex,
+    promotedApps,
+    promotionIndicators,
+    shouldLoadPromotion,
+} from '@/lib/promoted-apps';
 
 const slides = [...promotedApps, ...promotedApps];
 
@@ -71,8 +76,16 @@ export function PromotedApps() {
                                     className="block w-(--ad-width) shrink-0 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-teal-600"
                                 >
                                     <img
-                                        src={app.image}
-                                        alt={`${app.name} — ${t(`promoted_apps.${app.id}_cta`)}`}
+                                        src={
+                                            shouldLoadPromotion(
+                                                slideIndex,
+                                                index,
+                                            )
+                                                ? app.image
+                                                : undefined
+                                        }
+                                        loading="lazy"
+                                        alt={app.name}
                                         width={720}
                                         height={600}
                                         decoding="async"
@@ -101,20 +114,25 @@ export function PromotedApps() {
                     </button>
                 </div>
                 <div className="mt-1 flex items-center justify-center gap-1">
-                    {promotedApps.map((app, slideIndex) => (
-                        <button
-                            type="button"
-                            key={app.id}
-                            aria-label={app.name}
-                            aria-pressed={slideIndex === index}
-                            onClick={() => setIndex(slideIndex)}
-                            className="flex size-7 items-center justify-center"
-                        >
-                            <span
-                                className={`size-1.5 rounded-full ${slideIndex === index ? 'bg-slate-700 dark:bg-slate-200' : 'bg-slate-300 dark:bg-slate-600'}`}
-                            />
-                        </button>
-                    ))}
+                    {promotionIndicators(index, promotedApps.length).map(
+                        (slideIndex) => (
+                            <button
+                                type="button"
+                                key={slideIndex}
+                                aria-label={promotedApps[slideIndex].name}
+                                aria-pressed={slideIndex === index}
+                                onClick={() => setIndex(slideIndex)}
+                                className="flex size-7 items-center justify-center"
+                            >
+                                <span
+                                    className={`size-1.5 rounded-full ${slideIndex === index ? 'bg-slate-700 dark:bg-slate-200' : 'bg-slate-300 dark:bg-slate-600'}`}
+                                />
+                            </button>
+                        ),
+                    )}
+                    <span className="ml-2 text-[10px] text-slate-500 tabular-nums dark:text-slate-400">
+                        {index + 1} / {promotedApps.length}
+                    </span>
                     {!reducedMotion && (
                         <button
                             type="button"
