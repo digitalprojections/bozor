@@ -677,5 +677,10 @@
     "promoted_apps.checkers": "Keyingi yurish sizdan. Kompyuter yoki do‘stingiz bilan o‘ynang.",
     "promoted_apps.genstudio_cta": "Yaratishni boshlash",
     "promoted_apps.localscribe_cta": "LocalScribe’ni olish",
-    "promoted_apps.checkers_cta": "Hozir o‘ynash"
+    "promoted_apps.checkers_cta": "Hozir o‘ynash",
+    "promoted_apps.carousel": "Reklama lentasi",
+    "promoted_apps.previous": "Oldingi reklamalar",
+    "promoted_apps.next": "Keyingi reklamalar",
+    "promoted_apps.pause": "Almashishni to‘xtatish",
+    "promoted_apps.play": "Almashishni davom ettirish"
 }

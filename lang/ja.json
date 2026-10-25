@@ -676,5 +676,10 @@
     "promoted_apps.checkers": "次の一手を楽しもう。コンピューターや友達と対戦。",
     "promoted_apps.genstudio_cta": "今すぐ作成",
     "promoted_apps.localscribe_cta": "LocalScribeを入手",
-    "promoted_apps.checkers_cta": "今すぐプレイ"
+    "promoted_apps.checkers_cta": "今すぐプレイ",
+    "promoted_apps.carousel": "広告カルーセル",
+    "promoted_apps.previous": "前の広告",
+    "promoted_apps.next": "次の広告",
+    "promoted_apps.pause": "自動切り替えを停止",
+    "promoted_apps.play": "自動切り替えを再開"
 }

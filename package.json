@@ -79,5 +79,5 @@
         "lightningcss-win32-x64-msvc": "^1.29.1"
     },
     "name": "bozor",
-    "version": "1.0.10"
+    "version": "1.0.11"
 }

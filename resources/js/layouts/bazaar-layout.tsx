@@ -45,7 +45,7 @@ import {
 } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { formatRating } from '@/lib/format';
-import type { BreadcrumbItem } from '@/types';
+import type { BreadcrumbItem, LayoutAds } from '@/types';
 import AppLogo from '@/components/app-logo';
 
 interface BazaarLayoutProps {
@@ -72,6 +72,8 @@ export default function BazaarLayout({
         locale = 'en',
         visitorCounter,
     } = usePage().props as any;
+    const { layoutAds = {} } = usePage().props as { layoutAds?: LayoutAds };
+    const hasRightRail = !!sidebar || (layoutAds.right_rail?.length ?? 0) > 0;
     const user = auth.user && !auth.user.is_guest ? auth.user : null;
     const formattedVisitorTotal = new Intl.NumberFormat(locale).format(
         Number(visitorCounter?.total ?? 0),
@@ -191,6 +193,8 @@ export default function BazaarLayout({
                 </div>
             </header>
 
+            <PromotedApps />
+
             {/* Breadcrumbs Section */}
             <div className="border-b border-[#f0f2f5] bg-white py-2 dark:border-[#1f2a3d] dark:bg-[#111827]">
                 <div className="mx-auto w-full px-4 md:px-8">
@@ -236,7 +240,9 @@ export default function BazaarLayout({
                     className={cn(
                         'grid grid-cols-1',
                         flushMobile ? 'gap-4 md:gap-8' : 'gap-8',
-                        'lg:grid-cols-[200px_minmax(0,1fr)] xl:grid-cols-[220px_minmax(0,1fr)_280px]',
+                        hasRightRail
+                            ? 'lg:grid-cols-[180px_minmax(0,1fr)_240px] xl:grid-cols-[220px_minmax(0,1fr)_280px]'
+                            : 'lg:grid-cols-[240px_minmax(0,1fr)]',
                     )}
                 >
                     {/* Main Navigation Sidebar (Left) */}
@@ -255,12 +261,12 @@ export default function BazaarLayout({
                         {children}
                     </div>
 
-                    {/* Actions and app recommendations */}
-                    <aside className="flex min-w-0 flex-col gap-6 lg:col-start-2 xl:col-start-3 xl:row-start-1">
-                        {sidebar}
-                        <AdSlot placement="right_rail" variant="rail" />
-                        <PromotedApps />
-                    </aside>
+                    {hasRightRail && (
+                        <aside className="flex min-w-0 flex-col gap-6">
+                            {sidebar}
+                            <AdSlot placement="right_rail" variant="rail" />
+                        </aside>
+                    )}
                 </div>
             </main>
 

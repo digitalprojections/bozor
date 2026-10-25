@@ -677,5 +677,10 @@
     "promoted_apps.checkers": "Ваш ход! Сыграйте с компьютером или другом.",
     "promoted_apps.genstudio_cta": "Начать создавать",
     "promoted_apps.localscribe_cta": "Скачать LocalScribe",
-    "promoted_apps.checkers_cta": "Играть сейчас"
+    "promoted_apps.checkers_cta": "Играть сейчас",
+    "promoted_apps.carousel": "Карусель рекламы",
+    "promoted_apps.previous": "Предыдущие объявления",
+    "promoted_apps.next": "Следующие объявления",
+    "promoted_apps.pause": "Приостановить смену",
+    "promoted_apps.play": "Возобновить смену"
 }

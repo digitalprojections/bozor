@@ -677,5 +677,10 @@
     "promoted_apps.checkers": "Your next move awaits. Challenge the computer or a friend.",
     "promoted_apps.genstudio_cta": "Start creating",
     "promoted_apps.localscribe_cta": "Get LocalScribe",
-    "promoted_apps.checkers_cta": "Play now"
+    "promoted_apps.checkers_cta": "Play now",
+    "promoted_apps.carousel": "Ad carousel",
+    "promoted_apps.previous": "Previous ads",
+    "promoted_apps.next": "Next ads",
+    "promoted_apps.pause": "Pause rotation",
+    "promoted_apps.play": "Resume rotation"
 }

@@ -34,6 +34,11 @@ test('every supported locale supplies all promotion copy', () => {
         for (const key of [
             'title',
             'new_tab',
+            'carousel',
+            'previous',
+            'next',
+            'pause',
+            'play',
             ...promotedApps.flatMap((app) => [app.id, `${app.id}_cta`]),
         ]) {
             assert.ok(
@@ -41,5 +46,22 @@ test('every supported locale supplies all promotion copy', () => {
                 `${locale}: ${key}`,
             );
         }
+    }
+});
+
+import { nextPromotionIndex } from '../../resources/js/lib/promoted-apps.ts';
+test('carousel advances and wraps in either direction', () => {
+    assert.equal(nextPromotionIndex(0, 1, 3), 1);
+    assert.equal(nextPromotionIndex(2, 1, 3), 0);
+    assert.equal(nextPromotionIndex(0, -1, 3), 2);
+    assert.equal(nextPromotionIndex(1, 1, 0), 0);
+});
+test('every banner has a local optimized image', () => {
+    for (const app of promotedApps) {
+        assert.match(app.image, /^\/images\/ads\/.+\.webp$/);
+        assert.ok(
+            readFileSync(new URL(`../../public${app.image}`, import.meta.url))
+                .length < 150000,
+        );
     }
 });
