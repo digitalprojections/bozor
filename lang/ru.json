@@ -670,10 +670,12 @@
     "welcome.free_short": "Обычные объявления бесплатны. Платная реклама — по желанию.",
     "listing.likes_count": "Отметок «Нравится»: :count",
     "listing.likes_unavailable": "Количество отметок недоступно",
-    "promoted_apps.title": "Приложения Created Link",
-    "promoted_apps.all_apps": "Все приложения",
+    "promoted_apps.title": "Реклама",
     "promoted_apps.new_tab": "Откроется в новой вкладке",
-    "promoted_apps.genstudio": "Создавайте изображения и видео с ИИ.",
-    "promoted_apps.localscribe": "Преобразуйте аудио и видео в текст на Windows.",
-    "promoted_apps.checkers": "Играйте в шашки с компьютером или другом."
+    "promoted_apps.genstudio": "Воплощайте идеи в изображениях и видео с ИИ.",
+    "promoted_apps.localscribe": "Превращайте записи в редактируемый текст на Windows.",
+    "promoted_apps.checkers": "Ваш ход! Сыграйте с компьютером или другом.",
+    "promoted_apps.genstudio_cta": "Начать создавать",
+    "promoted_apps.localscribe_cta": "Скачать LocalScribe",
+    "promoted_apps.checkers_cta": "Играть сейчас"
 }

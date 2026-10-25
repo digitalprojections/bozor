@@ -670,10 +670,12 @@
     "welcome.free_short": "Ordinary listings are free. Paid ads are optional.",
     "listing.likes_count": ":count likes",
     "listing.likes_unavailable": "Likes unavailable",
-    "promoted_apps.title": "More from Created Link",
-    "promoted_apps.all_apps": "Explore all apps",
+    "promoted_apps.title": "Advertisement",
     "promoted_apps.new_tab": "Opens in a new tab",
-    "promoted_apps.genstudio": "Create images and videos with AI.",
-    "promoted_apps.localscribe": "Transcribe audio and video on Windows.",
-    "promoted_apps.checkers": "Play checkers against the computer or with a friend."
+    "promoted_apps.genstudio": "Bring your ideas to life with AI images and videos.",
+    "promoted_apps.localscribe": "Turn recordings into editable text on Windows.",
+    "promoted_apps.checkers": "Your next move awaits. Challenge the computer or a friend.",
+    "promoted_apps.genstudio_cta": "Start creating",
+    "promoted_apps.localscribe_cta": "Get LocalScribe",
+    "promoted_apps.checkers_cta": "Play now"
 }

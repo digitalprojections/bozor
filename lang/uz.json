@@ -670,10 +670,12 @@
     "welcome.free_short": "Oddiy e’lonlar bepul. Pullik reklama ixtiyoriy.",
     "listing.likes_count": ":count kishiga yoqdi",
     "listing.likes_unavailable": "Yoqtirishlar soni mavjud emas",
-    "promoted_apps.title": "Created Link ilovalari",
-    "promoted_apps.all_apps": "Barcha ilovalarni ko‘rish",
+    "promoted_apps.title": "Reklama",
     "promoted_apps.new_tab": "Yangi oynada ochiladi",
-    "promoted_apps.genstudio": "AI yordamida rasm va video yarating.",
-    "promoted_apps.localscribe": "Windows’da audio va videoni matnga aylantiring.",
-    "promoted_apps.checkers": "Kompyuter yoki do‘stingiz bilan shashka o‘ynang."
+    "promoted_apps.genstudio": "G‘oyalaringizni AI yordamida rasm va videoga aylantiring.",
+    "promoted_apps.localscribe": "Windows’da yozuvlaringizni tahrirlanadigan matnga aylantiring.",
+    "promoted_apps.checkers": "Keyingi yurish sizdan. Kompyuter yoki do‘stingiz bilan o‘ynang.",
+    "promoted_apps.genstudio_cta": "Yaratishni boshlash",
+    "promoted_apps.localscribe_cta": "LocalScribe’ni olish",
+    "promoted_apps.checkers_cta": "Hozir o‘ynash"
 }

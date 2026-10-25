@@ -33,9 +33,8 @@ test('every supported locale supplies all promotion copy', () => {
         );
         for (const key of [
             'title',
-            'all_apps',
             'new_tab',
-            ...promotedApps.map((app) => app.id),
+            ...promotedApps.flatMap((app) => [app.id, `${app.id}_cta`]),
         ]) {
             assert.ok(
                 strings[`promoted_apps.${key}`]?.trim(),
