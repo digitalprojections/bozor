@@ -669,5 +669,11 @@
     "welcome.meta_description": "Buy, sell, offer services, and share community announcements on Bozor in Japan. Personal and business listings are free to post.",
     "welcome.free_short": "Ordinary listings are free. Paid ads are optional.",
     "listing.likes_count": ":count likes",
-    "listing.likes_unavailable": "Likes unavailable"
+    "listing.likes_unavailable": "Likes unavailable",
+    "promoted_apps.title": "More from Created Link",
+    "promoted_apps.all_apps": "Explore all apps",
+    "promoted_apps.new_tab": "Opens in a new tab",
+    "promoted_apps.genstudio": "Create images and videos with AI.",
+    "promoted_apps.localscribe": "Transcribe audio and video on Windows.",
+    "promoted_apps.checkers": "Play checkers against the computer or with a friend."
 }

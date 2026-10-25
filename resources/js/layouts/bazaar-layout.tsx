@@ -33,6 +33,7 @@ import { useTranslations } from '@/hooks/use-translations';
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { LocaleSwitcher } from '@/components/locale-switcher';
 import { LoginRequiredDialog } from '@/components/login-required-dialog';
+import { PromotedApps } from '@/components/promoted-apps';
 import { AdSlot } from '@/components/ads/ad-slot';
 import { UserAvatar } from '@/components/user-avatar';
 import {
@@ -46,7 +47,6 @@ import { cn } from '@/lib/utils';
 import { formatRating } from '@/lib/format';
 import type { BreadcrumbItem } from '@/types';
 import AppLogo from '@/components/app-logo';
-import type { LayoutAds } from '@/types';
 
 interface BazaarLayoutProps {
     children: ReactNode;
@@ -69,13 +69,10 @@ export default function BazaarLayout({
     const {
         auth,
         flash,
-        layoutAds = {},
         locale = 'en',
         visitorCounter,
     } = usePage().props as any;
     const user = auth.user && !auth.user.is_guest ? auth.user : null;
-    const ads = layoutAds as LayoutAds;
-    const hasRightRailAds = (ads.right_rail?.length ?? 0) > 0;
     const formattedVisitorTotal = new Intl.NumberFormat(locale).format(
         Number(visitorCounter?.total ?? 0),
     );
@@ -239,9 +236,7 @@ export default function BazaarLayout({
                     className={cn(
                         'grid grid-cols-1',
                         flushMobile ? 'gap-4 md:gap-8' : 'gap-8',
-                        sidebar || hasRightRailAds
-                            ? 'lg:grid-cols-[240px_1fr_320px]'
-                            : 'lg:grid-cols-[240px_1fr]',
+                        'lg:grid-cols-[200px_minmax(0,1fr)] xl:grid-cols-[220px_minmax(0,1fr)_280px]',
                     )}
                 >
                     {/* Main Navigation Sidebar (Left) */}
@@ -260,13 +255,12 @@ export default function BazaarLayout({
                         {children}
                     </div>
 
-                    {/* Action Sidebar (Right) - Optional */}
-                    {(sidebar || hasRightRailAds) && (
-                        <aside className="flex flex-col gap-6">
-                            {sidebar}
-                            <AdSlot placement="right_rail" variant="rail" />
-                        </aside>
-                    )}
+                    {/* Actions and app recommendations */}
+                    <aside className="flex min-w-0 flex-col gap-6 lg:col-start-2 xl:col-start-3 xl:row-start-1">
+                        {sidebar}
+                        <AdSlot placement="right_rail" variant="rail" />
+                        <PromotedApps />
+                    </aside>
                 </div>
             </main>
 

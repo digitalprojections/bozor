@@ -668,5 +668,11 @@
     "welcome.meta_description": "日本のコミュニティマーケットBozor。品物の売買、サービスの紹介、地域のお知らせに。個人・事業者ともに掲載は無料です。",
     "welcome.free_short": "通常の掲載は無料。有料広告は任意です。",
     "listing.likes_count": "いいね :count件",
-    "listing.likes_unavailable": "いいね数を取得できません"
+    "listing.likes_unavailable": "いいね数を取得できません",
+    "promoted_apps.title": "Created Link のアプリ",
+    "promoted_apps.all_apps": "すべてのアプリを見る",
+    "promoted_apps.new_tab": "新しいタブで開きます",
+    "promoted_apps.genstudio": "AIで画像や動画を作成。",
+    "promoted_apps.localscribe": "Windowsで音声や動画を文字起こし。",
+    "promoted_apps.checkers": "コンピューターや友達とチェッカーを楽しめます。"
 }

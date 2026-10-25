@@ -669,5 +669,11 @@
     "welcome.meta_description": "Yaponiyada buyum sotish, xizmat taklif qilish va boshqa e’lonlarni Bozorda bepul joylang. Shaxsiy va biznes e’lonlari uchun to‘lov yo‘q.",
     "welcome.free_short": "Oddiy e’lonlar bepul. Pullik reklama ixtiyoriy.",
     "listing.likes_count": ":count kishiga yoqdi",
-    "listing.likes_unavailable": "Yoqtirishlar soni mavjud emas"
+    "listing.likes_unavailable": "Yoqtirishlar soni mavjud emas",
+    "promoted_apps.title": "Created Link ilovalari",
+    "promoted_apps.all_apps": "Barcha ilovalarni ko‘rish",
+    "promoted_apps.new_tab": "Yangi oynada ochiladi",
+    "promoted_apps.genstudio": "AI yordamida rasm va video yarating.",
+    "promoted_apps.localscribe": "Windows’da audio va videoni matnga aylantiring.",
+    "promoted_apps.checkers": "Kompyuter yoki do‘stingiz bilan shashka o‘ynang."
 }

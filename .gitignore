@@ -71,3 +71,7 @@ bozorkey.pem
 /local-artifacts/
 *.sql.gz
 *.pem
+
+# Python helper caches
+__pycache__/
+*.py[cod]

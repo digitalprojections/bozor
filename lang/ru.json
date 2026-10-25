@@ -669,5 +669,11 @@
     "welcome.meta_description": "Покупайте, продавайте, предлагайте услуги и делитесь новостями в Bozor в Японии. Объявления частных лиц и бизнеса размещаются бесплатно.",
     "welcome.free_short": "Обычные объявления бесплатны. Платная реклама — по желанию.",
     "listing.likes_count": "Отметок «Нравится»: :count",
-    "listing.likes_unavailable": "Количество отметок недоступно"
+    "listing.likes_unavailable": "Количество отметок недоступно",
+    "promoted_apps.title": "Приложения Created Link",
+    "promoted_apps.all_apps": "Все приложения",
+    "promoted_apps.new_tab": "Откроется в новой вкладке",
+    "promoted_apps.genstudio": "Создавайте изображения и видео с ИИ.",
+    "promoted_apps.localscribe": "Преобразуйте аудио и видео в текст на Windows.",
+    "promoted_apps.checkers": "Играйте в шашки с компьютером или другом."
 }

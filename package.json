@@ -15,7 +15,8 @@
         "test:statistics": "node --test tests/frontend/statistics.test.mjs",
         "test:welcome": "node --experimental-strip-types --test tests/frontend/welcome.test.mjs",
         "local:update": "powershell -ExecutionPolicy Bypass -File scripts/update-local-container.ps1",
-        "test:local": "powershell -ExecutionPolicy Bypass -File scripts/test-local-container.ps1"
+        "test:local": "powershell -ExecutionPolicy Bypass -File scripts/test-local-container.ps1",
+        "test:promoted-apps": "node --experimental-strip-types --test tests/frontend/promoted-apps.test.mjs"
     },
     "devDependencies": {
         "@eslint/js": "^9.19.0",
@@ -78,5 +79,5 @@
         "lightningcss-win32-x64-msvc": "^1.29.1"
     },
     "name": "bozor",
-    "version": "1.0.9"
+    "version": "1.0.10"
 }
